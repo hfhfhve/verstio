@@ -1,11 +1,11 @@
 # Verstio Frontend — снимок репозитория
-# commit: b203831a9167573537b72afeef6cf9969008572b
-# built:  2026-09-15 16:49 UTC
+# commit: f9fc62fe603df48ca9de2b6f6f258211a7dd9069
+# built:  2026-09-15 17:45 UTC
 
 ## Состав
 CNAME  (1 строк)
 README.md  (3 строк)
-index.html  (2 строк)
+index.html  (830 строк)
 app/404.html  (28 строк)
 app/app.js  (1683 строк)
 app/index.html  (329 строк)
@@ -32,7 +32,835 @@ verstio smm service
   index.html
 ════════════════════════════════════════════════════════
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Verstio — программный SEO с измеримым качеством каждой страницы</title>
+<meta name="description" content="Verstio делает pSEO-страницы из ваших данных: паспорт данных до генерации, 16 измерений качества во время, Search Console после. Каждая страница получает балл 0–100 и причины.">
+<link rel="canonical" href="https://verstio.ru/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Verstio — программный SEO с измеримым качеством">
+<meta property="og:description" content="Не 2000 текстов от ИИ и не копирайтеры на потоке. Конвейер с паспортом данных, гейтом качества и контролем после публикации.">
+<meta property="og:url" content="https://verstio.ru/">
+<meta property="og:image" content="https://verstio.ru/assets/hero.webp">
+<meta name="theme-color" content="#0D1013">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230D1013'/%3E%3Cpath d='M7 9l9 15 9-15' stroke='%23EFEAE1' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0D1013;
+  --ink-2:#14181D;
+  --ink-3:#1B2027;
+  --paper:#EFEAE1;
+  --paper-2:#E4DED2;
+  --paper-3:#F7F4EE;
+  --line-d:rgba(239,234,225,.14);
+  --line-l:rgba(13,16,19,.14);
+  --text-d:#C2C8D0;
+  --text-l:#3A3F45;
+  --dim-d:#7C848F;
+  --dim-l:#6B7078;
+  --blue:#5E9FE8;
+  --green:#5FA97F;
+  --red:#D9634F;
+  --amber:#C9902F;
+  --shell:1180px;
+  --gut:clamp(20px,5vw,64px);
+  --band:clamp(72px,9vw,132px);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text-d);font:400 17px/1.62 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
 
+.shell{width:100%;max-width:var(--shell);margin:0 auto;padding-inline:var(--gut)}
+.band{padding-block:var(--band);position:relative}
+.band--paper{background:var(--paper);color:var(--text-l)}
+.band--paper h2,.band--paper h3,.band--paper .big{color:#16191D}
+.band--ink-2{background:var(--ink-2);border-block:1px solid var(--line-d)}
+
+h1,h2,h3{margin:0;font-weight:400;color:#F4F1EB}
+h1{font-family:var(--serif);font-size:clamp(36px,5.2vw,66px);line-height:1.05;letter-spacing:-.012em}
+h2{font-family:var(--serif);font-size:clamp(30px,4.2vw,54px);line-height:1.07;letter-spacing:-.01em}
+h3{font-family:var(--sans);font-weight:600;font-size:19px;line-height:1.35}
+.lede{font-size:clamp(16px,1.3vw,19px);line-height:1.66;color:var(--dim-d);max-width:66ch;margin:22px 0 0}
+.band--paper .lede{color:var(--dim-l)}
+.head{max-width:740px;margin-bottom:clamp(40px,5vw,64px)}
+.kicker{font-size:14px;color:var(--dim-d);margin:0 0 18px;padding-bottom:10px;border-bottom:1px solid var(--line-d);display:inline-block}
+.band--paper .kicker{color:var(--dim-l);border-color:var(--line-l)}
+
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:8px;background:var(--paper);color:#0D1013;border:1px solid var(--paper);cursor:pointer;font-weight:500;font-size:16px;text-decoration:none;transition:background .25s,transform .35s var(--ease)}
+.btn:hover{background:#fff;transform:translateY(-1px)}
+.btn--ghost{background:transparent;color:#F4F1EB;border-color:var(--line-d)}
+.btn--ghost:hover{background:rgba(239,234,225,.07);border-color:rgba(239,234,225,.3)}
+.band--paper .btn{background:#12161A;color:var(--paper-3);border-color:#12161A}
+.band--paper .btn:hover{background:#000}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+
+/* --- шапка ─────────────────────────────────────────── */
+.top{position:sticky;top:0;z-index:50;background:rgba(13,16,19,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-d)}
+.top-in{max-width:var(--shell);margin:0 auto;padding:14px var(--gut);display:flex;align-items:center;gap:26px}
+.brand{font-family:var(--serif);font-size:24px;color:#F4F1EB;text-decoration:none;letter-spacing:.01em}
+.top-nav{display:flex;gap:22px;margin-inline:auto;font-size:15px}
+.top-nav a{color:var(--dim-d);text-decoration:none;transition:color .2s}
+.top-nav a:hover{color:#F4F1EB}
+.top .btn{padding:10px 18px;font-size:15px}
+
+/* ── герой ─────────────────────────────────────────── */
+.hero{padding-top:clamp(52px,7vw,96px);padding-bottom:clamp(52px,7vw,96px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,4vw,64px);align-items:end}
+.hero h1 em{font-style:italic;color:#fff}
+.hero-note{margin:28px 0 0;padding-left:16px;border-left:2px solid var(--blue);color:var(--dim-d);font-size:16px;max-width:52ch}
+
+/* карточка балла */
+.card{background:var(--ink-2);border:1px solid var(--line-d);border-radius:14px;padding:22px}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--line-d)}
+.card-url{font-size:14px;color:var(--dim-d);word-break:break-all;line-height:1.45}
+.card-url b{display:block;color:#F4F1EB;font-weight:500;font-size:15px;margin-bottom:4px}
+.score{text-align:right;flex:none}
+.score-num{font-family:var(--serif);font-size:54px;line-height:.9;color:#F4F1EB}
+.score-grade{font-size:13px;color:var(--green);margin-top:6px}
+.dims{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.dim{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px}
+.dim span{color:var(--dim-d)}
+.dim b{font-weight:500;color:#E7E3DB}
+.bar{grid-column:1/-1;height:4px;border-radius:2px;background:rgba(239,234,225,.1);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:2px;transform-origin:0 50%;transition:transform 1s var(--ease)}
+.bar i.mid{background:var(--amber)}
+.card-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line-d);display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;color:var(--dim-d)}
+.ok{color:var(--green)}
+
+/* ── общие сетки ───────────────────────────────────── */
+.cols{display:grid;gap:clamp(18px,2.4vw,28px)}
+.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* три подхода */
+.vs{border-top:1px solid var(--line-l)}
+.vs-row{display:grid;grid-template-columns:200px repeat(3,minmax(0,1fr));gap:0;border-bottom:1px solid var(--line-l)}
+.vs-row>*{padding:18px 20px;font-size:15.5px;line-height:1.5}
+.vs-q{color:var(--dim-l);font-size:14.5px}
+.vs-row .mine{background:rgba(13,16,19,.045);border-inline:1px solid var(--line-l);color:#16191D}
+.vs-head>*{padding-block:14px;font-weight:600;font-size:15px;color:#16191D}
+.vs-head .mine{background:#12161A;color:var(--paper-3);border-color:#12161A;border-radius:10px 10px 0 0}
+
+/* конвейер */
+.stage{border-top:1px solid var(--line-d);padding:26px 0}
+.stage:last-child{border-bottom:1px solid var(--line-d)}
+.stage-head{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:baseline;width:100%;background:none;border:0;padding:0;text-align:left;cursor:pointer}
+.stage-when{font-size:13.5px;color:var(--blue);flex:none;min-width:92px}
+.stage-head h3{color:#F4F1EB}
+.stage-head .plus{width:26px;height:26px;border:1px solid var(--line-d);border-radius:50%;display:grid;place-items:center;color:var(--dim-d);flex:none;transition:transform .3s var(--ease),border-color .3s}
+.stage[open] .plus,.stage.open .plus{transform:rotate(45deg);border-color:rgba(239,234,225,.35)}
+.stage-sum{margin:10px 0 0;color:var(--dim-d);font-size:16px;max-width:74ch;grid-column:2/3}
+.stage-body{display:none;padding:22px 0 4px;margin-left:110px}
+.stage.open .stage-body{display:block}
+.facts{margin:0;padding:0;list-style:none;display:grid;gap:14px;max-width:78ch}
+.facts li{position:relative;padding-left:20px;font-size:15.5px;line-height:1.55;color:var(--text-d)}
+.facts li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.facts code{white-space:nowrap}
+.facts code{font-size:13.5px;background:rgba(239,234,225,.08);padding:1px 6px;border-radius:4px;color:#E7E3DB}
+
+/* измерения */
+.dim-table{width:100%;border-collapse:collapse;font-size:15px}
+.dim-table th{text-align:left;font-weight:600;font-size:14px;color:var(--dim-l);padding:10px 12px;border-bottom:1px solid var(--line-l)}
+.dim-table td{padding:11px 12px;border-bottom:1px solid var(--line-l);vertical-align:top}
+.dim-table td:last-child,.dim-table th:last-child{text-align:right;white-space:nowrap}
+.dim-table tr.grp td{background:rgba(13,16,19,.05);font-weight:600;color:#16191D}
+.w{font-variant-numeric:tabular-nums;color:#16191D;font-weight:500}
+.hint{display:block;color:var(--dim-l);font-size:13.5px;margin-top:3px}
+.blockers{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.blockers li{position:relative;padding-left:20px;font-size:15.5px;line-height:1.5}
+.blockers li::before{content:"×";position:absolute;left:0;top:0;color:var(--red);font-weight:600}
+.panel{background:var(--paper-3);border:1px solid var(--line-l);border-radius:12px;padding:22px}
+.band:not(.band--paper) .panel{background:var(--ink-2);border-color:var(--line-d)}
+
+/* цифры */
+.stat{border-top:1px solid var(--line-d);padding-top:16px}
+.band--paper .stat{border-color:var(--line-l)}
+.stat b{display:block;font-family:var(--serif);font-size:clamp(30px,3.6vw,46px);line-height:1;color:#F4F1EB;margin-bottom:8px}
+.band--paper .stat b{color:#16191D}
+.stat span{font-size:14.5px;color:var(--dim-d);display:block;max-width:30ch}
+.band--paper .stat span{color:var(--dim-l)}
+
+/* изображения */
+.figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line-d);background:linear-gradient(140deg,#171C22,#0F1216)}
+.figure img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10}
+.figure.noimg{min-height:260px;background-image:repeating-linear-gradient(135deg,rgba(239,234,225,.05) 0 2px,transparent 2px 9px)}
+.figure.noimg img{display:none}
+.figure figcaption{padding:12px 16px;font-size:13.5px;color:var(--dim-d);border-top:1px solid var(--line-d)}
+.figure--wide img{aspect-ratio:21/9}
+
+/* форма */
+.lead{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,4vw,56px);align-items:start}
+.form{background:var(--ink-2);border:1px solid var(--line-d);border-radius:16px;padding:clamp(22px,3vw,34px)}
+.field{display:block;margin-bottom:16px}
+.field span{display:block;font-size:14.5px;color:var(--dim-d);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;padding:13px 14px;background:#0F1317;border:1px solid var(--line-d);border-radius:8px;color:#F1EEE8;transition:border-color .2s}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:rgba(239,234,225,.26)}
+.field textarea{min-height:92px;resize:vertical}
+.field.bad input,.field.bad select{border-color:var(--red)}
+.err{display:none;color:var(--red);font-size:13.5px;margin-top:6px}
+.field.bad .err{display:block}
+.form .btn{width:100%;justify-content:center;padding:16px;font-size:17px}
+.form-note{font-size:13.5px;color:var(--dim-d);margin:14px 0 0;line-height:1.55}
+.form-note a{color:#E7E3DB}
+.done{display:none;text-align:left}
+.form.sent .form-inner{display:none}
+.form.sent .done{display:block}
+.done h3{color:#F4F1EB;margin-bottom:10px}
+.contact{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:12px;font-size:16px}
+.contact li{display:grid;grid-template-columns:120px 1fr;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line-d)}
+.contact li span{color:var(--dim-d);font-size:14.5px}
+.contact a{color:#F4F1EB;text-decoration:none;border-bottom:1px solid rgba(239,234,225,.3)}
+
+/* faq */
+.faq{border-top:1px solid var(--line-l)}
+.faq details{border-bottom:1px solid var(--line-l)}
+.faq summary{cursor:pointer;padding:20px 0;font-weight:500;font-size:17.5px;color:#16191D;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--dim-l);font-weight:400}
+.faq details[open] summary::after{content:"−"}
+.faq p{margin:0 0 22px;max-width:74ch;color:var(--dim-l);font-size:16px}
+
+footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
+.foot{display:flex;flex-wrap:wrap;gap:18px 32px;align-items:center;justify-content:space-between;font-size:14.5px;color:var(--dim-d)}
+.foot a{color:var(--dim-d);text-decoration:none}
+.foot a:hover{color:#F4F1EB}
+
+@media (max-width:920px){
+  .hero-grid,.lead,.cols-2,.cols-3,.cols-4{grid-template-columns:1fr}
+  .top-nav{display:none}
+  .stage-body{margin-left:0}
+  .stage-head{grid-template-columns:1fr auto}
+  .stage-when{grid-column:1/-1;min-width:0;margin-bottom:6px}
+  .stage-sum{grid-column:1/-1}
+  .vs-row{grid-template-columns:1fr}
+  .vs-row>*{padding:12px 14px}
+  .vs-q{padding-bottom:0;font-weight:600;color:#16191D}
+  .vs-row .mine{border-inline:0;border-top:1px solid var(--line-l)}
+  .vs-head{display:none}
+  .vs-row .who{color:var(--dim-l);font-size:14px}
+  .contact li{grid-template-columns:1fr}
+  .contact li span{margin-bottom:-6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#top">Verstio</a>
+    <nav class="top-nav">
+      <a href="#pipeline">Как это работает</a>
+      <a href="#score">Оценка качества</a>
+      <a href="#after">После публикации</a>
+      <a href="#deliver">Что вы получаете</a>
+    </nav>
+    <a class="btn" href="#form">Обсудить проект</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ГЕРОЙ -->
+<section class="band hero shell">
+  <div class="hero-grid">
+    <div>
+      <p class="kicker">Программный SEO из ваших данных</p>
+      <h1>Мы не пишем две тысячи страниц.<br>Мы их <em>измеряем</em> и публикуем только те, что выживут в индексе.</h1>
+      <p class="lede">Verstio — небольшая студия с собственной системой pSEO. Каждая страница собирается из вашей таблицы данных, проходит девять блокирующих проверок и шестнадцать взвешенных измерений, получает балл от 0 до 100 и объяснение, где именно она теряет баллы.</p>
+      <div class="btn-row">
+        <a class="btn" href="#form">Оставить заявку</a>
+        <a class="btn btn--ghost" href="#pipeline">Посмотреть конвейер</a>
+      </div>
+      <p class="hero-note">Пилот на 50 страницах: если средний балл ниже 80, вы не платите за проект и забираете отчёт себе.</p>
+    </div>
+
+    <div class="card" aria-label="Пример отчёта по странице">
+      <div class="card-top">
+        <div class="card-url">
+          <b>Отчёт по странице</b>
+          /kvartiry-v-kazani-s-vidom-na-vodu/
+        </div>
+        <div class="score">
+          <div class="score-num" data-count="86">86</div>
+          <div class="score-grade">B — хорошо, публиковать</div>
+        </div>
+      </div>
+      <ul class="dims">
+        <li class="dim"><span>Уникальность против корпуса проекта</span><b>94,2%</b><div class="bar"><i style="transform:scaleX(.95)"></i></div></li>
+        <li class="dim"><span>Плотность фактов на 1000 слов</span><b>41</b><div class="bar"><i style="transform:scaleX(.88)"></i></div></li>
+        <li class="dim"><span>Проработка разделов H2</span><b>7 по 240+ симв.</b><div class="bar"><i style="transform:scaleX(.9)"></i></div></li>
+        <li class="dim"><span>Живость текста, разброс длин фраз</span><b>2 клише</b><div class="bar"><i class="mid" style="transform:scaleX(.62)"></i></div></li>
+        <li class="dim"><span>Перелинковка из тела страницы</span><b>6 ссылок, 6 анкоров</b><div class="bar"><i style="transform:scaleX(.84)"></i></div></li>
+      </ul>
+      <div class="card-foot">
+        <span class="ok">Блокеров нет</span>
+        <span>Измерено 94% веса</span>
+        <span>Теряем: живость −3,4</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ТРИ ПОДХОДА -->
+<section class="band band--paper">
+  <div class="shell">
+    <div class="head">
+      <p class="kicker">Почему обычные варианты не работают</p>
+      <h2>Есть два тупика. Мы стоим между ними.</h2>
+      <p class="lede">Классическое агентство пишет медленно и вручную, поэтому на тысяче страниц экономит на всём. Генератор «ИИ, сделай 2000 страниц» выдаёт один и тот же текст с подменёнными словами — именно это Google научился отбрасывать первым.</p>
+    </div>
+
+    <div class="vs">
+      <div class="vs-row vs-head" aria-hidden="true">
+        <div></div>
+        <div>Агентство на потоке</div>
+        <div class="mine">Verstio</div>
+        <div>«ИИ, сделай 2000 страниц»</div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-q">Откуда берётся отличие между страницами</div>
+        <div><span class="who">Агентство: </span>из синонимов и перестановки абзацев</div>
+        <div class="mine"><span class="who">Verstio: </span>из ваших данных — цены, площади, сроки, характеристики. Страница отличается фактами, а не формулировками</div>
+        <div><span class="who">Генератор: </span>из фантазии модели, факты выдуманы</div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-q">Что происходит с плохими исходными данными</div>
+        <div><span class="who">Агентство: </span>берут заказ, пишут воду</div>
+        <div class="mine"><span class="who">Verstio: </span>считаем заполненность и разнообразие каждой колонки. Если различать страницы нечем — честно говорим «стоп» и показываем, каких данных не хватает</div>
+        <div><span class="who">Генератор: </span>ему всё равно, на выходе 2000 клонов</div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-q">Как измеряется качество</div>
+        <div><span class="who">Агентство: </span>«вычитал редактор», уникальность по онлайн-проверке</div>
+        <div class="mine"><span class="who">Verstio: </span>16 непрерывных измерений с весами, 9 блокеров, балл 0–100 и оценка A–F по каждой странице</div>
+        <div><span class="who">Генератор: </span>никак, максимум «уникальность 100%»</div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-q">Что происходит после выкладки</div>
+        <div><span class="who">Агентство: </span>отчёт о позициях раз в месяц</div>
+        <div class="mine"><span class="who">Verstio: </span>тянем Search Console по каждому URL, делим страницы на живые и мёртвые, мёртвые переписываем</div>
+        <div><span class="who">Генератор: </span>ничего, проект закончился на выгрузке</div>
+      </div>
+
+      <div class="vs-row">
+        <div class="vs-q">Что остаётся у вас на руках</div>
+        <div><span class="who">Агентство: </span>тексты в документах</div>
+        <div class="mine"><span class="who">Verstio: </span>архив готового сайта, sitemap, robots, изображения в WebP, JSON с полями и отчёт по каждой странице</div>
+        <div><span class="who">Генератор: </span>простыня HTML без карты сайта и связей</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ИЗОБРАЖЕНИЕ 1 -->
+<section class="band band--ink-2">
+  <div class="shell">
+    <figure class="figure figure--wide">
+      <img src="assets/pipeline.webp" alt="Производственная линия: страницы проходят через пост контроля качества" loading="lazy">
+      <figcaption>Конвейер, а не творческий процесс: каждая страница проходит один и тот же контроль.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- КОНВЕЙЕР -->
+<section class="band shell" id="pipeline">
+  <div class="head">
+    <p class="kicker">Пять участков работы</p>
+    <h2>Система работает до генерации, во время и после неё</h2>
+    <p class="lede">Ниже — то, что реально делает наш бэкенд. Разверните любой участок: там конкретные проверки и пороги, а не обещания.</p>
+  </div>
+
+  <div class="stage open">
+    <button class="stage-head" aria-expanded="true">
+      <span class="stage-when">До генерации</span>
+      <h3>Паспорт данных: решаем, можно ли вообще делать проект</h3>
+      <span class="plus" aria-hidden="true">+</span>
+      <p class="stage-sum">Мы начинаем не с текста, а с вашей таблицы. Система считает каждую колонку и выносит вердикт: можно генерировать, можно с оговорками или нельзя.</p>
+    </button>
+    <div class="stage-body">
+      <ul class="facts">
+        <li>Таблица подгружается из CSV, XLSX или живой Google Sheets — система сама определяет кодировку, ключевую колонку и типы остальных.</li>
+        <li>По каждой колонке считаем заполненность и разнообразие: колонка попадает в «различающие», если заполнена минимум на 60% и даёт либо 30% уникальных значений, либо 8 разных значений и больше.</li>
+        <li>Колонки, где почти у каждой строки своё значение — цена, адрес, площадь, — помечаются отдельно: они дают больше уникальности, чем три колонки на два варианта.</li>
+        <li>Вердикт: <code>можно</code> при 4 и более различающих колонках, <code>осторожно</code> при 2–3, <code>стоп</code> если различать нечем. В последнем случае мы не берём деньги за проект, а говорим, каких данных не хватает.</li>
+        <li>Строки-пустышки отсеиваются заранее с причиной: дубль другой строки, пустой ключ, «заполнено 2 из 7 различающих колонок».</li>
+        <li>Считается потолок страниц: сколько строк реально дадут нормальную страницу. Обещать 2000 страниц с таблицы на 300 осмысленных строк мы не будем.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stage">
+    <button class="stage-head" aria-expanded="false">
+      <span class="stage-when">До генерации</span>
+      <h3>Каркас и схема полей, которые вы утверждаете один раз</h3>
+      <span class="plus" aria-hidden="true">+</span>
+      <p class="stage-sum">Сильная модель собирает один HTML-каркас страницы и строгую схему полей. Вы смотрите предпросмотр и утверждаете — после этого текст пишется только внутрь этой формы.</p>
+    </button>
+    <div class="stage-body">
+      <ul class="facts">
+        <li>Каркас содержит разметку, микроразметку JSON-LD, шапку, подвал, хлебные крошки и блок перелинковки — на отдельных маркерах, которые система заполняет автоматически.</li>
+        <li>Схема задаёт каждое поле с минимальной и максимальной длиной, поэтому title и description физически не могут выйти из поискового коридора.</li>
+        <li>Целостность каркаса проверяется перед сохранением: незакрытые теги, потерянные маркеры и сломанные блоки не пропускаются.</li>
+        <li>Тип страницы и макет выбираются под ваш случай: срез базы, сравнение, справочник, город или услуга — у каждого свой набор и порядок блоков.</li>
+        <li>Пять готовых тем оформления с палитрой, шрифтами и плотностью. Тему можно сменить в один клик, и уже сгенерированные страницы перекрашиваются без переписывания текста.</li>
+        <li>Шапка, подвал, блок доверия E-E-A-T, данные о компании и форма заявки включаются по вашему выбору. Ничего из этого модель не выдумывает: реквизиты, авторы и источники берутся только из того, что вы дали.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stage">
+    <button class="stage-head" aria-expanded="false">
+      <span class="stage-when">Во время</span>
+      <h3>Генерация: две модели, контроль сущности и повторные попытки</h3>
+      <span class="plus" aria-hidden="true">+</span>
+      <p class="stage-sum">Дорогая модель работает один раз на весь проект — над каркасом. Тысячи страниц наполняет дешёвая модель по готовой схеме, и каждый её ответ проверяется до сборки HTML.</p>
+    </button>
+    <div class="stage-body">
+      <ul class="facts">
+        <li>Такое разделение и держит стоимость: сложное решение принимается однажды, а массовая часть стоит копейки за страницу. Расход токенов и цена считаются по каждой попытке.</li>
+        <li>Защита от подмены сущности: если строка про «однушку в Азино», страница не может уехать на другой район или другой объект — совпадение проверяется по корням слов в заголовке, первом абзаце и названии сущности.</li>
+        <li>Ответ модели чинится и разбирается даже при обрыве, но затем сверяется со схемой: пустые обязательные поля, короткие и раздутые тексты, оставшиеся плейсхолдеры и служебный мусор — повод для повторной попытки с подсказкой, что именно было не так.</li>
+        <li>Стоп-фразы задаются на проект: канцелярит, «в современном мире», названия конкурентов — всё, что вы не хотите видеть.</li>
+        <li>Адреса страниц строятся из смысла, а не из ключа целиком: короткий понятный slug латиницей, канонический адрес и sitemap согласованы между собой.</li>
+        <li>Очередь работает параллельно, прогресс виден по каждой странице, генерацию можно остановить в один клик и потом дозапустить только упавшие.</li>
+        <li>Каждая попытка сохраняется целиком, вместе с промтом и ответом. При споре «почему страница такая» есть что открыть.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stage">
+    <button class="stage-head" aria-expanded="false">
+      <span class="stage-when">Во время</span>
+      <h3>Уникальность считается против всего проекта, а не «по интернету»</h3>
+      <span class="plus" aria-hidden="true">+</span>
+      <p class="stage-sum">Главная болезнь массовых страниц — одинаковый скелет с подменёнными словами. Онлайн-проверки уникальности этого не видят. Наш движок видит.</p>
+    </button>
+    <div class="stage-body">
+      <ul class="facts">
+        <li>Текст приводится к корням слов и режется на отпечатки по 5 и по 3 слова — два прохода: первый ловит прямые совпадения, второй видит переписанное другими словами.</li>
+        <li>Статический текст каркаса вычитается: шапка, подвал и повторяющиеся подписи не должны понижать оценку. Сравнивается только то, что модель написала сама.</li>
+        <li>Новая страница сравнивается со всем корпусом проекта, а не с предыдущей. Отдельно оценивается похожесть структуры документа — если каркас пора ротировать, мы это видим.</li>
+        <li>Ниже 75% похожая страница считается дублем и блокируется независимо от общего балла. Целевой ориентир — 92% и выше.</li>
+        <li>Уникальность пересчитывается по всему проекту после генерации, а не один раз при вставке первой страницы.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stage">
+    <button class="stage-head" aria-expanded="false">
+      <span class="stage-when">После</span>
+      <h3>Выгрузка готового сайта и наблюдение за индексом</h3>
+      <span class="plus" aria-hidden="true">+</span>
+      <p class="stage-sum">Проект заканчивается не папкой с текстами, а сайтом, который можно залить как есть, и отчётом о том, что из него реально живёт в поиске.</p>
+    </button>
+    <div class="stage-body">
+      <ul class="facts">
+        <li>В архиве: страницы в виде <code>/slug/index.html</code>, карта сайта с датами изменения и разбивкой на файлы при больших объёмах, robots.txt, изображения в WebP и отдельно JSON с полями каждой страницы.</li>
+        <li>Перелинковка и хлебные крошки расставляются по смысловым подгруппам, а не случайными ссылками «смотри также».</li>
+        <li>Search Console подключается по сервисному аккаунту: показы, клики, CTR и средняя позиция подтягиваются по каждому URL за выбранный период.</li>
+        <li>Страницы делятся на живые и мёртвые. Мёртвые — это не «ещё не проиндексировалось», это адрес без показов, и он отправляется на переписывание.</li>
+        <li>Балл можно пересчитать задним числом по уже опубликованным страницам: критерии строже — отчёт честнее, без перегенерации всего проекта.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ОЦЕНКА -->
+<section class="band band--paper" id="score">
+  <div class="shell">
+    <div class="head">
+      <p class="kicker">Гейт качества</p>
+      <h2>Балл вместо «прошло — не прошло»</h2>
+      <p class="lede">Порог легко обмануть: страница на 801 символ с уникальностью 0,801 формально проходит. Поэтому у нас два контура. Сначала блокеры — дефекты, при которых публиковать нельзя ни при каком балле. Затем шестнадцать шкал с весами, из которых собирается итоговый балл.</p>
+    </div>
+
+    <div class="cols cols-2" style="align-items:start">
+      <div>
+        <table class="dim-table">
+          <caption class="sr">Измерения качества и их веса</caption>
+          <thead><tr><th>Измерение</th><th>Вес</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td>Антидубль и антидорвей</td><td class="w">26</td></tr>
+            <tr><td>Уникальность против корпуса<span class="hint">1 − похожесть на ближайшую страницу проекта</span></td><td class="w">16</td></tr>
+            <tr><td>Различие title между страницами</td><td class="w">6</td></tr>
+            <tr><td>Вариативность каркаса<span class="hint">различие структуры документа</span></td><td class="w">4</td></tr>
+
+            <tr class="grp"><td>Глубина содержания</td><td class="w">26</td></tr>
+            <tr><td>Объём чистого текста<span class="hint">без шапки и подвала, цель 1800–6000 символов</span></td><td class="w">9</td></tr>
+            <tr><td>Плотность фактов<span class="hint">числа, даты, имена, единицы измерения на 1000 слов</span></td><td class="w">9</td></tr>
+            <tr><td>Проработка разделов<span class="hint">не меньше пяти H2 по 200+ символов текста под каждым</span></td><td class="w">8</td></tr>
+
+            <tr class="grp"><td>Релевантность ключу</td><td class="w">12</td></tr>
+            <tr><td>Ключ в опорных местах<span class="hint">title, H1, первый абзац, хотя бы один H2, адрес страницы</span></td><td class="w">8</td></tr>
+            <tr><td>Переспам ключа<span class="hint">только защита от накрутки: плотность ключа не фактор ранжирования</span></td><td class="w">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <table class="dim-table">
+          <tbody>
+            <tr class="grp"><td>Живость и текст</td><td class="w">15</td></tr>
+            <tr><td>Живость текста<span class="hint">клише-канцелярит и разброс длин предложений</span></td><td class="w">9</td></tr>
+            <tr><td>Самоповторы<span class="hint">повтор пятёрок слов и похожесть разделов между собой</span></td><td class="w">6</td></tr>
+
+            <tr class="grp"><td>Техническое SEO</td><td class="w">21</td></tr>
+            <tr><td>Перелинковка<span class="hint">внутренние ссылки из тела и разные анкоры</span></td><td class="w">7</td></tr>
+            <tr><td>Качество меты<span class="hint">длина title и description в коридоре, ключ внутри</span></td><td class="w">6</td></tr>
+            <tr><td>Микроразметка<span class="hint">валидный JSON-LD: Article, FAQPage, BreadcrumbList</span></td><td class="w">6</td></tr>
+            <tr><td>Медиа<span class="hint">картинки с непустыми уникальными alt и размерами</span></td><td class="w">2</td></tr>
+          </tbody>
+        </table>
+
+        <div class="panel" style="margin-top:22px">
+          <h3 style="color:#16191D;margin-bottom:12px">Чего здесь нет намеренно</h3>
+          <p style="margin:0;color:var(--dim-l);font-size:15.5px">Тошноты, водности и индексов читаемости. Google официально не использует ни плотность слов, ни формулы читаемости, а meta keywords игнорирует с 2009 года. Эти 11 баллов веса мы отдали плотности фактов и живости текста — тому, что действительно отличает страницу от шаблона.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols cols-2" style="margin-top:clamp(36px,4vw,56px);align-items:start">
+      <div class="panel">
+        <h3 style="color:#16191D;margin-bottom:14px">Девять блокеров: публикация невозможна</h3>
+        <ul class="blockers" style="color:var(--text-l)">
+          <li>HTML оборван или разметка не закрыта</li>
+          <li>В тексте остались незаполненные плейсхолдеры каркаса</li>
+          <li>Протёк служебный мусор: имена полей, обрывки промта</li>
+          <li>Заголовков H1 не ровно один</li>
+          <li>Меньше 900 символов чистого текста</li>
+          <li>Уникальность ниже 75% — это дубль другой страницы</li>
+          <li>Пустой title или description</li>
+          <li>Ключ не найден в тексте: страница не про то, про что должна</li>
+          <li>Ответ модели не соответствует схеме каркаса</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="color:#16191D">Как складывается итоговый балл</h3>
+        <p class="lede" style="margin-top:14px">Обычное среднее позволяет закрыть провал успехами: девять пятёрок и один ноль дают 90 баллов. Мы считаем степенное среднее, которое тянет итог к худшему значению, и сверху ставим потолок.</p>
+        <div class="cols cols-2" style="margin-top:26px;gap:20px">
+          <div class="stat"><b>81</b><span>вместо 90 в примере выше: провал нельзя компенсировать</span></div>
+          <div class="stat"><b>78</b><span>потолок балла, если провалено хоть одно критическое измерение</span></div>
+          <div class="stat"><b>A–F</b><span>оценка страницы: A публикуем первыми, D и F уходят на переписывание</span></div>
+          <div class="stat"><b>94%</b><span>доля веса, которую удалось измерить — считаем только то, что реально проверили</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ИЗОБРАЖЕНИЕ 2 + ПОСЛЕ ПУБЛИКАЦИИ -->
+<section class="band band--ink-2" id="after">
+  <div class="shell">
+    <div class="cols cols-2" style="align-items:center">
+      <div>
+        <p class="kicker">После публикации</p>
+        <h2>Страница либо приносит показы, либо переписывается</h2>
+        <p class="lede">Массовые проекты обычно умирают после выгрузки: никто не знает, какие из тысячи адресов вообще попали в индекс. Мы подключаем Search Console и смотрим по каждому URL.</p>
+        <div class="cols cols-2" style="margin-top:30px;gap:20px">
+          <div class="stat"><b>Живые</b><span>есть показы: работают, трогать не нужно</span></div>
+          <div class="stat"><b>Мёртвые</b><span>нет показов: уходят на переписывание в следующий круг</span></div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="assets/control.webp" alt="Стол контроля качества с отчётами и увеличительным стеклом" loading="lazy">
+        <figcaption>Отчёт по каждому адресу: показы, клики, CTR, средняя позиция.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ЧТО ВЫ ПОЛУЧАЕТЕ -->
+<section class="band shell" id="deliver">
+  <div class="head">
+    <p class="kicker">Результат работы</p>
+    <h2>Что у вас останется, даже если мы разойдёмся</h2>
+  </div>
+  <div class="cols cols-3">
+    <div class="panel">
+      <h3>Готовый сайт</h3>
+      <p style="color:var(--dim-d);font-size:15.5px;margin:12px 0 0">Архив, который кладётся в корень как есть: страницы по адресам вида /slug/, карта сайта с датами, robots.txt, изображения в WebP. Заливается на GitHub Pages, nginx или ваш хостинг без переделок.</p>
+    </div>
+    <div class="panel">
+      <h3>Отчёт по каждой странице</h3>
+      <p style="color:var(--dim-d);font-size:15.5px;margin:12px 0 0">Балл, оценка, значения всех измерений, список блокеров и строка «где теряем баллы». Таблицу можно отсортировать и увидеть, какие страницы публиковать первыми.</p>
+    </div>
+    <div class="panel">
+      <h3>Данные и исходники</h3>
+      <p style="color:var(--dim-d);font-size:15.5px;margin:12px 0 0">JSON с полями каждой страницы, утверждённый каркас и паспорт данных с вердиктом по колонкам. Этим можно пользоваться и без нас — например, отдать своему разработчику.</p>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:clamp(28px,3vw,40px)">
+    <div class="cols cols-2" style="gap:24px;align-items:start">
+      <div>
+        <h3>У нас пока нет отзывов — и мы не будем их выдумывать</h3>
+        <p style="color:var(--dim-d);font-size:16px;margin:12px 0 0">Verstio — новая студия. Вместо чужих лиц в кружочках мы предлагаем то, что можно проверить до оплаты.</p>
+      </div>
+      <ul class="facts">
+        <li>Бесплатный разбор ваших данных: показываем вердикт по колонкам и реальный потолок страниц до начала работы.</li>
+        <li>Пилот на 50 страницах. Средний балл ниже 80 — вы не платите за проект и забираете отчёт и страницы себе.</li>
+        <li>Методика открыта: пороги, веса и блокеры описаны выше, вы можете проверить любую страницу по ним вручную.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ФОРМА -->
+<section class="band band--ink-2" id="form">
+  <div class="shell lead">
+    <div>
+      <p class="kicker">Заявка</p>
+      <h2>Начнём с разбора ваших данных</h2>
+      <p class="lede">Расскажите про проект — вернёмся с вердиктом: сколько страниц реально можно сделать на ваших данных, каких колонок не хватает и сколько это будет стоить. Разбор бесплатный, ответ в течение рабочего дня.</p>
+      <ul class="contact">
+        <li><span>Заявки и вопросы</span><a href="mailto:hello@verstio.ru">hello@verstio.ru</a></li>
+        <li><span>Поддержка</span><a href="mailto:support@verstio.ru">support@verstio.ru</a></li>
+        <li><span>Телеграм</span><a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a></li>
+      </ul>
+      <figure class="figure" style="margin-top:28px">
+        <img src="assets/studio.webp" alt="Рабочий стол студии: таблица данных и разложенные макеты страниц" loading="lazy">
+      </figure>
+    </div>
+
+    <form class="form" id="leadForm" novalidate>
+      <div class="form-inner">
+        <label class="field" data-f="name">
+          <span>Как к вам обращаться</span>
+          <input name="name" type="text" autocomplete="name" placeholder="Тимур" required>
+          <em class="err">Впишите имя</em>
+        </label>
+        <label class="field" data-f="phone">
+          <span>Телефон</span>
+          <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00" required>
+          <em class="err">Нужен номер, на который можно позвонить или написать</em>
+        </label>
+        <label class="field" data-f="email">
+          <span>Почта</span>
+          <input name="email" type="email" autocomplete="email" placeholder="you@company.ru" required>
+          <em class="err">Проверьте адрес почты</em>
+        </label>
+        <label class="field">
+          <span>Сайт или домен проекта <i style="font-style:normal;color:#6E7681">— если есть</i></span>
+          <input name="site" type="text" placeholder="example.ru">
+        </label>
+        <label class="field">
+          <span>Ниша и что за страницы нужны</span>
+          <input name="niche" type="text" placeholder="Например: аренда квартир по районам Казани">
+        </label>
+        <label class="field">
+          <span>Сколько страниц ориентировочно</span>
+          <select name="volume">
+            <option value="">Ещё не считал</option>
+            <option>до 100</option>
+            <option>100–500</option>
+            <option>500–2000</option>
+            <option>больше 2000</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Есть ли таблица с данными</span>
+          <select name="data">
+            <option value="">Не уверен, нужно обсудить</option>
+            <option>Да, готовая таблица или база</option>
+            <option>Данные есть, но разрознены</option>
+            <option>Данных нет, нужна помощь со сбором</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Что важно учесть <i style="font-style:normal;color:#6E7681">— необязательно</i></span>
+          <textarea name="comment" placeholder="Сроки, конкуренты, прошлый опыт с SEO"></textarea>
+        </label>
+        <button class="btn" type="submit">Отправить заявку</button>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь на обработку указанных данных для ответа на заявку. Не любите формы — напишите на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a> или в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>.</p>
+      </div>
+
+      <div class="done" role="status">
+        <h3>Заявка отправлена</h3>
+        <p style="color:var(--dim-d);margin:0 0 14px">Ответим в течение рабочего дня с почты hello@verstio.ru. Если срочно — напишите в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener" style="color:#F4F1EB">@VerstioBot</a>.</p>
+        <p style="color:var(--dim-d);margin:0;font-size:15px">К разбору пригодится ваша таблица данных — можно прислать ссылку на Google Sheets или файл в ответном письме.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="band band--paper">
+  <div class="shell">
+    <div class="head">
+      <p class="kicker">Частые вопросы</p>
+      <h2>То, что спрашивают до начала работы</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Это не дорвеи? Нас не забанят?</summary>
+        <p>Дорвей — это страница без собственной ценности: один скелет с подменёнными словами. Именно против этого построена половина нашей системы: паспорт данных отсекает проекты, где страницы отличать нечем, а движок уникальности блокирует всё, что похоже на другую страницу проекта больше чем на 25%. Мы делаем страницы из ваших фактов, а не из синонимов.</p>
+      </details>
+      <details>
+        <summary>Что нужно от меня для старта?</summary>
+        <p>Таблица данных и домен. Таблица может быть CSV, Excel или Google Sheets — система читает её сама. Если таблицы нет, на разборе разберёмся, откуда взять данные: выгрузка из базы, прайс, каталог, справочник.</p>
+      </details>
+      <details>
+        <summary>Сколько страниц можно сделать?</summary>
+        <p>Столько, сколько выдерживают данные. Потолок считается арифметически: строки без фактов и дубликаты отбрасываются до генерации. Если таблица даёт 300 осмысленных страниц, мы не будем продавать 2000.</p>
+      </details>
+      <details>
+        <summary>Почему нельзя просто попросить ИИ написать тысячу текстов?</summary>
+        <p>Можно, и результат будет ровно таким: модель не знает ваших цен и характеристик, поэтому напишет обобщённый текст с выдуманными фактами и одинаковой структурой. У нас модель заполняет строго заданные поля значениями из вашей таблицы, а всё, что не прошло девять блокеров и не набрало балл, не публикуется.</p>
+      </details>
+      <details>
+        <summary>Чем занимаетесь вы, если генерирует система?</summary>
+        <p>Решениями, которые система принять не может: разбор данных, тип страниц и стратегия, каркас и схема полей, стоп-фразы, настройка порогов под вашу нишу, разбор слабых страниц и работа с мёртвыми после публикации. Система — инструмент, а не исполнитель.</p>
+      </details>
+      <details>
+        <summary>Как вы отчитываетесь?</summary>
+        <p>Таблицей по каждой странице: балл, оценка, значения измерений, блокеры. После публикации добавляются показы, клики, CTR и средняя позиция из Search Console с делением на живые и мёртвые адреса.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="shell foot">
+    <div><span class="brand" style="font-size:20px">Verstio</span> — программный SEO из ваших данных</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
+      <a href="mailto:support@verstio.ru">support@verstio.ru</a>
+      <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>
+      <a href="/app/">Вход для команды</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Куда отправлять заявки. Пока пусто — форма откроет письмо на hello@verstio.ru. */
+  var LEAD_ENDPOINT = '';
+
+  /* Раскрытие участков конвейера */
+  document.querySelectorAll('.stage-head').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var stage = btn.closest('.stage');
+      var open = stage.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  /* Счёт балла в карточке — один раз, когда герой виден */
+  var num = document.querySelector('[data-count]');
+  if (num && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var target = parseInt(num.dataset.count, 10), cur = 0;
+    var step = function(){
+      cur += Math.max(1, Math.round((target - cur) / 8));
+      if (cur >= target) { num.textContent = target; return; }
+      num.textContent = cur;
+      requestAnimationFrame(step);
+    };
+    num.textContent = '0';
+    setTimeout(step, 350);
+  }
+
+  /* Форма */
+  var form = document.getElementById('leadForm');
+  var RE_MAIL = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+  function digits(v){ return (v || '').replace(/\D/g, ''); }
+
+  function validate(){
+    var ok = true;
+    [['name', function(v){ return v.trim().length >= 2; }],
+     ['phone', function(v){ return digits(v).length >= 10; }],
+     ['email', function(v){ return RE_MAIL.test(v.trim()); }]
+    ].forEach(function(pair){
+      var wrap = form.querySelector('[data-f="' + pair[0] + '"]');
+      var input = wrap.querySelector('input');
+      var good = pair[1](input.value);
+      wrap.classList.toggle('bad', !good);
+      if (!good && ok) { input.focus(); }
+      ok = ok && good;
+    });
+    return ok;
+  }
+
+  form.querySelectorAll('input').forEach(function(i){
+    i.addEventListener('input', function(){
+      var w = i.closest('.field');
+      if (w) { w.classList.remove('bad'); }
+    });
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!validate()) { return; }
+
+    var data = {};
+    new FormData(form).forEach(function(v, k){ data[k] = String(v || '').trim(); });
+    data.page = location.href;
+
+    var btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Отправляем…';
+
+    var finish = function(){ form.classList.add('sent'); };
+
+    if (!LEAD_ENDPOINT) {
+      var body = Object.keys(data).map(function(k){ return k + ': ' + data[k]; }).join('\n');
+      location.href = 'mailto:hello@verstio.ru?subject=' +
+        encodeURIComponent('Заявка с сайта — ' + (data.name || '')) +
+        '&body=' + encodeURIComponent(body);
+      finish();
+      return;
+    }
+
+    fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function(r){
+      if (!r.ok) { throw new Error('bad status'); }
+      finish();
+    }).catch(function(){
+      btn.disabled = false;
+      btn.textContent = 'Отправить заявку';
+      alert('Не получилось отправить. Напишите на hello@verstio.ru или в @VerstioBot.');
+    });
+  });
+
+  /* Пока изображений нет — показываем фактуру вместо битой картинки */
+  document.querySelectorAll('.figure img').forEach(function(img){
+    img.addEventListener('error', function(){
+      var f = img.closest('.figure');
+      if (f) { f.classList.add('noimg'); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
 
 ════════════════════════════════════════════════════════
   app/404.html
