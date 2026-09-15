@@ -28,6 +28,85 @@ function saveApiBase(url) {
   localStorage.setItem('seo_api_base', String(url || '').replace(/\/+$/, ''));
 }
 
+/* --------------------------------------------------------------------------
+   1.5 ВХОД В КАБИНЕТ
+
+   Кабинет — статика, поэтому он ничего не охраняет сам: реальный замок
+   стоит на бэкенде (middleware в main.py). Здесь только три вещи:
+     * храним токен,
+     * подклеиваем его к каждому запросу,
+     * при 401 уводим на login.html.
+   -------------------------------------------------------------------------- */
+
+const TOKEN_KEY = 'seo_token';
+
+const auth = {
+  token() {
+    try { return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || ''; }
+    catch (e) { return ''; }
+  },
+
+  save(token, remember) {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      (remember === false ? sessionStorage : localStorage).setItem(TOKEN_KEY, token);
+    } catch (e) {}
+  },
+
+  clear() {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
+  },
+
+  /** Вход по почте и паролю. Бросает ошибку с текстом с сервера. */
+  async login(email, password, remember) {
+    const res = await req('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+      noAuthRedirect: true,
+    });
+    if (!res || !res.token) throw new Error('Сервер не вернул токен');
+    this.save(res.token, remember);
+    try { localStorage.setItem('seo_last_email', res.email || email); } catch (e) {}
+    return res;
+  },
+
+  /** Жив ли токен. Никогда не бросает. */
+  async check() {
+    if (!this.token()) return false;
+    try {
+      const me = await req('/auth/me', { noAuthRedirect: true });
+      return !!(me && me.email);
+    } catch (e) {
+      if (e && e.status === 401) this.clear();
+      return false;   // сеть легла — не вышвыриваем из кабинета
+    }
+  },
+
+  async logout() {
+    try { await req('/auth/logout', { method: 'POST', noAuthRedirect: true }); } catch (e) {}
+    this.clear();
+    location.replace('login.html');
+  },
+
+  /** Подписывает прямые ссылки (выгрузка, файлы картинок). */
+  signUrl(url) {
+    const t = this.token();
+    if (!t) return url;
+    return url + (url.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(t);
+  },
+
+  /** Уводит на форму входа, запомнив текущий адрес. */
+  toLogin() {
+    if (/login\.html$/.test(location.pathname)) return;
+    const next = location.pathname + location.search;
+    location.replace('login.html?next=' + encodeURIComponent(next));
+  },
+};
+
 /* Состояние связи — показывается в подвале левой колонки. */
 const wire = {
   ok: null,
@@ -43,6 +122,9 @@ const wire = {
 
 async function req(path, opts = {}) {
   const url = API_BASE.replace(/\/+$/, '') + path;
+  const token = auth.token();
+  // noAuthRedirect — для самих эндпоинтов входа: их 401 обрабатывает форма.
+  const { noAuthRedirect, ...fetchOpts } = opts;
   let response;
   try {
     response = await fetch(url, {
@@ -50,9 +132,10 @@ async function req(path, opts = {}) {
       headers: {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
+        ...(token ? { Authorization: 'Bearer ' + token } : {}),
         ...(opts.headers || {}),
       },
-      ...opts,
+      ...fetchOpts,
     });
   } catch (e) {
     wire.set(false, 'сеть');
@@ -72,6 +155,14 @@ async function req(path, opts = {}) {
     try { detail = JSON.parse(text)?.detail ?? null; } catch (e) {}
     if (detail && typeof detail === 'object') msg = detail.message || JSON.stringify(detail);
     else if (detail) msg = detail;
+
+    if (response.status === 401) {
+      const err = new Error(msg || 'Нужен вход в кабинет');
+      err.status = 401;
+      wire.set(true);
+      if (!noAuthRedirect) { auth.clear(); auth.toLogin(); }
+      throw err;
+    }
 
     if (response.status === 404 || response.status === 405) {
       const err = new Error(
@@ -141,7 +232,7 @@ const api = {
   deletePage:     (id, pid) => req(`/projects/${id}/pages/${pid}`, { method: 'DELETE' }),
   deletePages:    (id, ids) => req(`/projects/${id}/pages/delete`, { method: 'POST', body: JSON.stringify({ ids }) }),
   regeneratePage: (pid)     => req(`/pages/${pid}/regenerate`, { method: 'POST' }),
-  exportUrl:      (id, only) => `${API_BASE.replace(/\/+$/, '')}/projects/${id}/export` + (only ? `?only=${encodeURIComponent(only)}` : ''),
+  exportUrl:      (id, only) => auth.signUrl(`${API_BASE.replace(/\/+$/, '')}/projects/${id}/export` + (only ? `?only=${encodeURIComponent(only)}` : '')),
 
   /* ---- Чат ---- */
   chatHistory:      (id)      => req(`/chat/${id}/history`),
@@ -176,7 +267,7 @@ const api = {
   uploadMedia: (id, fd) => req(`/projects/${id}/media/upload`, { method: 'POST', body: fd, headers: {} }),
   importMedia: (id, d)  => req(`/projects/${id}/media/url`, { method: 'POST', body: JSON.stringify(d) }),
   deleteMedia: (id, aid)=> req(`/projects/${id}/media/${aid}`, { method: 'DELETE' }),
-  mediaUrl:    (id, aid)=> `${API_BASE.replace(/\/+$/, '')}/projects/${id}/media/${aid}/file`,
+  mediaUrl:    (id, aid)=> auth.signUrl(`${API_BASE.replace(/\/+$/, '')}/projects/${id}/media/${aid}/file`),
 
   /* ---- БЛОК 2 — Библиотеки и проектировщик (ещё нет) ---- */
   listLibraries: ()      => req('/libraries'),
@@ -1551,3 +1642,41 @@ if (document.readyState === 'loading') {
 } else {
   initTableUpload();
 }
+
+
+/* --------------------------------------------------------------------------
+   ОХРАНА СТРАНИЦ КАБИНЕТА
+
+   Удобство, а не защита: без токена бэкенд всё равно не ответит,
+   но лучше сразу показать форму входа, чем пустой интерфейс с ошибками.
+   -------------------------------------------------------------------------- */
+
+function mountLogoutButton() {
+  document.querySelectorAll('.topbar-tools').forEach(box => {
+    if (box.querySelector('[data-logout]')) return;
+    const b = document.createElement('button');
+    b.className = 'icon-btn';
+    b.type = 'button';
+    b.title = 'Выйти из кабинета';
+    b.setAttribute('data-logout', '');
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"'
+      + ' stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M15 17l5-5-5-5"/><path d="M20 12H9"/>'
+      + '<path d="M13 4H6a2 2 0 00-2 2v12a2 2 0 002 2h7"/></svg>';
+    b.addEventListener('click', () => auth.logout());
+    box.appendChild(b);
+  });
+}
+
+(function guardCabinet() {
+  if (/login\.html$/.test(location.pathname)) return;
+
+  if (!auth.token()) { auth.toLogin(); return; }
+
+  const run = () => {
+    mountLogoutButton();
+    auth.check();   // просроченный токен отдаст 401 → req сам уведёт на вход
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
