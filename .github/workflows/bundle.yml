@@ -1,0 +1,41 @@
+name: Build BUNDLE.txt
+
+# Собирает снимок всего репозитория в BUNDLE.txt при каждом пуше в main.
+# paths-ignore обязателен: без него коммит с бандлом запустит сборку снова и так до бесконечности.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'BUNDLE.txt'
+  workflow_dispatch:
+
+# Нужно, чтобы робот мог пушить бандл обратно в репозиторий.
+permissions:
+  contents: write
+
+# Если пушнул два раза подряд — старая сборка отменяется.
+concurrency:
+  group: bundle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Собрать BUNDLE.txt
+        run: python3 build_bundle.py
+
+      - name: Закоммитить, если изменился
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add BUNDLE.txt
+          # --quiet выходит с 0, если разницы нет: пустых коммитов не делаем.
+          if git diff --cached --quiet; then
+            echo 'Бандл не изменился.'
+            exit 0
+          fi
+          git commit -m 'chore: пересобран BUNDLE.txt [skip ci]'
+          git push
