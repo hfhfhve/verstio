@@ -136,6 +136,8 @@ h3{font-family:var(--sans);font-weight:600;font-size:19px;line-height:1.35}
 .facts{margin:0;padding:0;list-style:none;display:grid;gap:14px;max-width:78ch}
 .facts li{position:relative;padding-left:20px;font-size:15.5px;line-height:1.55;color:var(--text-d)}
 .facts li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.band--paper .facts li{color:var(--text-l)}
+.band--paper .facts code{background:rgba(13,16,19,.06);color:#1D2126}
 .facts code{white-space:nowrap}
 .facts code{font-size:13.5px;background:rgba(239,234,225,.08);padding:1px 6px;border-radius:4px;color:#E7E3DB}
 
@@ -234,6 +236,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <a href="#pipeline">Как это работает</a>
       <a href="#score">Оценка качества</a>
       <a href="#after">После публикации</a>
+      <a href="#cases">Примеры задач</a>
       <a href="#deliver">Что вы получаете</a>
     </nav>
     <a class="btn" href="#form">Обсудить проект</a>
@@ -253,7 +256,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
         <a class="btn" href="#form">Оставить заявку</a>
         <a class="btn btn--ghost" href="#pipeline">Посмотреть конвейер</a>
       </div>
-      <p class="hero-note">Пилот на 50 страницах: если средний балл ниже 80, вы не платите за проект и забираете отчёт себе.</p>
+      <p class="hero-note">Бесплатный разбор данных до начала работы: скажем честный потолок страниц по вашей таблице и что в ней нужно добавить.</p>
     </div>
 
     <div class="card" aria-label="Пример отчёта по странице">
@@ -556,6 +559,59 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   </div>
 </section>
 
+<!-- ПРИМЕРЫ ЗАДАЧ -->
+<section class="band band--paper" id="cases">
+  <div class="shell">
+    <div class="head">
+      <p class="kicker">Примеры задач</p>
+      <h2>Три типовых проекта, которые мы берём</h2>
+      <p class="lede">Ниша почти не важна — важно, есть ли таблица с различающимися фактами. Ниже — постановки задач, под которые система собрана, и то, как мы их разбираем.</p>
+    </div>
+    <div class="cols cols-3">
+      <div class="panel">
+        <figure class="figure" style="margin:-22px -22px 20px;border-radius:12px 12px 0 0;border:0;border-bottom:1px solid var(--line-l)">
+          <img src="assets/case-travel.webp" alt="Стол турагента: карта, папки с турами и ноутбук" loading="lazy">
+        </figure>
+        <p class="kicker" style="margin-bottom:12px">Турагентство, Москва</p>
+        <h3>2000 страниц по направлениям и типам отдыха</h3>
+        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 14px">У Миши есть выгрузка туров: направление, курорт, сезон, звёздность, цена на двоих, ночи, перелёт, питание. Задача — закрыть длинный запрос вида «Турция в октябре с детьми из Москвы», по которому он никогда не выйдет одной страницей «Туры».</p>
+        <ul class="facts">
+          <li>Страница различается ценами, погодой сезона и длительностью перелёта, а не перестановкой слов</li>
+          <li>Перелинковка ведёт по соседним сезонам и ближайшим курортам</li>
+          <li>Проверка подмены сущности: в тексте про Кемер не окажется Анталии</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <figure class="figure" style="margin:-22px -22px 20px;border-radius:12px 12px 0 0;border:0;border-bottom:1px solid var(--line-l)">
+          <img src="assets/case-auto.webp" alt="Сервисный цех: поднятый автомобиль и планшет с прайсом" loading="lazy">
+        </figure>
+        <p class="kicker" style="margin-bottom:12px">Сеть автосервисов, 4 города</p>
+        <h3>1400 страниц: услуга × марка × город</h3>
+        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 14px">Прайс на 200 работ с нормо-часами и стоимостью запчастей по маркам. Задача — забрать запросы вида «замена цепи ГРМ BMW N57 Цена» без тысячи одинаковых текстов.</p>
+        <ul class="facts">
+          <li>Факты на странице: цена, время работ, ресурс узла, совместимые двигатели — плотность фактов под контролем</li>
+          <li>Паспорт данных сразу покажет, если по половине марок цен нет: такие строки не идут в работу</li>
+          <li>Разметка Service и FAQPage, адреса вида /zamena-cepi-grm-bmw-kazan/</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <figure class="figure" style="margin:-22px -22px 20px;border-radius:12px 12px 0 0;border:0;border-bottom:1px solid var(--line-l)">
+          <img src="assets/case-supply.webp" alt="Склад оборудования с каталожными карточками" loading="lazy">
+        </figure>
+        <p class="kicker" style="margin-bottom:12px">B2B-поставщик оборудования</p>
+        <h3>600 страниц вместо заказанных 3000</h3>
+        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 14px">Клиент хотел 3000 страниц по комбинациям «оборудование × отрасль × город». Потолок по его же данным — 600: город и отрасль не меняли ни одного факта в строке.</p>
+        <ul class="facts">
+          <li>Прямо говорим цифру до оплаты: 2400 «лишних» страниц были бы дублями друг друга</li>
+          <li>Вместо раздувания объёма усиливаем 600 страниц: таблицы характеристик, режимы применения, расчёты</li>
+          <li>Если клиент добавит колонки, потолок пересчитывается и объём растёт законно</li>
+        </ul>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:24px">Это типовые постановки задач и сценарии работы системы, а не отчёты по действующим клиентам. Свой вариант разберём на консультации по вашей таблице.</p>
+  </div>
+</section>
+
 <!-- ЧТО ВЫ ПОЛУЧАЕТЕ -->
 <section class="band shell" id="deliver">
   <div class="head">
@@ -580,13 +636,14 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   <div class="panel" style="margin-top:clamp(28px,3vw,40px)">
     <div class="cols cols-2" style="gap:24px;align-items:start">
       <div>
-        <h3>У нас пока нет отзывов — и мы не будем их выдумывать</h3>
-        <p style="color:var(--dim-d);font-size:16px;margin:12px 0 0">Verstio — новая студия. Вместо чужих лиц в кружочках мы предлагаем то, что можно проверить до оплаты.</p>
+        <h3>Что мы обещаем, а что зависит не только от нас</h3>
+        <p style="color:var(--dim-d);font-size:16px;margin:12px 0 0">Позиции в Google не продаются — их не гарантирует никто, кто разбирается в поиске. Мы отвечаем за то, что находится в нашей зоне контроля, и говорим об этом прямо.</p>
       </div>
       <ul class="facts">
-        <li>Бесплатный разбор ваших данных: показываем вердикт по колонкам и реальный потолок страниц до начала работы.</li>
-        <li>Пилот на 50 страницах. Средний балл ниже 80 — вы не платите за проект и забираете отчёт и страницы себе.</li>
-        <li>Методика открыта: пороги, веса и блокеры описаны выше, вы можете проверить любую страницу по ним вручную.</li>
+        <li>При качественных исходных данных и здоровой репутации домена проекты такого класса стабильно набирают охват в поиске — страницы попадают в индекс и начинают собирать показы по длинному запросу.</li>
+        <li>Мы отвечаем за качество самих страниц: балл, уникальность против корпуса проекта, отсутствие блокеров, корректную разметку и перелинковку. Это проверяемо по отчёту, а не на словах.</li>
+        <li>Что мы не контролируем: историю и репутацию домена, конкуренцию в нише и алгоритмы Google. Слабый домен снижает показы даже у безупречных страниц — поэтому мы смотрим на домен до начала работы.</li>
+        <li>Ориентиры по охвату именно для вашего проекта разбираем на консультации, после того как увидим данные и домен. Без данных любые цифры были бы выдумкой.</li>
       </ul>
     </div>
   </div>
@@ -715,7 +772,6 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
       <a href="mailto:support@verstio.ru">support@verstio.ru</a>
       <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>
-      <a href="/app/">Вход для команды</a>
     </div>
   </div>
 </footer>
@@ -816,7 +872,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     });
   });
 
-  /* Пока изображений нет — показываем фактуру вместо битой картинки */
+  /* Пока изображений нет — показываем фактур вместо битой картинки */
   document.querySelectorAll('.figure img').forEach(function(img){
     img.addEventListener('error', function(){
       var f = img.closest('.figure');
