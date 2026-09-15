@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вход — SEO-Фабрика</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="style.css?v=30">
+<script>
+  try {
+    var t = localStorage.getItem('seo_theme');
+    if (t !== 'light' && t !== 'dark') t = 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+<style>
+/* --------------------------------------------------------------------------
+   Страница входа. Свои стили держим здесь, чтобы не раздувать style.css:
+   кроме этой страницы они нигде не нужны.
+   -------------------------------------------------------------------------- */
+body.auth-body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+}
+@media (max-width: 900px) {
+  body.auth-body { grid-template-columns: 1fr; }
+  .auth-aside { display: none; }
+}
+
+/* Левая половина — форма */
+.auth-pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px clamp(24px, 7vw, 96px);
+}
+.auth-brand {
+  display: flex; align-items: center; gap: 11px;
+  margin-bottom: 44px;
+}
+.auth-mark {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: var(--accent); color: #fff;
+  box-shadow: var(--sh-2);
+}
+.auth-brand-name { font-weight: 650; font-size: 15px; letter-spacing: -.01em; display: block; }
+.auth-brand-sub { font-size: 12px; color: var(--muted); display: block; margin-top: 1px; }
+
+.auth-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.auth-eyebrow i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); display: inline-block;
+}
+.auth-title {
+  margin: 0 0 8px; font-size: 30px; line-height: 1.15;
+  font-weight: 680; letter-spacing: -.025em;
+}
+.auth-sub { margin: 0 0 30px; font-size: 14px; line-height: 1.55; color: var(--text-2); max-width: 42ch; }
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; max-width: 400px; }
+.auth-field { display: flex; flex-direction: column; gap: 7px; }
+.auth-label { font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.auth-input {
+  width: 100%; box-sizing: border-box;
+  height: 44px; padding: 0 14px;
+  font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+.auth-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.auth-input::placeholder { color: var(--faint); }
+
+.auth-pass-wrap { position: relative; }
+.auth-pass-wrap .auth-input { padding-right: 46px; }
+.auth-peek {
+  position: absolute; right: 6px; top: 6px;
+  width: 32px; height: 32px; border: 0; border-radius: var(--r-sm);
+  background: transparent; color: var(--muted); cursor: pointer;
+  display: grid; place-items: center;
+}
+.auth-peek:hover { background: var(--surface-2); color: var(--text); }
+
+.auth-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.auth-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); cursor: pointer; }
+
+.auth-submit {
+  height: 46px; border: 0; border-radius: var(--r-md);
+  background: var(--accent); color: #fff;
+  font: inherit; font-size: 14.5px; font-weight: 600;
+  cursor: pointer; box-shadow: var(--sh-2);
+  transition: background var(--t) var(--ease), transform var(--t-fast) var(--ease);
+}
+.auth-submit:hover:not(:disabled) { background: var(--accent-hover); }
+.auth-submit:active:not(:disabled) { transform: translateY(1px); }
+.auth-submit:disabled { opacity: .6; cursor: default; }
+
+.auth-msg {
+  display: none; gap: 9px; align-items: flex-start;
+  padding: 11px 13px; border-radius: var(--r-md);
+  font-size: 13px; line-height: 1.45;
+  border: 1px solid var(--bad-line); background: var(--bad-soft); color: var(--bad);
+}
+.auth-msg.is-on { display: flex; }
+.auth-msg.is-ok { border-color: var(--ok-line); background: var(--ok-soft); color: var(--ok); }
+
+.auth-foot {
+  margin-top: 34px; padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 12.5px; color: var(--muted);
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.auth-foot a { color: var(--accent); text-decoration: none; }
+.auth-foot a:hover { text-decoration: underline; }
+.auth-wire { display: inline-flex; align-items: center; gap: 6px; }
+.auth-wire i { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+.auth-wire.ok i { background: var(--ok); }
+.auth-wire.bad i { background: var(--bad); }
+
+/* Правая половина — витрина */
+.auth-aside {
+  position: relative; overflow: hidden;
+  padding: 56px clamp(28px, 4vw, 64px);
+  display: flex; flex-direction: column; justify-content: center;
+  background:
+    radial-gradient(1100px 620px at 18% 12%, rgba(39, 131, 222, .16), transparent 62%),
+    radial-gradient(900px 560px at 88% 84%, rgba(131, 96, 184, .14), transparent 60%),
+    var(--surface);
+  border-left: 1px solid var(--line);
+}
+.auth-aside::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, var(--line-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at 50% 42%, #000 20%, transparent 74%);
+  opacity: .75; pointer-events: none;
+}
+.auth-aside-inner { position: relative; max-width: 420px; }
+.auth-quote { font-size: 21px; line-height: 1.4; font-weight: 600; letter-spacing: -.02em; margin: 0 0 12px; }
+.auth-quote-sub { font-size: 14px; line-height: 1.6; color: var(--text-2); margin: 0 0 30px; }
+.auth-cards { display: grid; gap: 10px; }
+.auth-card {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 13px 15px; border-radius: var(--r-lg);
+  background: var(--bg); border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.auth-card-ico {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px;
+  display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent);
+}
+.auth-card-t { font-size: 13.5px; font-weight: 620; }
+.auth-card-d { font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+
+.auth-theme {
+  position: absolute; top: 18px; right: 18px;
+  width: 34px; height: 34px; border-radius: var(--r-sm);
+  border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+  display: grid; place-items: center; cursor: pointer; z-index: 2;
+}
+.auth-theme:hover { color: var(--text); }
+</style>
+</head>
+<body class="auth-body">
+
+<!-- =========================== форма =========================== -->
+<div class="auth-pane">
+  <div class="auth-brand">
+    <span class="auth-mark">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6l7 6 7-6v12"/></svg>
+    </span>
+    <span>
+      <span class="auth-brand-name">SEO-Фабрика</span>
+      <span class="auth-brand-sub">рабочий кабинет агентства</span>
+    </span>
+  </div>
+
+  <div class="auth-eyebrow"><i></i> Закрытая зона</div>
+  <h1 class="auth-title">Вход в кабинет</h1>
+  <p class="auth-sub">
+    Генерация страниц и настройки моделей доступны только владельцу.
+    Заявки на работу — через форму на главной.
+  </p>
+
+  <form class="auth-form" id="loginForm" autocomplete="on">
+    <div class="auth-msg" id="authMsg" role="alert">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="flex:0 0 auto;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+      <span id="authMsgText"></span>
+    </div>
+
+    <div class="auth-field">
+      <label class="auth-label" for="email">Почта</label>
+      <input class="auth-input" id="email" name="email" type="email"
+             autocomplete="username" placeholder="you@example.com" required>
+    </div>
+
+    <div class="auth-field">
+      <label class="auth-label" for="password">Пароль</label>
+      <div class="auth-pass-wrap">
+        <input class="auth-input" id="password" name="password" type="password"
+               autocomplete="current-password" placeholder="••••••••••" required>
+        <button class="auth-peek" id="peekBtn" type="button" title="Показать пароль" aria-label="Показать пароль">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="auth-row">
+      <label class="auth-check">
+        <input type="checkbox" id="remember" checked> Запомнить на этом устройстве
+      </label>
+    </div>
+
+    <button class="auth-submit" id="submitBtn" type="submit">Войти</button>
+  </form>
+
+  <div class="auth-foot">
+    <span class="auth-wire" id="wireBadge"><i></i> <span id="wireText">проверяем связь…</span></span>
+    <a href="/">На главную</a>
+    <a href="#" id="apiBaseBtn">Адрес бэкенда</a>
+  </div>
+</div>
+
+<!-- =========================== витрина =========================== -->
+<aside class="auth-aside">
+  <button class="auth-theme" id="themeBtn" type="button" title="Сменить тему">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M21 12.8A8.5 8.5 0 1111.2 3a6.8 6.8 0 009.8 9.8z"/></svg>
+  </button>
+
+  <div class="auth-aside-inner">
+    <p class="auth-quote">Фабрика pSEO-страниц под одним ключом</p>
+    <p class="auth-quote-sub">
+      Кабинет живёт на том же домене, что и лендинг, но закрыт
+      на уровне API — без токена ни один запрос не доходит до моделей.
+    </p>
+
+    <div class="auth-cards">
+      <div class="auth-card">
+        <span class="auth-card-ico">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+        </span>
+        <span>
+          <span class="auth-card-t">Замок на бэкенде</span>
+          <span class="auth-card-d">Все эндпоинты /api требуют токен. Спрятанной версткой здесь не обойтись.</span>
+        </span>
+      </div>
+      <div class="auth-card">
+        <span class="auth-card-ico">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.4 8.2-8 9-4.6-.8-8-4-8-9V7l8-4z"/><path d="M9.5 12.2l1.9 1.9 3.6-3.9"/></svg>
+        </span>
+        <span>
+          <span class="auth-card-t">Деньги на API под охраной</span>
+          <span class="auth-card-d">Генерацию и чат с моделями может запустить только владелец кабинета.</span>
+        </span>
+      </div>
+      <div class="auth-card">
+        <span class="auth-card-ico">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M8 16V9M13 16v-4M18 16v-6"/></svg>
+        </span>
+        <span>
+          <span class="auth-card-t">Заявки — с лендинга</span>
+          <span class="auth-card-d">Клиенты оставляют заявку на verstio.ru, работа идёт в закрытом кабинете.</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script src="app.js?v=43"></script>
+<script>
+/* --------------------------------------------------------------------------
+   Логика входа. Опирается на auth.* из app.js.
+   -------------------------------------------------------------------------- */
+'use strict';
+
+const form   = document.getElementById('loginForm');
+const emailI = document.getElementById('email');
+const passI  = document.getElementById('password');
+const btn    = document.getElementById('submitBtn');
+const msg    = document.getElementById('authMsg');
+const msgTxt = document.getElementById('authMsgText');
+
+function showMsg(text, kind) {
+  msgTxt.textContent = text;
+  msg.classList.toggle('is-ok', kind === 'ok');
+  msg.classList.add('is-on');
+}
+function hideMsg() { msg.classList.remove('is-on'); }
+
+/* Куда вернуться после входа (только относительный путь — без open redirect). */
+function nextPath() {
+  const raw = new URLSearchParams(location.search).get('next') || '';
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return 'index.html';
+  return raw;
+}
+
+/* Подставляем почту, если входили раньше. */
+try {
+  const last = localStorage.getItem('seo_last_email');
+  if (last) emailI.value = last;
+} catch (e) {}
+(emailI.value ? passI : emailI).focus();
+
+/* Глазик. */
+document.getElementById('peekBtn').addEventListener('click', () => {
+  passI.type = passI.type === 'password' ? 'text' : 'password';
+  passI.focus();
+});
+
+/* Тема. */
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', now);
+  try { localStorage.setItem('seo_theme', now); } catch (e) {}
+});
+
+/* Адрес бэкенда — на случай локальной отладки. */
+document.getElementById('apiBaseBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  const next = window.prompt('Адрес API бэкенда:', API_BASE);
+  if (next && next.trim()) { saveApiBase(next.trim()); location.reload(); }
+});
+
+/* Связь с сервером — сразу видно, жив ли бэкенд. */
+(async () => {
+  const badge = document.getElementById('wireBadge');
+  const text  = document.getElementById('wireText');
+  try {
+    await fetch(API_BASE.replace(/\/+$/, '') + '/health', { cache: 'no-store' });
+    badge.classList.add('ok');
+    text.textContent = 'сервер на связи';
+  } catch (e) {
+    badge.classList.add('bad');
+    text.textContent = 'сервер не отвечает';
+  }
+})();
+
+/* Уже вошли — не держим на форме. */
+(async () => {
+  if (!auth.token()) return;
+  if (await auth.check()) location.replace(nextPath());
+})();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideMsg();
+  btn.disabled = true;
+  btn.textContent = 'Проверяем…';
+  try {
+    await auth.login(emailI.value.trim(), passI.value, document.getElementById('remember').checked);
+    showMsg('Готово, открываем кабинет…', 'ok');
+    location.replace(nextPath());
+  } catch (err) {
+    showMsg(String(err && err.message || err).replace(/^HTTP \d+:\s*/, ''));
+    passI.select();
+    btn.disabled = false;
+    btn.textContent = 'Войти';
+  }
+});
+</script>
+</body>
+</html>
