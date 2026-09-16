@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>Проекты — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=44">
+<link rel="stylesheet" href="style.css?v=45">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -126,7 +126,7 @@
         <div class="panel-head">
           <div class="panel-head-body">
             <div class="panel-title">Все проекты <span class="pill neutral" id="projCountPill">0</span></div>
-            <div class="panel-sub">Нажмите на карточку, чтобы открыть рабочие экраны.</div>
+            <div class="panel-sub">Сгруппированы по сайтам. Нажмите на карточку, чтобы открыть рабочие экраны.</div>
           </div>
           <div class="panel-tools">
             <input class="input input-sm" id="projFilter" placeholder="Фильтр по названию…" autocomplete="off">
@@ -134,7 +134,7 @@
           </div>
         </div>
         <div class="panel-body">
-          <div class="pgrid" id="projGrid"></div>
+          <div id="projGrid"></div>
         </div>
       </section>
 
@@ -172,7 +172,7 @@
   </main>
 </div>
 
-<script src="app.js?v=44"></script>
+<script src="app.js?v=45"></script>
 <script>
 (function () {
 'use strict';
@@ -212,8 +212,8 @@ async function load() {
     return;
   }
   renderMetrics();
+  await loadSites();
   render();
-  loadSites();
 }
 
 /* ---------- сайты ---------- */
@@ -273,6 +273,22 @@ function renderMetrics() {
     `<div class="metric ${err ? 'bad' : ''}"><div class="metric-k">С ошибками</div><div class="metric-v">${err}</div></div>`;
 }
 
+/** Карточка одного проекта. Вынесена, чтобы рисовать её и в группах. */
+function projectCard(p) {
+  return `<a class="pcard" href="project.html?id=${encodeURIComponent(p.id)}">` +
+      `<div class="pcard-top">` +
+        `<span class="pcard-ico">${ico('pages', 17)}</span>` +
+        `${pill(p.status)}` +
+      `</div>` +
+      `<div class="pcard-name">${escHtml(p.name || 'Без названия')}</div>` +
+      `<div class="pcard-domain">${escHtml(p.domain || 'без домена')}</div>` +
+      `<div class="pcard-foot">` +
+        `<span>${ico('clock', 13)} ${escHtml(relTime(p.updated_at || p.created_at))}</span>` +
+        `<button class="icon-btn sm danger" data-del="${p.id}" title="Удалить проект">${ico('trash', 15)}</button>` +
+      `</div>` +
+    `</a>`;
+}
+
 function render() {
   const q = ($('#projFilter').value || '').toLowerCase();
   const rows = PROJECTS.filter(p =>
@@ -297,19 +313,30 @@ function render() {
     return;
   }
 
-  grid.innerHTML = rows.map(p =>
-    `<a class="pcard" href="project.html?id=${encodeURIComponent(p.id)}">` +
-      `<div class="pcard-top">` +
-        `<span class="pcard-ico">${ico('pages', 17)}</span>` +
-        `${pill(p.status)}` +
-      `</div>` +
-      `<div class="pcard-name">${escHtml(p.name || 'Без названия')}</div>` +
-      `<div class="pcard-domain">${escHtml(p.domain || 'без домена')}</div>` +
-      `<div class="pcard-foot">` +
-        `<span>${ico('clock', 13)} ${escHtml(relTime(p.updated_at || p.created_at))}</span>` +
-        `<button class="icon-btn sm danger" data-del="${p.id}" title="Удалить проект">${ico('trash', 15)}</button>` +
-      `</div>` +
-    `</a>`).join('');
+  // Проекты живут внутри сайтов, поэтому и показываем их группами по домену.
+  // Отдельная группа «Без сайта» — для черновиков, у которых домена ещё нет.
+  const groups = [];
+  SITES.forEach(site => {
+    const mine = rows.filter(p => Number((p.settings || {}).site_id || 0) === site.id);
+    if (mine.length) groups.push({ site, items: mine });
+  });
+  const loose = rows.filter(p => !Number((p.settings || {}).site_id || 0));
+  if (loose.length) groups.push({ site: null, items: loose });
+
+  grid.innerHTML = groups.map(g => {
+    const head = g.site
+      ? `<div class="group-head">` +
+          `<a href="site.html?id=${g.site.id}" class="group-name">${ico('radar', 15)} ${escHtml(g.site.name || g.site.domain)}</a>` +
+          `<span class="muted">${escHtml(g.site.domain)} · ${fmtNum(g.items.length)} ` +
+          `${plural(g.items.length, 'проект', 'проекта', 'проектов')}</span>` +
+          `<span class="grow"></span>` +
+          `<a class="link-btn" href="site.html?id=${g.site.id}">Результаты в поиске →</a>` +
+        `</div>`
+      : `<div class="group-head"><span class="group-name">${ico('alert', 15)} Без сайта</span>` +
+        `<span class="muted">не попадут в отчёты по поиску, пока не привязаны к домену</span></div>`;
+    return `<div class="pgroup">${head}<div class="pgrid">` +
+           g.items.map(projectCard).join('') + `</div></div>`;
+  }).join('');
 
   grid.querySelectorAll('[data-del]').forEach(b => {
     b.onclick = async ev => {
