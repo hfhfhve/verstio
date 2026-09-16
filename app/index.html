@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ru" data-theme="light">
 <head>
@@ -6,7 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>Проекты — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=29">
+<link rel="stylesheet" href="style.css?v=44">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -102,6 +101,26 @@
         </div>
       </section>
 
+      <!-- сайты: уровень над проектами -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Сайты <span class="pill neutral" id="siteCountPill">0</span></div>
+            <div class="panel-sub">
+              Домен с подключённой Search Console. Проекты — это его разделы,
+              а поисковая отдача считается по всему сайту сразу.
+            </div>
+          </div>
+          <div class="panel-tools">
+            <input class="input input-sm" id="nsDomain" placeholder="example.com" autocomplete="off" style="max-width:190px">
+            <button class="btn btn-sm btn-primary" id="nsCreate" type="button"><span data-ico-sm="plus"></span> Добавить сайт</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="pgrid" id="siteGrid"></div>
+        </div>
+      </section>
+
       <!-- список -->
       <section class="panel">
         <div class="panel-head">
@@ -153,7 +172,7 @@
   </main>
 </div>
 
-<script src="app.js?v=28"></script>
+<script src="app.js?v=44"></script>
 <script>
 (function () {
 'use strict';
@@ -194,6 +213,52 @@ async function load() {
   }
   renderMetrics();
   render();
+  loadSites();
+}
+
+/* ---------- сайты ---------- */
+
+let SITES = [];
+
+async function loadSites() {
+  try { SITES = await api.listSites() || []; }
+  catch (e) { SITES = []; }
+  $('#siteCountPill').textContent = fmtNum(SITES.length);
+  const grid = $('#siteGrid');
+  if (!SITES.length) {
+    grid.innerHTML =
+      `<div class="empty span-all">` +
+        `<div class="empty-title">Сайтов пока нет</div>` +
+        `<div class="empty-text">Добавьте домен — проекты с таким же доменом подтянутся сами, ` +
+        `и появится сквозной экран «Результаты в поиске».</div>` +
+      `</div>`;
+    return;
+  }
+  grid.innerHTML = SITES.map(s => {
+    const ls = s.last_sync || null;
+    return `<a class="scard" href="site.html?id=${s.id}">` +
+      `<div class="scard-name">${escHtml(s.name || s.domain)}</div>` +
+      `<div class="scard-domain">${escHtml(s.domain)}</div>` +
+      `<div class="scard-foot">` +
+        `<span>${ico('pages', 13)} ${fmtNum(s.projects_count || 0)} проектов</span>` +
+        `<span>${s.gsc_site_url ? ico('ok', 13) + ' ресурс подключён' : ico('alert', 13) + ' ресурс не выбран'}</span>` +
+      `</div>` +
+      `<div class="scard-foot">${ls ? 'снято ' + escHtml(ls.synced_at || '') : 'ещё не синхронизировано'}</div>` +
+    `</a>`;
+  }).join('');
+}
+
+async function createSite(btn) {
+  const domain = $('#nsDomain').value.trim();
+  if (!domain) { toast.warn('Введите домен', 'например example.com'); return; }
+  await withBusy(btn, async () => {
+    try {
+      const s = await api.createSite({ domain });
+      $('#nsDomain').value = '';
+      toast.ok('Сайт добавлен', 'Проекты с этим доменом привязаны автоматически');
+      location.href = 'site.html?id=' + s.id;
+    } catch (e) { toast.err('Не удалось добавить', e); }
+  });
 }
 
 function renderMetrics() {
@@ -299,6 +364,8 @@ $('#newProjClose').onclick = closeForm;
 $('#npCancel').onclick = closeForm;
 $('#npCreate').onclick = e => create(e.currentTarget);
 $('#npName').addEventListener('keydown', e => { if (e.key === 'Enter') create($('#npCreate')); });
+$('#nsCreate').onclick = e => createSite(e.currentTarget);
+$('#nsDomain').addEventListener('keydown', e => { if (e.key === 'Enter') createSite($('#nsCreate')); });
 $('#projFilter').oninput = render;
 $('#projReload').onclick = load;
 $('#themeBtn').onclick = () => toggleTheme();
@@ -326,3 +393,4 @@ load();
 
 </body>
 </html>
+
