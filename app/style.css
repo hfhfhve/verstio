@@ -3171,3 +3171,187 @@ tr.row-click:hover > td { background: var(--surface-2); }
 }
 .group-name:hover { color: var(--accent); }
 .group-head .grow { flex: 1; }
+
+/* ==========================================================================
+   ЭКРАН САЙТА · поисковая отдача Яндекса
+
+   Прежняя версия была набором одинаковых серых панелей: главное не
+   выделялось, а служебное занимало полэкрана. Здесь три правила:
+   1) состав поиска — единственная крупная цифра на экране;
+   2) предупреждения живут одной строкой, а не блоком в четверть окна;
+   3) настройка уехала в свою вкладку и не мозолит глаза каждый день.
+   ========================================================================== */
+
+/* --- шапка экрана ------------------------------------------------------- */
+
+.hero {
+  display: flex; align-items: flex-end; gap: 20px;
+  padding: 26px 0 20px;
+}
+.hero-body { min-width: 0; flex: 1; }
+.hero-title {
+  margin: 0; font-size: 30px; line-height: 1.15; font-weight: 640;
+  letter-spacing: -.02em;
+}
+.hero-actions { display: flex; align-items: center; gap: 10px; flex: none; }
+
+.statline {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  margin-top: 9px; font-size: 12.5px; color: var(--muted);
+}
+.statline .mono { color: var(--text-2); }
+.statline-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+.statline .ok-text,
+.statline .bad-text { display: inline-flex; align-items: center; gap: 5px; }
+.ok-text  { color: var(--ok); }
+.bad-text { color: var(--bad); }
+
+/* --- предупреждения одной строкой --------------------------------------- */
+
+.alerts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.alert {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px; border-radius: var(--r-sm);
+  border: 1px solid var(--line); background: var(--surface);
+  font-size: 13px; line-height: 1.45;
+}
+.alert-ico { flex: none; display: inline-flex; color: var(--muted); }
+.alert-text { min-width: 0; flex: 1; }
+.alert-text b { font-weight: 600; }
+.alert .link-btn { flex: none; }
+.alert.info { background: var(--accent-soft); border-color: var(--accent-line); }
+.alert.info .alert-ico { color: var(--accent); }
+.alert.warn { background: var(--warn-soft); border-color: var(--warn-line); }
+.alert.warn .alert-ico { color: var(--warn); }
+.alert.bad  { background: var(--bad-soft);  border-color: var(--bad-line); }
+.alert.bad  .alert-ico { color: var(--bad); }
+
+/* --- плитки с цифрами --------------------------------------------------- */
+
+.kpis {
+  display: grid; gap: 12px; margin-bottom: 20px;
+  grid-template-columns: 1.7fr 1fr 1fr 1fr;
+}
+.kpi {
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--bg); padding: 16px 18px; min-height: 96px;
+}
+.kpi-k {
+  font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.kpi-v {
+  margin-top: 7px; font-size: 26px; font-weight: 640; letter-spacing: -.02em;
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+}
+.kpi-of { font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.kpi-share {
+  margin-left: auto; font-size: 13px; font-weight: 600; color: var(--ok);
+  background: var(--ok-soft); border: 1px solid var(--ok-line);
+  border-radius: 999px; padding: 1px 9px; letter-spacing: 0;
+}
+.kpi-note { font-size: 11.5px; color: var(--faint); margin-top: 4px; line-height: 1.45; }
+.kpi.is-bad .kpi-v { color: var(--bad); }
+.kpi.is-skel { background: var(--surface-2); border-color: var(--line-soft); }
+
+.kpi-hero { background: var(--surface); }
+.kpi-legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  margin-top: 9px; font-size: 11.5px; color: var(--muted);
+}
+.kpi-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.sw { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.sw.ok { background: var(--ok); }
+.sw.bad { background: var(--bad); }
+.sw.mute { background: var(--line-strong); }
+
+/* полоса состава поиска */
+.bar {
+  display: flex; height: 8px; margin-top: 12px; border-radius: 999px;
+  overflow: hidden; background: var(--surface-3);
+}
+.bar-seg { display: block; height: 100%; }
+.bar-seg.ok { background: var(--ok); }
+.bar-seg.bad { background: var(--bad); }
+.bar-seg.mute { background: var(--line-strong); }
+
+/* тонкая полоска внутри таблиц и карточек */
+.minibar {
+  height: 6px; border-radius: 999px; background: var(--surface-3);
+  overflow: hidden; max-width: 150px;
+}
+.minibar > span { display: block; height: 100%; background: var(--ok); }
+
+/* --- вкладки ------------------------------------------------------------ */
+
+.seg.tabs { margin: 4px 0 16px; flex-wrap: wrap; }
+
+/* --- таблицы страниц ---------------------------------------------------- */
+
+.cell-sub {
+  font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.trend { font-size: 11.5px; font-weight: 600; }
+.trend.up { color: var(--ok); }
+.trend.down { color: var(--bad); }
+.chip-n { opacity: .65; font-variant-numeric: tabular-nums; }
+
+/* --- причины исключения ------------------------------------------------- */
+
+.reasons { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.reason {
+  border: 1px solid var(--line); border-left: 3px solid var(--line-strong);
+  border-radius: var(--r-md); background: var(--bg); padding: 14px 16px;
+}
+.reason.is-quality { border-left-color: var(--bad); background: var(--bad-soft); }
+.reason.is-dup { border-left-color: var(--warn); background: var(--warn-soft); }
+.reason-top { display: flex; align-items: baseline; gap: 10px; }
+.reason-label { font-size: 14.5px; font-weight: 640; flex: 1; }
+.reason-n { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+.reason-text { font-size: 12.5px; color: var(--text-2); margin-top: 6px; line-height: 1.55; }
+.reason-fix {
+  font-size: 12.5px; margin-top: 8px; padding-top: 8px;
+  border-top: 1px dashed var(--line-strong); color: var(--text);
+}
+.reason .link-btn { margin-top: 10px; }
+
+/* --- вердикт в карточке страницы ---------------------------------------- */
+
+.verdict {
+  border-radius: var(--r-sm); padding: 12px 14px; font-size: 13px; line-height: 1.55;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.verdict.ok  { background: var(--ok-soft);  border-color: var(--ok-line);  color: var(--ok); font-weight: 600; }
+.verdict.bad { background: var(--bad-soft); border-color: var(--bad-line); }
+.verdict.bad b { color: var(--bad); }
+.verdict.mute { color: var(--muted); }
+.verdict-fix { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--bad-line); color: var(--text); }
+
+/* --- лента событий ------------------------------------------------------ */
+
+.timeline { list-style: none; margin: 0; padding: 0; font-size: 12.5px; }
+.timeline li {
+  position: relative; padding: 5px 0 5px 16px; color: var(--text-2);
+  border-left: 2px solid var(--line);
+}
+.timeline li::before {
+  content: ''; position: absolute; left: -5px; top: 11px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong);
+}
+.timeline li.in::before  { background: var(--ok); }
+.timeline li.out::before { background: var(--bad); }
+.timeline li b { color: var(--text); font-weight: 600; margin-right: 6px; }
+
+/* --- карточки рекомендаций ---------------------------------------------- */
+
+.fb-card.is-bad     { border-left: 3px solid var(--bad); }
+.fb-card.is-warn    { border-left: 3px solid var(--warn); }
+.fb-card.is-ok      { border-left: 3px solid var(--ok); }
+.fb-card.is-neutral { border-left: 3px solid var(--line-strong); }
+.fb-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .hero { flex-direction: column; align-items: flex-start; }
+}
