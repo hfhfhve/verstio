@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 83e3e7319f7fa17238cf28e3acc00b11c7a79354
-# built:  2026-09-16 18:38 UTC
+# commit: 5f8f3a32d258c767b87a4b047c820d01a90af9f4
+# built:  2026-09-16 18:39 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -16,7 +16,7 @@ app/project.html  (3641 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (800 строк)
 app/site.html  (650 строк)
-app/style.css  (3159 строк)
+app/style.css  (3174 строк)
 
 ════════════════════════════════════════════════════════
   CNAME
@@ -12497,3 +12497,18 @@ tr.row-click:hover > td { background: var(--surface-2); }
 .scard-domain { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
 .scard-foot { display: flex; gap: 10px; align-items: center; color: var(--muted);
   font-size: 12px; margin-top: 12px; }
+
+/* Группа проектов внутри сайта на главной. */
+.pgroup { margin-bottom: 22px; }
+.pgroup:last-child { margin-bottom: 0; }
+.group-head {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 0 2px 10px; font-size: 13px;
+}
+.group-name {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-weight: 600; letter-spacing: -.015em; font-size: 14.5px;
+  color: var(--text); text-decoration: none;
+}
+.group-name:hover { color: var(--accent); }
+.group-head .grow { flex: 1; }
