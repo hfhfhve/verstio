@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: 286cedd47fa1a5f089b293fa858bf3f91b52e34c
+# commit: 772d65f5647fbecb475d84e7eec5232be34a3e57
 # built:  2026-09-16 18:38 UTC
 
 ## Состав
@@ -15,7 +15,7 @@ app/login.html  (382 строк)
 app/project.html  (3622 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (800 строк)
-app/site.html  (592 строк)
+app/site.html  (650 строк)
 app/style.css  (3159 строк)
 
 ════════════════════════════════════════════════════════
@@ -8673,7 +8673,7 @@ load();
 <meta name="viewport" content="width=1280">
 <title>Сайт — результаты в поиске</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=44">
+<link rel="stylesheet" href="style.css?v=45">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -8743,10 +8743,10 @@ load();
             <div class="panel-sub">Ключ — один на все сайты, ресурс и проекты — здесь</div>
           </div>
           <div class="panel-tools">
-            <button class="btn btn-sm" id="connToggle" type="button">Свернуть</button>
+            <button class="btn btn-sm" id="connToggle" type="button">Развернуть</button>
           </div>
         </div>
-        <div class="panel-body" id="connBody">
+        <div class="panel-body" id="connBody" hidden>
           <div class="up-row">
             <select class="select input-sm" id="resourceSel" style="min-width:280px">
               <option value="">— ресурс не выбран —</option>
@@ -8763,10 +8763,26 @@ load();
             <span class="field-hint">Один домен обычно режется на несколько проектов — отметьте свои.</span>
           </div>
         </div>
-        <div class="panel-foot">
+        <div class="panel-foot" id="connFoot" hidden>
           <button class="btn" id="saveProjBtn"><span data-ico-sm="check"></span> Сохранить состав</button>
           <span class="grow"></span>
           <button class="btn btn-danger btn-sm" id="delSiteBtn" type="button">Удалить сайт</button>
+        </div>
+      </section>
+
+      <!-- ── проекты этого сайта ───────────────────────────────────── -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Проекты сайта <span class="pill neutral" id="prjPill">0</span></div>
+            <div class="panel-sub">Разделы одного домена. Цифры — за выбранный период</div>
+          </div>
+          <div class="panel-tools">
+            <a class="btn btn-sm" href="index.html"><span data-ico-sm="plus"></span> Новый проект</a>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="pgrid" id="sitePrjGrid"></div>
         </div>
       </section>
 
@@ -8881,7 +8897,7 @@ load();
   </main>
 </div>
 
-<script src="app.js?v=44"></script>
+<script src="app.js?v=45"></script>
 <script>
 (function () {
 'use strict';
@@ -8960,6 +8976,7 @@ async function reload() {
       `чужих адресов: ${fmtNum(ls.orphan_urls || 0)}`
     : 'Ещё ни одной синхронизации.';
 
+  renderSiteProjects();
   await loadPages();
   if (TAB === 'queries' || TAB === 'cannibal') loadQueries();
   if (TAB === 'slices') renderSlices();
@@ -9126,6 +9143,38 @@ async function loadFeedback() {
   });
 }
 
+/** Карточки проектов сайта с их долей поисковой отдачи. */
+function renderSiteProjects() {
+  const stats = {};
+  (DATA.by_project || []).forEach(x => { stats[x.project_id] = x; });
+  const list = (SITE.projects || []);
+  $('#prjPill').textContent = fmtNum(list.length);
+  const grid = $('#sitePrjGrid');
+  if (!list.length) {
+    grid.innerHTML =
+      `<div class="empty span-all"><div class="empty-title">К сайту не привязан ни один проект</div>` +
+      `<div class="empty-text">Откройте «Подключение и состав» и отметьте проекты этого домена — ` +
+      `тогда их страницы начнут сопоставляться с выдачей.</div></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const st = stats[p.id] || {};
+    return `<a class="pcard" href="project.html?id=${p.id}">` +
+      `<div class="pcard-top"><span class="pcard-ico">${ico('pages', 17)}</span>${pill(p.status)}</div>` +
+      `<div class="pcard-name">${escHtml(p.name)}</div>` +
+      `<div class="pcard-domain">` +
+        (st.pages
+          ? `${fmtNum(st.indexed || 0)} из ${fmtNum(st.pages)} страниц в индексе`
+          : 'страниц в индексе пока нет') + `</div>` +
+      `<div class="pcard-foot">` +
+        `<span>${fmtNum(st.clicks || 0)} кликов</span>` +
+        `<span>${fmtNum(st.impressions || 0)} показов</span>` +
+        `<span>позиция ${searchUI.pos(st.position)}</span>` +
+      `</div>` +
+    `</a>`;
+  }).join('');
+}
+
 /* ---------- подключение ---------- */
 
 function renderConnection() {
@@ -9139,6 +9188,14 @@ function renderConnection() {
     `${escHtml(p.name)} <span class="muted">${escHtml(p.domain || 'без домена')}</span></button>`).join('')
     || '<span class="muted">Проектов нет.</span>';
   $$('#projBoxes button').forEach(b => b.onclick = () => b.classList.toggle('is-on'));
+
+  // Сайт без ресурса или без проектов бесполезен — такую панель открываем сразу.
+  const needSetup = !SITE.gsc_site_url || !(SITE.projects || []).length;
+  if (needSetup) {
+    $('#connBody').hidden = false;
+    $('#connFoot').hidden = false;
+    $('#connToggle').textContent = 'Свернуть';
+  }
 }
 
 async function loadResources(btn) {
@@ -9235,8 +9292,9 @@ $$('#daysSeg button').forEach(b => b.onclick = () => {
   DAYS = Number(b.dataset.days); reload();
 });
 $('#connToggle').onclick = e => {
-  const body = $('#connBody');
+  const body = $('#connBody'), foot = $('#connFoot');
   body.hidden = !body.hidden;
+  foot.hidden = body.hidden;
   e.currentTarget.textContent = body.hidden ? 'Развернуть' : 'Свернуть';
 };
 $('#delSiteBtn').onclick = async () => {
