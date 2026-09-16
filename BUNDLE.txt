@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 80f55754ed86e1dbdb4a91e6edd7189bfafa2631
-# built:  2026-09-16 20:40 UTC
+# commit: e9d4784c0cb5217e8cee307988e2ad5891fca192
+# built:  2026-09-16 20:41 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -15,7 +15,7 @@ app/login.html  (382 строк)
 app/project.html  (3641 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (800 строк)
-app/site.html  (650 строк)
+app/site.html  (809 строк)
 app/style.css  (3174 строк)
 
 ════════════════════════════════════════════════════════
@@ -8774,9 +8774,9 @@ load();
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1280">
-<title>Сайт — результаты в поиске</title>
+<title>Сайт — что говорит Яндекс</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=45">
+<link rel="stylesheet" href="style.css?v=46">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -8796,7 +8796,7 @@ load();
       </span>
       <span>
         <span class="brand-name">SEO-Фабрика</span>
-        <span class="brand-sub">сайты и поисковая отдача</span>
+        <span class="brand-sub">что говорит Яндекс</span>
       </span>
     </div>
 
@@ -8814,96 +8814,79 @@ load();
   <main class="canvas">
     <div class="wrap">
 
-      <div class="view-head">
-        <div class="view-head-body">
-          <div class="view-eyebrow"><i class="dot"></i> После публикации</div>
-          <h1 class="view-title" id="siteTitle">Результаты в поиске</h1>
-          <p class="view-sub" id="siteSub">
-            Search Console плюс то, чего в ней нет: тип страницы, балл качества, возраст и ключ.
-          </p>
+      <!-- ── шапка экрана ──────────────────────────────────────────── -->
+      <div class="hero">
+        <div class="hero-body">
+          <h1 class="hero-title" id="siteTitle">Сайт</h1>
+          <div class="statline" id="siteStat"></div>
         </div>
-        <div class="view-actions">
+        <div class="hero-actions">
           <div class="seg seg-sm" id="daysSeg">
             <button data-days="7">7 дней</button>
             <button data-days="28" class="is-on">28 дней</button>
             <button data-days="90">90 дней</button>
           </div>
           <button class="btn btn-dark btn-lg" id="syncBtn">
-            <span data-ico-sm="refresh"></span> Синхронизировать
+            <span data-ico-sm="refresh"></span> Обновить данные
           </button>
         </div>
       </div>
 
       <div id="siteWarn"></div>
 
-      <div class="metrics" id="siteTiles"></div>
-
-      <!-- ── подключение и состав сайта ────────────────────────────── -->
-      <section class="panel" id="connPanel">
-        <div class="panel-head">
-          <div class="panel-head-body">
-            <div class="panel-title">Подключение и состав</div>
-            <div class="panel-sub">Ключ — один на все сайты, ресурс и проекты — здесь</div>
-          </div>
-          <div class="panel-tools">
-            <button class="btn btn-sm" id="connToggle" type="button">Развернуть</button>
-          </div>
-        </div>
-        <div class="panel-body" id="connBody" hidden>
-          <div class="up-row">
-            <select class="select input-sm" id="resourceSel" style="min-width:280px">
-              <option value="">— ресурс не выбран —</option>
-            </select>
-            <button class="btn" id="loadResBtn"><span data-ico-sm="radar"></span> Загрузить ресурсы</button>
-            <button class="btn btn-primary" id="saveResBtn">Сохранить ресурс</button>
-            <button class="btn" id="guideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
-          </div>
-          <div class="field-hint mt-2" id="syncNote">Ещё ни одной синхронизации.</div>
-
-          <div class="field mt-3">
-            <span class="field-label">Проекты этого сайта</span>
-            <div id="projBoxes" class="chipbar"></div>
-            <span class="field-hint">Один домен обычно режется на несколько проектов — отметьте свои.</span>
-          </div>
-        </div>
-        <div class="panel-foot" id="connFoot" hidden>
-          <button class="btn" id="saveProjBtn"><span data-ico-sm="check"></span> Сохранить состав</button>
-          <span class="grow"></span>
-          <button class="btn btn-danger btn-sm" id="delSiteBtn" type="button">Удалить сайт</button>
-        </div>
-      </section>
-
-      <!-- ── проекты этого сайта ───────────────────────────────────── -->
-      <section class="panel">
-        <div class="panel-head">
-          <div class="panel-head-body">
-            <div class="panel-title">Проекты сайта <span class="pill neutral" id="prjPill">0</span></div>
-            <div class="panel-sub">Разделы одного домена. Цифры — за выбранный период</div>
-          </div>
-          <div class="panel-tools">
-            <a class="btn btn-sm" href="index.html"><span data-ico-sm="plus"></span> Новый проект</a>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="pgrid" id="sitePrjGrid"></div>
-        </div>
-      </section>
+      <!-- ── цифры ─────────────────────────────────────────────────── -->
+      <div class="kpis" id="siteTiles"></div>
 
       <!-- ── вкладки ───────────────────────────────────────────────── -->
-      <div class="seg" id="tabSeg" style="margin:18px 0 14px">
-        <button data-tab="pages" class="is-on">Страницы</button>
+      <div class="seg tabs" id="tabSeg">
+        <button data-tab="overview" class="is-on">Обзор</button>
+        <button data-tab="pages">Страницы</button>
+        <button data-tab="excluded">Почему не в поиске</button>
         <button data-tab="queries">Запросы</button>
         <button data-tab="cannibal">Каннибализация</button>
-        <button data-tab="slices">Срезы</button>
-        <button data-tab="feedback">Рекомендации</button>
+        <button data-tab="projects">Проекты</button>
+        <button data-tab="setup">Настройка</button>
       </div>
 
-      <!-- Страницы -->
-      <section class="panel" id="tab-pages">
+      <!-- ═══ ОБЗОР ═══════════════════════════════════════════════════ -->
+      <section id="tab-overview">
+
+        <section class="panel">
+          <div class="panel-head">
+            <div class="panel-head-body">
+              <div class="panel-title">Что делать прямо сейчас</div>
+              <div class="panel-sub">Списки построены на вердиктах Яндекса, а не на догадках</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="fb-grid" id="fbGrid"></div>
+            <div id="fbHint" class="mt-3"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div class="panel-head-body">
+              <div class="panel-title">Что работает, а что нет</div>
+              <div class="panel-sub">Доля страниц в поиске по проектам и по шаблонам</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="field-label">По проектам</div>
+            <div id="byProject" class="mt-2"></div>
+            <div class="field-label mt-4">По шаблонам и типам страниц</div>
+            <div id="byType" class="mt-2"></div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ═══ СТРАНИЦЫ ════════════════════════════════════════════════ -->
+      <section class="panel" id="tab-pages" hidden>
         <div class="panel-head">
           <div class="panel-head-body">
             <div class="panel-title">Страницы</div>
-            <div class="panel-sub" id="pagesSub">Клик по строке открывает карточку с динамикой и запросами</div>
+            <div class="panel-sub">Клик по строке открывает карточку: вердикт, история, динамика</div>
           </div>
           <div class="panel-tools">
             <input class="input input-sm" id="pagesFilter" placeholder="Путь или ключ…" autocomplete="off">
@@ -8921,16 +8904,31 @@ load();
         <div class="panel-foot">
           <span class="muted" id="pagesCount">—</span>
           <span class="grow"></span>
+          <button class="btn btn-sm" id="recrawlBtn"><span data-ico-sm="refresh"></span> Отправить на переобход</button>
           <button class="btn btn-sm" id="exportCsv"><span data-ico-sm="download"></span> Выгрузить CSV</button>
         </div>
       </section>
 
-      <!-- Запросы -->
+      <!-- ═══ ПОЧЕМУ НЕ В ПОИСКЕ ══════════════════════════════════════ -->
+      <section class="panel" id="tab-excluded" hidden>
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Почему страницы не в поиске</div>
+            <div class="panel-sub">
+              Яндекс, в отличие от Google, называет причину прямым текстом. Это самый
+              честный отзыв о качестве, который вообще можно получить
+            </div>
+          </div>
+        </div>
+        <div class="panel-body" id="exclBody"></div>
+      </section>
+
+      <!-- ═══ ЗАПРОСЫ ═════════════════════════════════════════════════ -->
       <section class="panel" id="tab-queries" hidden>
         <div class="panel-head">
           <div class="panel-head-body">
             <div class="panel-title">Запросы</div>
-            <div class="panel-sub" id="qSub">По чему нас показывают за последний снятый период</div>
+            <div class="panel-sub" id="qSub">По чему нас показывают за снятый период</div>
           </div>
         </div>
         <div class="tbl-scroll">
@@ -8941,52 +8939,84 @@ load();
               <th style="width:110px;">Показы</th>
               <th style="width:90px;">CTR</th>
               <th style="width:100px;">Позиция</th>
-              <th style="width:110px;">Страниц</th>
             </tr></thead>
             <tbody id="qBody"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- Каннибализация -->
+      <!-- ═══ КАННИБАЛИЗАЦИЯ ══════════════════════════════════════════ -->
       <section class="panel" id="tab-cannibal" hidden>
         <div class="panel-head">
           <div class="panel-head-body">
             <div class="panel-title">Каннибализация</div>
-            <div class="panel-sub">Один запрос тянет несколько наших страниц — они мешают друг другу</div>
+            <div class="panel-sub">
+              Страницы, которые борются за один и тот же смысл. Подтверждённые —
+              те, что Яндекс уже склеил между собой
+            </div>
           </div>
         </div>
         <div class="panel-body" id="cannBody"></div>
       </section>
 
-      <!-- Срезы -->
-      <section class="panel" id="tab-slices" hidden>
+      <!-- ═══ ПРОЕКТЫ ═════════════════════════════════════════════════ -->
+      <section class="panel" id="tab-projects" hidden>
         <div class="panel-head">
           <div class="panel-head-body">
-            <div class="panel-title">Срезы</div>
-            <div class="panel-sub">Что реально работает: проекты и шаблоны страниц</div>
+            <div class="panel-title">Проекты сайта <span class="pill neutral" id="prjPill">0</span></div>
+            <div class="panel-sub">Разделы одного домена. Цифры — за выбранный период</div>
+          </div>
+          <div class="panel-tools">
+            <a class="btn btn-sm" href="index.html"><span data-ico-sm="plus"></span> Новый проект</a>
           </div>
         </div>
         <div class="panel-body">
-          <div class="field-label">По проектам</div>
-          <div id="byProject" class="mt-2"></div>
-          <div class="field-label mt-4">По шаблонам и типам страниц</div>
-          <div id="byType" class="mt-2"></div>
+          <div class="pgrid" id="sitePrjGrid"></div>
         </div>
       </section>
 
-      <!-- Рекомендации -->
-      <section class="panel" id="tab-feedback" hidden>
-        <div class="panel-head">
-          <div class="panel-head-body">
-            <div class="panel-title">Рекомендации</div>
-            <div class="panel-sub">Списки с кнопкой: что отправить в регенерацию и какие ключи отсеять</div>
+      <!-- ═══ НАСТРОЙКА ═══════════════════════════════════════════════ -->
+      <section id="tab-setup" hidden>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div class="panel-head-body">
+              <div class="panel-title">Сайт в Яндекс.Вебмастере</div>
+              <div class="panel-sub">Токен общий и живёт в глобальных настройках — здесь только выбор сайта</div>
+            </div>
+            <div class="panel-tools">
+              <button class="btn btn-sm" id="guideBtn" type="button"><span data-ico-sm="info"></span> Как подключить</button>
+            </div>
           </div>
-        </div>
-        <div class="panel-body">
-          <div class="fb-grid" id="fbGrid"></div>
-          <div id="fbHint" class="mt-3"></div>
-        </div>
+          <div class="panel-body">
+            <div class="up-row">
+              <select class="select input-sm" id="hostSel" style="min-width:320px">
+                <option value="">— сайт не выбран —</option>
+              </select>
+              <button class="btn" id="loadHostsBtn"><span data-ico-sm="radar"></span> Загрузить список</button>
+              <button class="btn btn-primary" id="saveHostBtn">Сохранить</button>
+            </div>
+            <div class="field-hint mt-2" id="syncNote">Данные ещё ни разу не снимались.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div class="panel-head-body">
+              <div class="panel-title">Состав сайта</div>
+              <div class="panel-sub">Один домен обычно режется на несколько проектов — отметьте свои</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div id="projBoxes" class="chipbar"></div>
+          </div>
+          <div class="panel-foot">
+            <button class="btn" id="saveProjBtn"><span data-ico-sm="check"></span> Сохранить состав</button>
+            <span class="grow"></span>
+            <button class="btn btn-danger btn-sm" id="delSiteBtn" type="button">Удалить сайт</button>
+          </div>
+        </section>
+
       </section>
 
       <footer class="plain-foot">
@@ -9000,7 +9030,7 @@ load();
   </main>
 </div>
 
-<script src="app.js?v=45"></script>
+<script src="app.js?v=46"></script>
 <script>
 (function () {
 'use strict';
@@ -9009,8 +9039,10 @@ const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 
 let SITES = [], SITE = null, PROJECTS = [];
-let DAYS = 28, FILTER = 'all', TAB = 'pages';
-let DATA = null, ROWS = [];
+let DAYS = 28, FILTER = 'all', TAB = 'overview';
+let DATA = null, ROWS = [], EXCL = null;
+
+const TABS = ['overview', 'pages', 'excluded', 'queries', 'cannibal', 'projects', 'setup'];
 
 function hydrateIcons(root) {
   const r = root || document;
@@ -9032,6 +9064,19 @@ function sid() {
   return saved || (SITES[0] ? SITES[0].id : 0);
 }
 
+/** Возраст последнего снимка человеческими словами. */
+function ago(stamp) {
+  if (!stamp) return 'данные ещё не снимались';
+  const t = Date.parse(stamp);
+  if (!t) return 'обновлено ' + stamp;
+  const min = Math.round((Date.now() - t) / 60000);
+  if (min < 2) return 'обновлено только что';
+  if (min < 60) return `обновлено ${min} мин. назад`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `обновлено ${h} ч. назад`;
+  return `обновлено ${Math.round(h / 24)} дн. назад`;
+}
+
 /* ---------- загрузка ---------- */
 
 async function boot() {
@@ -9041,8 +9086,8 @@ async function boot() {
 
   if (!SITES.length) {
     $('#siteTitle').textContent = 'Сайтов пока нет';
-    $('#siteSub').textContent = 'Создайте сайт на главной: он объединяет проекты одного домена.';
-    $('#connPanel').hidden = true;
+    $('#siteStat').textContent = 'Создайте сайт на главной: он объединяет проекты одного домена.';
+    $$('#tabSeg button').forEach(b => b.disabled = true);
     return;
   }
   const want = sid();
@@ -9052,54 +9097,75 @@ async function boot() {
   $('#siteSwitch').innerHTML = SITES.map(s =>
     `<option value="${s.id}" ${s.id === SITE.id ? 'selected' : ''}>${escHtml(s.name || s.domain)}</option>`).join('');
 
-  renderConnection();
+  renderSetup();
   await reload();
 }
 
 async function reload() {
   if (!SITE) return;
-  $('#pagesBody').innerHTML = skeletonRows(8, 6);
+  $('#siteTiles').innerHTML = '<div class="kpi kpi-hero is-skel"></div><div class="kpi is-skel"></div>' +
+                              '<div class="kpi is-skel"></div><div class="kpi is-skel"></div>';
   try {
     DATA = await api.siteOverview(SITE.id, { days: DAYS });
   } catch (e) {
-    $('#pagesBody').innerHTML = emptyRow(8, 'Не удалось получить данные', e.message);
+    $('#siteTiles').innerHTML = '';
+    $('#siteWarn').innerHTML = searchUI.warnings([{ kind: 'bad', text: e.message }]);
     return;
   }
   SITE = Object.assign(SITE, DATA.site || {});
+  const ls = DATA.last_sync || {};
+
   $('#siteTitle').textContent = SITE.name || SITE.domain;
-  $('#siteSub').textContent =
-    `${SITE.domain} · ресурс ${SITE.gsc_site_url || 'не выбран'} · период ${DATA.period}`;
+  $('#siteStat').innerHTML =
+    `<span class="mono">${escHtml(SITE.domain)}</span>` +
+    `<span class="statline-sep"></span>` +
+    (SITE.connected
+      ? `<span class="ok-text">${ico('ok', 13)} Вебмастер подключён</span>`
+      : `<span class="bad-text">${ico('alert', 13)} сайт в Вебмастере не выбран</span>`) +
+    `<span class="statline-sep"></span>` +
+    `<span>${escHtml(ago(ls.synced_at))}</span>` +
+    `<span class="statline-sep"></span>` +
+    `<span>период ${escHtml(DATA.period || '')}</span>`;
+
   $('#siteTiles').innerHTML = searchUI.tiles(DATA);
   $('#siteWarn').innerHTML = searchUI.warnings(DATA.warnings);
-  const ls = DATA.last_sync;
-  $('#syncNote').innerHTML = ls
-    ? `Снято ${escHtml(ls.synced_at || '')} · период ${escHtml(ls.period || '')} · ` +
-      `адресов от Google: <b>${fmtNum(ls.rows_from_google || 0)}</b> · ` +
-      `совпало с нашими: <b>${fmtNum(ls.matched_urls || 0)}</b> · ` +
-      `чужих адресов: ${fmtNum(ls.orphan_urls || 0)}`
-    : 'Ещё ни одной синхронизации.';
+  $$('#siteWarn [data-warn-act]').forEach(b => b.onclick = () => {
+    const act = b.dataset.warnAct;
+    if (act === 'setup') setTab('setup');
+    else if (act) location.href = act;
+  });
+
+  $('#syncNote').innerHTML = ls.synced_at
+    ? `Снято ${escHtml(ls.synced_at)} · в поиске <b>${fmtNum(ls.in_search || 0)}</b> · ` +
+      `исключено <b>${fmtNum(ls.excluded || 0)}</b> · ` +
+      `совпало с нашими страницами <b>${fmtNum(ls.matched_urls || 0)}</b> · ` +
+      `чужих адресов ${fmtNum(ls.orphan_urls || 0)}`
+    : 'Данные ещё ни разу не снимались.';
 
   renderSiteProjects();
-  await loadPages();
-  if (TAB === 'queries' || TAB === 'cannibal') loadQueries();
-  if (TAB === 'slices') renderSlices();
-  if (TAB === 'feedback') loadFeedback();
+  await renderTab();
+}
+
+/** Рисуем только активную вкладку — лишних запросов не делаем. */
+async function renderTab() {
+  if (TAB === 'overview') { renderSlices(); await loadFeedback(); }
+  if (TAB === 'pages') await loadPages();
+  if (TAB === 'excluded') await loadExcluded();
+  if (TAB === 'queries' || TAB === 'cannibal') await loadQueries();
 }
 
 async function loadPages() {
   $('#pagesHead').innerHTML = searchUI.tableHead();
   $('#chipbar').innerHTML = searchUI.chips(FILTER, (DATA && DATA.buckets) || {});
-  $$('#chipbar button').forEach(b => b.onclick = () => {
-    FILTER = b.dataset.chip; loadPages();
-  });
-  $('#pagesBody').innerHTML = skeletonRows(8, 6);
+  bindChips();
+  $('#pagesBody').innerHTML = skeletonRows(8, 7);
   let res;
   try {
     res = await api.sitePages(SITE.id, {
       days: DAYS, filter: FILTER, q: $('#pagesFilter').value.trim(), limit: 400,
     });
   } catch (e) {
-    $('#pagesBody').innerHTML = emptyRow(8, 'Не удалось загрузить таблицу', e.message);
+    $('#pagesBody').innerHTML = emptyRow(7, 'Не удалось загрузить таблицу', e.message);
     return;
   }
   ROWS = res.rows || [];
@@ -9107,64 +9173,118 @@ async function loadPages() {
   $('#pagesCount').textContent =
     `Показано ${fmtNum(ROWS.length)} из ${fmtNum(res.total || 0)} · период ${res.period}`;
   $('#chipbar').innerHTML = searchUI.chips(FILTER, res.buckets || {});
-  $$('#chipbar button').forEach(b => b.onclick = () => { FILTER = b.dataset.chip; loadPages(); });
+  bindChips();
   $$('#pagesBody tr.row-click').forEach(tr => tr.onclick = () => openDetail(tr));
+}
+
+function bindChips() {
+  $$('#chipbar button').forEach(b => b.onclick = () => { FILTER = b.dataset.chip; loadPages(); });
 }
 
 async function openDetail(tr) {
   const row = ROWS.find(r => (r.url_norm || '') === tr.dataset.url) || {};
-  drawer.open({ eyebrow: 'Страница', title: row.path || row.url || 'Страница', body: '<div class="muted">Загружаем…</div>' });
+  drawer.open({
+    eyebrow: 'Страница', title: row.path || row.url || 'Страница',
+    body: '<div class="muted">Загружаем…</div>',
+  });
   try {
     const data = await api.sitePageDetail(SITE.id, {
-      page_id: row.page_id || '', url_norm: row.page_id ? '' : row.url_norm, days: Math.max(DAYS, 90),
+      page_id: row.page_id || '', url_norm: row.page_id ? '' : row.url_norm,
+      days: Math.max(DAYS, 90),
     });
-    drawer.setBody(searchUI.detailHtml(data, row));
+    drawer.setBody(searchUI.detailHtml(data, row) +
+      (row.page_id
+        ? `<div class="drawer-sec"><button class="btn btn-sm" id="drawerCrawl">` +
+          `Отправить на переобход</button></div>` : ''));
+    const btn = document.getElementById('drawerCrawl');
+    if (btn) btn.onclick = () => sendRecrawl([row.page_id], btn);
   } catch (e) {
-    drawer.setBody(`<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
-      `<div class="note-body">${escHtml(e.message)}</div></div>`);
+    drawer.setBody(`<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
+      `<span class="alert-text">${escHtml(e.message)}</span></div>`);
   }
+}
+
+async function loadExcluded() {
+  $('#exclBody').innerHTML = '<div class="muted">Считаем…</div>';
+  try { EXCL = await api.siteExcluded(SITE.id, {}); }
+  catch (e) {
+    $('#exclBody').innerHTML = `<div class="alert bad"><span class="alert-text">${escHtml(e.message)}</span></div>`;
+    return;
+  }
+  const groups = EXCL.groups || [];
+  $('#exclBody').innerHTML =
+    (EXCL.unknown
+      ? `<div class="alert warn"><span class="alert-ico">${ico('info', 15)}</span>` +
+        `<span class="alert-text">Ещё ${fmtNum(EXCL.unknown)} наших страниц Яндекс не оценил вовсе — ` +
+        `робот до них не дошёл. Их можно отправить на переобход во вкладке «Страницы».</span></div>`
+      : '') +
+    searchUI.reasonCards(groups);
+
+  $$('#exclBody [data-reason]').forEach(b => b.onclick = () => {
+    const g = groups.find(x => x.code === b.dataset.reason);
+    if (!g) return;
+    drawer.open({
+      eyebrow: 'Причина', title: g.label,
+      body: `<div class="drawer-sec">${escHtml(g.text)}` +
+            (g.fix ? `<div class="verdict-fix mt-2">${escHtml(g.fix)}</div>` : '') + `</div>` +
+            `<div class="drawer-sec"><table class="tbl"><thead><tr><th>Страница</th>` +
+            `<th style="width:70px;">Балл</th><th style="width:90px;">Возраст</th></tr></thead><tbody>` +
+            (g.rows || []).map(r => `<tr><td class="mono">${escHtml(r.path)}` +
+              (r.key ? `<div class="cell-sub">${escHtml(r.key)}</div>` : '') + `</td>` +
+              `<td>${r.score == null ? '—' : Math.round(r.score)}</td>` +
+              `<td>${r.age_days == null ? '—' : r.age_days + ' дн.'}</td></tr>`).join('') +
+            `</tbody></table></div>`,
+    });
+  });
 }
 
 async function loadQueries() {
   const mode = TAB === 'cannibal' ? 'cannibal' : 'top';
   const target = mode === 'top' ? $('#qBody') : $('#cannBody');
-  if (mode === 'top') target.innerHTML = skeletonRows(6, 5);
-  else target.innerHTML = '<div class="muted">Загружаем…</div>';
+  target.innerHTML = mode === 'top' ? skeletonRows(6, 5) : '<div class="muted">Загружаем…</div>';
   let res;
   try { res = await api.siteQueries(SITE.id, { mode, limit: 200 }); }
   catch (e) {
-    if (mode === 'top') target.innerHTML = emptyRow(6, 'Не удалось загрузить', e.message);
-    else target.innerHTML = `<div class="note bad"><div class="note-body">${escHtml(e.message)}</div></div>`;
+    if (mode === 'top') target.innerHTML = emptyRow(5, 'Не удалось загрузить', e.message);
+    else target.innerHTML = `<div class="alert bad"><span class="alert-text">${escHtml(e.message)}</span></div>`;
     return;
   }
+
   if (mode === 'top') {
     $('#qSub').textContent = res.period
       ? 'По чему нас показывают · период ' + res.period
-      : 'Запросы появятся после синхронизации';
+      : 'Запросы появятся после обновления данных';
     target.innerHTML = (res.rows || []).length
       ? res.rows.map(r =>
-          `<tr><td>${escHtml(r.query)}${r.ours ? '' : ' <span class="pill warn">не наша страница</span>'}</td>` +
+          `<tr><td>${escHtml(r.query)}</td>` +
           `<td>${fmtNum(r.clicks)}</td><td>${fmtNum(r.impressions)}</td>` +
-          `<td>${searchUI.ctr(r.ctr)}</td><td>${searchUI.pos(r.position)}</td>` +
-          `<td>${fmtNum(r.pages)}</td></tr>`).join('')
-      : emptyRow(6, 'Запросов нет', 'Нажмите «Синхронизировать» — запросы снимаются вместе со страницами.');
+          `<td>${searchUI.ctr(r.ctr)}</td><td>${searchUI.pos(r.position)}</td></tr>`).join('')
+      : emptyRow(5, 'Запросов нет',
+          'Яндекс отдаёт запросы, только когда у сайта появляются показы. Нажмите «Обновить данные».');
     return;
   }
+
   const rows = res.rows || [];
   target.innerHTML = rows.length
     ? rows.map(r =>
-        `<div class="fb-card" style="margin-bottom:12px">` +
-          `<h4>${escHtml(r.query)}</h4>` +
-          `<div class="fb-note">${fmtNum(r.pages)} наших страниц делят один запрос · ` +
-          `${fmtNum(r.impressions)} показов · ${fmtNum(r.clicks)} кликов. ` +
-          `Оставьте одну целевую, остальные переориентируйте или свяжите ссылкой.</div>` +
-          `<table class="tbl"><thead><tr><th>Страница</th><th style="width:90px;">Клики</th>` +
-          `<th style="width:100px;">Показы</th><th style="width:100px;">Позиция</th></tr></thead><tbody>` +
-          r.urls.map(u => `<tr><td class="mono">${escHtml(u.path)}</td><td>${fmtNum(u.clicks)}</td>` +
-            `<td>${fmtNum(u.impressions)}</td><td>${searchUI.pos(u.position)}</td></tr>`).join('') +
+        `<div class="fb-card ${r.confirmed ? 'is-bad' : ''}" style="margin-bottom:12px">` +
+          `<h4>${escHtml(r.label)}` +
+          (r.confirmed ? ` <span class="pill bad">Яндекс уже склеил</span>` : '') + `</h4>` +
+          `<div class="fb-note">${fmtNum(r.pages)} наших страниц об одном и том же. ` +
+          (r.confirmed
+            ? `${fmtNum(r.merged)} из них Яндекс объединил с соседними — трафик уходит одной, остальные простаивают.`
+            : `Пока Яндекс их не склеил, но они конкурируют между собой.`) +
+          ` Оставьте одну целевую, остальные переориентируйте или свяжите ссылкой.</div>` +
+          `<table class="tbl"><thead><tr><th>Страница</th><th style="width:170px;">Состояние</th>` +
+          `<th style="width:90px;">Клики</th><th style="width:100px;">Показы</th></tr></thead><tbody>` +
+          r.urls.map(u => `<tr><td class="mono">${escHtml(u.path)}` +
+            (u.key ? `<div class="cell-sub">${escHtml(u.key)}</div>` : '') + `</td>` +
+            `<td>${searchUI.statePill(u)}</td>` +
+            `<td>${fmtNum(u.clicks)}</td><td>${fmtNum(u.impressions)}</td></tr>`).join('') +
           `</tbody></table>` +
         `</div>`).join('')
-    : '<div class="muted">Пересечений нет: каждый запрос тянет одну нашу страницу. Это хорошо.</div>';
+    : `<div class="empty"><div class="empty-title">Пересечений не видно</div>` +
+      `<div class="empty-text">Каждая страница отвечает за свой смысл, и Яндекс ничего не склеил. Это хорошо.</div></div>`;
 }
 
 function renderSlices() {
@@ -9173,49 +9293,64 @@ function renderSlices() {
   $('#byType').innerHTML = searchUI.breakdown(DATA.by_type, 'Шаблон или тип');
 }
 
+const ACT_LABEL = {
+  regenerate: 'Переписать заново',
+  exclude_keys: 'Отсеять ключи',
+  recrawl: 'Отправить на переобход',
+};
+
 async function loadFeedback() {
   $('#fbGrid').innerHTML = '<div class="muted">Считаем…</div>';
   let res;
   try { res = await api.siteFeedback(SITE.id, { days: DAYS }); }
-  catch (e) { $('#fbGrid').innerHTML = `<div class="note bad"><div class="note-body">${escHtml(e.message)}</div></div>`; return; }
+  catch (e) {
+    $('#fbGrid').innerHTML = `<div class="alert bad"><span class="alert-text">${escHtml(e.message)}</span></div>`;
+    return;
+  }
 
-  $('#fbGrid').innerHTML = (res.cards || []).map(c =>
-    `<div class="fb-card">` +
-      `<h4>${escHtml(c.title)}</h4>` +
-      `<div class="fb-n">${fmtNum(c.count)}</div>` +
-      `<div class="fb-note">${escHtml(c.note)}</div>` +
-      (c.count
-        ? `<button class="btn btn-sm ${c.action === 'exclude_keys' ? 'btn-danger' : 'btn-primary'}" ` +
-          `data-fb="${c.id}" data-act="${c.action}">` +
-          (c.action === 'exclude_keys' ? 'Отсеять ключи' : 'Отправить в регенерацию') + `</button> ` +
-          `<button class="btn btn-sm" data-list="${c.id}">Показать список</button>`
-        : '<span class="muted">Нечего делать</span>') +
-    `</div>`).join('');
+  const cards = (res.cards || []).filter(c => c.count > 0);
+  $('#fbGrid').innerHTML = cards.length
+    ? cards.map(c =>
+        `<div class="fb-card is-${c.tone || 'neutral'}">` +
+          `<h4>${escHtml(c.title)}</h4>` +
+          `<div class="fb-n">${fmtNum(c.count)}</div>` +
+          `<div class="fb-note">${escHtml(c.note)}</div>` +
+          `<div class="fb-acts">` +
+            `<button class="btn btn-sm ${c.action === 'exclude_keys' ? 'btn-danger' : 'btn-primary'}" ` +
+            `data-fb="${c.id}" data-act="${c.action}">${escHtml(ACT_LABEL[c.action] || 'Применить')}</button>` +
+            `<button class="btn btn-sm" data-list="${c.id}">Список</button>` +
+          `</div>` +
+        `</div>`).join('')
+    : `<div class="empty span-all"><div class="empty-title">Делать нечего — и это хорошо</div>` +
+      `<div class="empty-text">Ни одна страница не попала в проблемные списки. ` +
+      `Либо всё в порядке, либо данных пока мало: нажмите «Обновить данные».</div></div>`;
 
   const w = res.weights_hint || {};
+  const gap = w.score_gap;
   $('#fbHint').innerHTML =
-    `<div class="note info"><span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
-    `<b>Что видно по вашим данным.</b> Средний балл качества у страниц в индексе — ` +
-    `<b>${w.score_indexed == null ? '—' : w.score_indexed}</b>, у молчащих — ` +
-    `<b>${w.score_silent == null ? '—' : w.score_silent}</b>. ` +
-    `Уникальность: <b>${w.uniqueness_indexed == null ? '—' : w.uniqueness_indexed}</b> против ` +
-    `<b>${w.uniqueness_silent == null ? '—' : w.uniqueness_silent}</b>. ` +
-    (w.best_type ? `Лучше всех индексируется «${escHtml(w.best_type)}»` : '') +
-    (w.worst_type ? `, хуже всех — «${escHtml(w.worst_type)}».` : '.') +
-    ` Если разрыв по баллу больше 5 пунктов — поднимайте порог гейта, если его нет — ` +
-    `дело не в качестве текста, а в структуре и ссылках.` +
-    `</div></div>`;
+    `<div class="alert info"><span class="alert-ico">${ico('info', 15)}</span><span class="alert-text">` +
+    `<b>Что видно по вашим данным.</b> Средний балл у страниц в поиске — ` +
+    `<b>${w.score_ok == null ? '—' : w.score_ok}</b> (${fmtNum(w.pages_ok || 0)} шт.), ` +
+    `у исключённых — <b>${w.score_bad == null ? '—' : w.score_bad}</b> (${fmtNum(w.pages_bad || 0)} шт.). ` +
+    (gap == null
+      ? 'Сравнивать пока не с чем — нужны исключённые страницы.'
+      : (Math.abs(gap) >= 5
+          ? `Разрыв ${gap} пункта — балл действительно что-то ловит, порог гейта можно поднимать.`
+          : `Разрыв всего ${gap} — балл не отличает хорошие страницы от отвергнутых, дело не в тексте.`)) +
+    (w.best_type ? ` Лучше всех держится «${escHtml(w.best_type)}»` : '') +
+    (w.worst_type ? `, хуже всех — «${escHtml(w.worst_type)}».` : '') +
+    `</span></div>`;
 
-  const cards = res.cards || [];
   $$('#fbGrid [data-list]').forEach(b => b.onclick = () => {
     const card = cards.find(c => c.id === b.dataset.list);
     drawer.open({
       eyebrow: 'Список', title: card.title,
-      body: `<table class="tbl"><thead><tr><th>Страница</th><th style="width:80px;">Клики</th>` +
-            `<th style="width:90px;">Показы</th><th style="width:90px;">Позиция</th></tr></thead><tbody>` +
+      body: `<table class="tbl"><thead><tr><th>Страница</th><th style="width:70px;">Балл</th>` +
+            `<th style="width:80px;">Показы</th><th style="width:90px;">Позиция</th></tr></thead><tbody>` +
             card.rows.map(r => `<tr><td class="mono">${escHtml(r.path)}` +
-              (r.key ? `<div class="muted" style="font-size:12px">${escHtml(r.key)}</div>` : '') + `</td>` +
-              `<td>${fmtNum(r.clicks)}</td><td>${fmtNum(r.impressions)}</td>` +
+              (r.key ? `<div class="cell-sub">${escHtml(r.key)}</div>` : '') + `</td>` +
+              `<td>${r.score == null ? '—' : Math.round(r.score)}</td>` +
+              `<td>${fmtNum(r.impressions)}</td>` +
               `<td>${searchUI.pos(r.position)}</td></tr>`).join('') +
             `</tbody></table>`,
     });
@@ -9223,23 +9358,38 @@ async function loadFeedback() {
 
   $$('#fbGrid [data-fb]').forEach(b => b.onclick = async () => {
     const card = cards.find(c => c.id === b.dataset.fb);
-    const isKeys = b.dataset.act === 'exclude_keys';
-    const ok = await confirmDialog({
-      title: isKeys ? 'Отсеять ключи этих страниц?' : 'Отправить страницы в регенерацию?',
-      text: isKeys
-        ? `${card.count} ключей больше не попадут в новые запуски генерации. Вернуть можно кнопкой в списке ключей проекта.`
-        : `${card.count} страниц будут переписаны заново. Это стоит денег на модели и займёт время.`,
-      confirm: isKeys ? 'Отсеять' : 'Регенерировать', danger: isKeys,
-    });
-    if (!ok) return;
+    const act = b.dataset.act;
+    const texts = {
+      exclude_keys: {
+        title: 'Отсеять ключи этих страниц?',
+        text: `${card.count} ключей больше не попадут в новые запуски генерации. Вернуть можно в списке ключей проекта.`,
+        confirm: 'Отсеять', danger: true,
+      },
+      regenerate: {
+        title: 'Переписать страницы заново?',
+        text: `${card.count} страниц будут сгенерированы заново. Это стоит денег на модели и займёт время.`,
+        confirm: 'Переписать', danger: false,
+      },
+      recrawl: {
+        title: 'Отправить страницы роботу?',
+        text: `${card.count} адресов уйдут в очередь переобхода Яндекса. Квота небольшая — лишнее отсечётся само.`,
+        confirm: 'Отправить', danger: false,
+      },
+    }[act] || { title: 'Применить?', text: '', confirm: 'Да' };
+
+    if (!await confirmDialog(texts)) return;
     await withBusy(b, async () => {
       try {
-        const payload = isKeys
-          ? { exclude_keys: card.rows.map(r => r.key_item_id).filter(Boolean), reason: 'нет показов в Search Console' }
-          : { regenerate: card.rows.map(r => r.page_id).filter(Boolean) };
+        const payload =
+          act === 'exclude_keys' ? { exclude_keys: card.rows.map(r => r.key_item_id).filter(Boolean),
+                                     reason: 'нет показов в Яндексе' }
+        : act === 'recrawl'      ? { recrawl: card.rows.map(r => r.page_id).filter(Boolean) }
+        :                          { regenerate: card.rows.map(r => r.page_id).filter(Boolean) };
         const r = await api.applyFeedback(SITE.id, payload);
-        toast.ok(isKeys ? 'Ключи отсеяны' : 'Поставлено в очередь',
-          isKeys ? `Исключено: ${r.excluded_keys}` : `Задач: ${r.queued}`);
+        toast.ok('Готово',
+          act === 'exclude_keys' ? `Исключено ключей: ${r.excluded_keys}`
+          : act === 'recrawl'    ? `Отправлено: ${r.recrawled}`
+          :                        `Задач в очереди: ${r.queued}`);
         loadFeedback();
       } catch (e) { toast.err('Не получилось', e); }
     });
@@ -9249,26 +9399,28 @@ async function loadFeedback() {
 /** Карточки проектов сайта с их долей поисковой отдачи. */
 function renderSiteProjects() {
   const stats = {};
-  (DATA.by_project || []).forEach(x => { stats[x.project_id] = x; });
+  ((DATA && DATA.by_project) || []).forEach(x => { stats[x.project_id] = x; });
   const list = (SITE.projects || []);
   $('#prjPill').textContent = fmtNum(list.length);
   const grid = $('#sitePrjGrid');
   if (!list.length) {
     grid.innerHTML =
       `<div class="empty span-all"><div class="empty-title">К сайту не привязан ни один проект</div>` +
-      `<div class="empty-text">Откройте «Подключение и состав» и отметьте проекты этого домена — ` +
+      `<div class="empty-text">Откройте вкладку «Настройка» и отметьте проекты этого домена — ` +
       `тогда их страницы начнут сопоставляться с выдачей.</div></div>`;
     return;
   }
   grid.innerHTML = list.map(p => {
     const st = stats[p.id] || {};
+    const share = st.pages ? (st.in_search || 0) / st.pages : 0;
     return `<a class="pcard" href="project.html?id=${p.id}">` +
       `<div class="pcard-top"><span class="pcard-ico">${ico('pages', 17)}</span>${pill(p.status)}</div>` +
       `<div class="pcard-name">${escHtml(p.name)}</div>` +
-      `<div class="pcard-domain">` +
-        (st.pages
-          ? `${fmtNum(st.indexed || 0)} из ${fmtNum(st.pages)} страниц в индексе`
-          : 'страниц в индексе пока нет') + `</div>` +
+      (st.pages
+        ? `<div class="minibar mt-2"><span style="width:${(share * 100).toFixed(1)}%"></span></div>` +
+          `<div class="pcard-domain">${fmtNum(st.in_search || 0)} из ${fmtNum(st.pages)} страниц в поиске` +
+          (st.excluded ? ` · ${fmtNum(st.excluded)} исключено` : '') + `</div>`
+        : `<div class="pcard-domain">данных по страницам пока нет</div>`) +
       `<div class="pcard-foot">` +
         `<span>${fmtNum(st.clicks || 0)} кликов</span>` +
         `<span>${fmtNum(st.impressions || 0)} показов</span>` +
@@ -9278,49 +9430,50 @@ function renderSiteProjects() {
   }).join('');
 }
 
-/* ---------- подключение ---------- */
+/* ---------- настройка ---------- */
 
-function renderConnection() {
-  const sel = $('#resourceSel');
-  const cur = SITE.gsc_site_url || '';
-  sel.innerHTML = `<option value="">— ресурс не выбран —</option>` +
-    (cur ? `<option value="${escAttr(cur)}" selected>${escHtml(cur)}</option>` : '');
+function renderSetup() {
+  const sel = $('#hostSel');
+  const cur = SITE.ya_host_id || '';
+  sel.innerHTML = `<option value="">— сайт не выбран —</option>` +
+    (cur ? `<option value="${escAttr(cur)}" selected>${escHtml(SITE.ya_host_url || cur)}</option>` : '');
   const mine = new Set((SITE.projects || []).map(p => p.id));
   $('#projBoxes').innerHTML = PROJECTS.map(p =>
     `<button type="button" data-proj="${p.id}" class="${mine.has(p.id) ? 'is-on' : ''}">` +
     `${escHtml(p.name)} <span class="muted">${escHtml(p.domain || 'без домена')}</span></button>`).join('')
     || '<span class="muted">Проектов нет.</span>';
   $$('#projBoxes button').forEach(b => b.onclick = () => b.classList.toggle('is-on'));
-
-  // Сайт без ресурса или без проектов бесполезен — такую панель открываем сразу.
-  const needSetup = !SITE.gsc_site_url || !(SITE.projects || []).length;
-  if (needSetup) {
-    $('#connBody').hidden = false;
-    $('#connFoot').hidden = false;
-    $('#connToggle').textContent = 'Свернуть';
-  }
 }
 
-async function loadResources(btn) {
+async function loadHosts(btn) {
   await withBusy(btn, async () => {
     try {
-      const r = await api.siteResources(SITE.id);
-      const sel = $('#resourceSel');
-      sel.innerHTML = `<option value="">— ресурс не выбран —</option>` +
-        (r.sites || []).map(s =>
-          `<option value="${escAttr(s.site_url)}">${escHtml(s.site_url)} — ${escHtml(s.level)}</option>`).join('');
-      sel.value = SITE.gsc_site_url || r.suggested || '';
-      toast.ok('Ресурсы загружены',
-        (r.sites || []).length ? `Доступно: ${r.sites.length}` : 'Аккаунт ' + r.client_email + ' не добавлен ни в один ресурс');
+      const r = await api.siteHosts(SITE.id);
+      const sel = $('#hostSel');
+      sel.innerHTML = `<option value="">— сайт не выбран —</option>` +
+        (r.hosts || []).map(h =>
+          `<option value="${escAttr(h.host_id)}" data-url="${escAttr(h.url)}">` +
+          `${escHtml(h.url)}${h.verified ? '' : ' — не подтверждён'}</option>`).join('');
+      sel.value = r.current || r.suggested || '';
+      const bad = (r.hosts || []).filter(h => !h.verified).length;
+      toast.ok('Список загружен',
+        (r.hosts || []).length
+          ? `Сайтов: ${r.hosts.length}` + (bad ? `, из них не подтверждено: ${bad}` : '')
+          : 'В Вебмастере нет ни одного сайта');
     } catch (e) { toast.err('Не вышло', e); }
   });
 }
 
-async function saveResource(btn) {
+async function saveHost(btn) {
   await withBusy(btn, async () => {
     try {
-      SITE = Object.assign(SITE, await api.updateSite(SITE.id, { gsc_site_url: $('#resourceSel').value }));
-      toast.ok('Ресурс сохранён', SITE.gsc_site_url || 'снят');
+      const sel = $('#hostSel');
+      const opt = sel.options[sel.selectedIndex];
+      SITE = Object.assign(SITE, await api.updateSite(SITE.id, {
+        ya_host_id: sel.value,
+        ya_host_url: (opt && opt.dataset.url) || '',
+      }));
+      toast.ok('Сохранено', SITE.ya_host_url || SITE.ya_host_id || 'сайт снят');
       reload();
     } catch (e) { toast.err('Не сохранилось', e); }
   });
@@ -9343,20 +9496,35 @@ async function sync(btn) {
       const r = await api.siteSync(SITE.id, 90);
       const s = r.summary || {};
       toast.ok('Данные сняты',
-        `Адресов: ${fmtNum(s.rows_from_google || 0)} · совпало: ${fmtNum(s.matched_urls || 0)}`);
+        `В поиске: ${fmtNum(s.in_search || 0)} · исключено: ${fmtNum(s.excluded || 0)} · ` +
+        `совпало с нашими: ${fmtNum(s.matched_urls || 0)}`);
       reload();
-    } catch (e) { toast.err('Синхронизация не прошла', e); }
+    } catch (e) { toast.err('Не получилось снять данные', e); }
+  });
+}
+
+async function sendRecrawl(pageIds, btn) {
+  const ids = (pageIds || []).filter(Boolean);
+  if (!ids.length) { toast.info('Нечего отправлять'); return; }
+  await withBusy(btn, async () => {
+    try {
+      const r = await api.recrawl(SITE.id, { page_ids: ids });
+      toast.ok('Отправлено роботу', `Принято: ${r.sent} из ${r.total}` +
+        ((r.failed || []).length ? ` · отказов: ${r.failed.length}` : ''));
+    } catch (e) { toast.err('Переобход не прошёл', e); }
   });
 }
 
 function exportCsv() {
-  const head = ['url', 'состояние', 'тип', 'возраст_дней', 'клики', 'показы', 'ctr', 'позиция', 'балл', 'ключ'];
+  const head = ['url', 'состояние', 'причина', 'шаблон', 'возраст_дней',
+                'клики', 'показы', 'позиция', 'балл', 'ключ'];
   const lines = [head.join(';')].concat(ROWS.map(r => [
-    r.url || r.path, r.state, r.template || r.type || '', r.age_days == null ? '' : r.age_days,
-    r.clicks, r.impressions, r.ctr, r.position == null ? '' : r.position,
+    r.url || r.path, r.state, (r.reason && r.reason.label) || '',
+    r.template || r.type || '', r.age_days == null ? '' : r.age_days,
+    r.clicks, r.impressions, r.position == null ? '' : r.position,
     r.score == null ? '' : r.score, (r.key || '').replace(/;/g, ','),
   ].join(';')));
-  downloadText(`search-${SITE.domain}-${DAYS}d.csv`, lines.join('\n'), 'text/csv');
+  downloadText(`yandex-${SITE.domain}-${DAYS}d.csv`, lines.join('\n'), 'text/csv');
 }
 
 /* ---------- вкладки и события ---------- */
@@ -9364,12 +9532,8 @@ function exportCsv() {
 function setTab(name) {
   TAB = name;
   $$('#tabSeg button').forEach(b => b.classList.toggle('is-on', b.dataset.tab === name));
-  ['pages', 'queries', 'cannibal', 'slices', 'feedback'].forEach(t => {
-    $('#tab-' + t).hidden = t !== name;
-  });
-  if (name === 'queries' || name === 'cannibal') loadQueries();
-  if (name === 'slices') renderSlices();
-  if (name === 'feedback') loadFeedback();
+  TABS.forEach(t => { $('#tab-' + t).hidden = t !== name; });
+  renderTab();
 }
 
 wire.onChange(w => {
@@ -9383,23 +9547,18 @@ hydrateIcons();
 $('#themeBtn').onclick = () => { toggleTheme(); hydrateIcons(); };
 $('#siteSwitch').onchange = e => { location.href = 'site.html?id=' + e.target.value; };
 $('#syncBtn').onclick = e => sync(e.currentTarget);
-$('#loadResBtn').onclick = e => loadResources(e.currentTarget);
-$('#saveResBtn').onclick = e => saveResource(e.currentTarget);
+$('#loadHostsBtn').onclick = e => loadHosts(e.currentTarget);
+$('#saveHostBtn').onclick = e => saveHost(e.currentTarget);
 $('#saveProjBtn').onclick = e => saveProjects(e.currentTarget);
-$('#guideBtn').onclick = () => openGscGuide();
+$('#guideBtn').onclick = () => openYandexGuide();
 $('#exportCsv').onclick = exportCsv;
+$('#recrawlBtn').onclick = e => sendRecrawl(ROWS.map(r => r.page_id), e.currentTarget);
 $('#pagesFilter').oninput = () => { clearTimeout(window._pf); window._pf = setTimeout(loadPages, 250); };
 $$('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
 $$('#daysSeg button').forEach(b => b.onclick = () => {
   $$('#daysSeg button').forEach(x => x.classList.toggle('is-on', x === b));
   DAYS = Number(b.dataset.days); reload();
 });
-$('#connToggle').onclick = e => {
-  const body = $('#connBody'), foot = $('#connFoot');
-  body.hidden = !body.hidden;
-  foot.hidden = body.hidden;
-  e.currentTarget.textContent = body.hidden ? 'Развернуть' : 'Свернуть';
-};
 $('#delSiteBtn').onclick = async () => {
   const ok = await confirmDialog({
     title: 'Удалить сайт «' + (SITE.name || SITE.domain) + '»?',
