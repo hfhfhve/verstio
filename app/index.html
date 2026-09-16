@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>Проекты — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=45">
+<link rel="stylesheet" href="style.css?v=46">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -107,7 +107,7 @@
           <div class="panel-head-body">
             <div class="panel-title">Сайты <span class="pill neutral" id="siteCountPill">0</span></div>
             <div class="panel-sub">
-              Домен с подключённой Search Console. Проекты — это его разделы,
+              Домен, подключённый к Яндекс.Вебмастеру. Проекты — это его разделы,
               а поисковая отдача считается по всему сайту сразу.
             </div>
           </div>
@@ -172,7 +172,7 @@
   </main>
 </div>
 
-<script src="app.js?v=45"></script>
+<script src="app.js?v=46"></script>
 <script>
 (function () {
 'use strict';
@@ -241,9 +241,13 @@ async function loadSites() {
       `<div class="scard-domain">${escHtml(s.domain)}</div>` +
       `<div class="scard-foot">` +
         `<span>${ico('pages', 13)} ${fmtNum(s.projects_count || 0)} проектов</span>` +
-        `<span>${s.gsc_site_url ? ico('ok', 13) + ' ресурс подключён' : ico('alert', 13) + ' ресурс не выбран'}</span>` +
+        `<span>${s.connected ? ico('ok', 13) + ' Вебмастер подключён' : ico('alert', 13) + ' сайт не выбран'}</span>` +
       `</div>` +
-      `<div class="scard-foot">${ls ? 'снято ' + escHtml(ls.synced_at || '') : 'ещё не синхронизировано'}</div>` +
+      `<div class="scard-foot">` +
+        (ls
+          ? `${fmtNum(ls.in_search || 0)} в поиске · ${fmtNum(ls.excluded || 0)} исключено · снято ${escHtml(ls.synced_at || '')}`
+          : 'данные ещё не снимались') +
+      `</div>` +
     `</a>`;
   }).join('');
 }
