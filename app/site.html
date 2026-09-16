@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Сайт — результаты в поиске</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=44">
+<script>
+  try {
+    var t = localStorage.getItem('seo_theme');
+    if (t !== 'light' && t !== 'dark') t = 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body class="is-plain">
+
+<div class="plain-shell">
+
+  <header class="topbar plain-topbar">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6l7 6 7-6v12"/></svg>
+      </span>
+      <span>
+        <span class="brand-name">SEO-Фабрика</span>
+        <span class="brand-sub">сайты и поисковая отдача</span>
+      </span>
+    </div>
+
+    <span class="topbar-spacer"></span>
+
+    <select class="select input-sm" id="siteSwitch" style="max-width:280px"></select>
+
+    <div class="topbar-tools">
+      <a class="icon-btn" href="index.html" title="Проекты"><span data-ico="pages"></span></a>
+      <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему"><span data-theme-ico></span></button>
+      <a class="icon-btn" href="settings.html" title="Глобальные настройки"><span data-ico="gear"></span></a>
+    </div>
+  </header>
+
+  <main class="canvas">
+    <div class="wrap">
+
+      <div class="view-head">
+        <div class="view-head-body">
+          <div class="view-eyebrow"><i class="dot"></i> После публикации</div>
+          <h1 class="view-title" id="siteTitle">Результаты в поиске</h1>
+          <p class="view-sub" id="siteSub">
+            Search Console плюс то, чего в ней нет: тип страницы, балл качества, возраст и ключ.
+          </p>
+        </div>
+        <div class="view-actions">
+          <div class="seg seg-sm" id="daysSeg">
+            <button data-days="7">7 дней</button>
+            <button data-days="28" class="is-on">28 дней</button>
+            <button data-days="90">90 дней</button>
+          </div>
+          <button class="btn btn-dark btn-lg" id="syncBtn">
+            <span data-ico-sm="refresh"></span> Синхронизировать
+          </button>
+        </div>
+      </div>
+
+      <div id="siteWarn"></div>
+
+      <div class="metrics" id="siteTiles"></div>
+
+      <!-- ── подключение и состав сайта ────────────────────────────── -->
+      <section class="panel" id="connPanel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Подключение и состав</div>
+            <div class="panel-sub">Ключ — один на все сайты, ресурс и проекты — здесь</div>
+          </div>
+          <div class="panel-tools">
+            <button class="btn btn-sm" id="connToggle" type="button">Свернуть</button>
+          </div>
+        </div>
+        <div class="panel-body" id="connBody">
+          <div class="up-row">
+            <select class="select input-sm" id="resourceSel" style="min-width:280px">
+              <option value="">— ресурс не выбран —</option>
+            </select>
+            <button class="btn" id="loadResBtn"><span data-ico-sm="radar"></span> Загрузить ресурсы</button>
+            <button class="btn btn-primary" id="saveResBtn">Сохранить ресурс</button>
+            <button class="btn" id="guideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
+          </div>
+          <div class="field-hint mt-2" id="syncNote">Ещё ни одной синхронизации.</div>
+
+          <div class="field mt-3">
+            <span class="field-label">Проекты этого сайта</span>
+            <div id="projBoxes" class="chipbar"></div>
+            <span class="field-hint">Один домен обычно режется на несколько проектов — отметьте свои.</span>
+          </div>
+        </div>
+        <div class="panel-foot">
+          <button class="btn" id="saveProjBtn"><span data-ico-sm="check"></span> Сохранить состав</button>
+          <span class="grow"></span>
+          <button class="btn btn-danger btn-sm" id="delSiteBtn" type="button">Удалить сайт</button>
+        </div>
+      </section>
+
+      <!-- ── вкладки ───────────────────────────────────────────────── -->
+      <div class="seg" id="tabSeg" style="margin:18px 0 14px">
+        <button data-tab="pages" class="is-on">Страницы</button>
+        <button data-tab="queries">Запросы</button>
+        <button data-tab="cannibal">Каннибализация</button>
+        <button data-tab="slices">Срезы</button>
+        <button data-tab="feedback">Рекомендации</button>
+      </div>
+
+      <!-- Страницы -->
+      <section class="panel" id="tab-pages">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Страницы</div>
+            <div class="panel-sub" id="pagesSub">Клик по строке открывает карточку с динамикой и запросами</div>
+          </div>
+          <div class="panel-tools">
+            <input class="input input-sm" id="pagesFilter" placeholder="Путь или ключ…" autocomplete="off">
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="chipbar" id="chipbar"></div>
+        </div>
+        <div class="tbl-scroll">
+          <table class="tbl">
+            <thead id="pagesHead"></thead>
+            <tbody id="pagesBody"></tbody>
+          </table>
+        </div>
+        <div class="panel-foot">
+          <span class="muted" id="pagesCount">—</span>
+          <span class="grow"></span>
+          <button class="btn btn-sm" id="exportCsv"><span data-ico-sm="download"></span> Выгрузить CSV</button>
+        </div>
+      </section>
+
+      <!-- Запросы -->
+      <section class="panel" id="tab-queries" hidden>
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Запросы</div>
+            <div class="panel-sub" id="qSub">По чему нас показывают за последний снятый период</div>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table class="tbl">
+            <thead><tr>
+              <th>Запрос</th>
+              <th style="width:110px;">Клики</th>
+              <th style="width:110px;">Показы</th>
+              <th style="width:90px;">CTR</th>
+              <th style="width:100px;">Позиция</th>
+              <th style="width:110px;">Страниц</th>
+            </tr></thead>
+            <tbody id="qBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Каннибализация -->
+      <section class="panel" id="tab-cannibal" hidden>
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Каннибализация</div>
+            <div class="panel-sub">Один запрос тянет несколько наших страниц — они мешают друг другу</div>
+          </div>
+        </div>
+        <div class="panel-body" id="cannBody"></div>
+      </section>
+
+      <!-- Срезы -->
+      <section class="panel" id="tab-slices" hidden>
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Срезы</div>
+            <div class="panel-sub">Что реально работает: проекты и шаблоны страниц</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="field-label">По проектам</div>
+          <div id="byProject" class="mt-2"></div>
+          <div class="field-label mt-4">По шаблонам и типам страниц</div>
+          <div id="byType" class="mt-2"></div>
+        </div>
+      </section>
+
+      <!-- Рекомендации -->
+      <section class="panel" id="tab-feedback" hidden>
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Рекомендации</div>
+            <div class="panel-sub">Списки с кнопкой: что отправить в регенерацию и какие ключи отсеять</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="fb-grid" id="fbGrid"></div>
+          <div id="fbHint" class="mt-3"></div>
+        </div>
+      </section>
+
+      <footer class="plain-foot">
+        <span class="nav-state" id="wireDot"></span>
+        <span id="wireText">Проверка связи…</span>
+        <span class="selbar-sep"></span>
+        <a class="link-btn" href="index.html">Все проекты</a>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script src="app.js?v=44"></script>
+<script>
+(function () {
+'use strict';
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+let SITES = [], SITE = null, PROJECTS = [];
+let DAYS = 28, FILTER = 'all', TAB = 'pages';
+let DATA = null, ROWS = [];
+
+function hydrateIcons(root) {
+  const r = root || document;
+  r.querySelectorAll('[data-ico]:not([data-ico-done])').forEach(el => {
+    el.innerHTML = ico(el.dataset.ico, 17); el.setAttribute('data-ico-done', '1');
+  });
+  r.querySelectorAll('[data-ico-sm]:not([data-ico-done])').forEach(el => {
+    el.innerHTML = ico(el.dataset.icoSm, 14); el.setAttribute('data-ico-done', '1');
+  });
+  r.querySelectorAll('[data-theme-ico]').forEach(el => {
+    el.innerHTML = ico(getTheme() === 'dark' ? 'sun' : 'moon', 16);
+  });
+}
+
+function sid() {
+  const url = Number(new URLSearchParams(location.search).get('id') || 0);
+  if (url) return url;
+  const saved = Number(localStorage.getItem('seo_last_site') || 0);
+  return saved || (SITES[0] ? SITES[0].id : 0);
+}
+
+/* ---------- загрузка ---------- */
+
+async function boot() {
+  try { SITES = await api.listSites() || []; }
+  catch (e) { toast.err('Не удалось получить список сайтов', e); return; }
+  try { PROJECTS = await api.listProjects() || []; } catch (e) { PROJECTS = []; }
+
+  if (!SITES.length) {
+    $('#siteTitle').textContent = 'Сайтов пока нет';
+    $('#siteSub').textContent = 'Создайте сайт на главной: он объединяет проекты одного домена.';
+    $('#connPanel').hidden = true;
+    return;
+  }
+  const want = sid();
+  SITE = SITES.find(s => s.id === want) || SITES[0];
+  localStorage.setItem('seo_last_site', String(SITE.id));
+
+  $('#siteSwitch').innerHTML = SITES.map(s =>
+    `<option value="${s.id}" ${s.id === SITE.id ? 'selected' : ''}>${escHtml(s.name || s.domain)}</option>`).join('');
+
+  renderConnection();
+  await reload();
+}
+
+async function reload() {
+  if (!SITE) return;
+  $('#pagesBody').innerHTML = skeletonRows(8, 6);
+  try {
+    DATA = await api.siteOverview(SITE.id, { days: DAYS });
+  } catch (e) {
+    $('#pagesBody').innerHTML = emptyRow(8, 'Не удалось получить данные', e.message);
+    return;
+  }
+  SITE = Object.assign(SITE, DATA.site || {});
+  $('#siteTitle').textContent = SITE.name || SITE.domain;
+  $('#siteSub').textContent =
+    `${SITE.domain} · ресурс ${SITE.gsc_site_url || 'не выбран'} · период ${DATA.period}`;
+  $('#siteTiles').innerHTML = searchUI.tiles(DATA);
+  $('#siteWarn').innerHTML = searchUI.warnings(DATA.warnings);
+  const ls = DATA.last_sync;
+  $('#syncNote').innerHTML = ls
+    ? `Снято ${escHtml(ls.synced_at || '')} · период ${escHtml(ls.period || '')} · ` +
+      `адресов от Google: <b>${fmtNum(ls.rows_from_google || 0)}</b> · ` +
+      `совпало с нашими: <b>${fmtNum(ls.matched_urls || 0)}</b> · ` +
+      `чужих адресов: ${fmtNum(ls.orphan_urls || 0)}`
+    : 'Ещё ни одной синхронизации.';
+
+  await loadPages();
+  if (TAB === 'queries' || TAB === 'cannibal') loadQueries();
+  if (TAB === 'slices') renderSlices();
+  if (TAB === 'feedback') loadFeedback();
+}
+
+async function loadPages() {
+  $('#pagesHead').innerHTML = searchUI.tableHead();
+  $('#chipbar').innerHTML = searchUI.chips(FILTER, (DATA && DATA.buckets) || {});
+  $$('#chipbar button').forEach(b => b.onclick = () => {
+    FILTER = b.dataset.chip; loadPages();
+  });
+  $('#pagesBody').innerHTML = skeletonRows(8, 6);
+  let res;
+  try {
+    res = await api.sitePages(SITE.id, {
+      days: DAYS, filter: FILTER, q: $('#pagesFilter').value.trim(), limit: 400,
+    });
+  } catch (e) {
+    $('#pagesBody').innerHTML = emptyRow(8, 'Не удалось загрузить таблицу', e.message);
+    return;
+  }
+  ROWS = res.rows || [];
+  $('#pagesBody').innerHTML = searchUI.rows(ROWS);
+  $('#pagesCount').textContent =
+    `Показано ${fmtNum(ROWS.length)} из ${fmtNum(res.total || 0)} · период ${res.period}`;
+  $('#chipbar').innerHTML = searchUI.chips(FILTER, res.buckets || {});
+  $$('#chipbar button').forEach(b => b.onclick = () => { FILTER = b.dataset.chip; loadPages(); });
+  $$('#pagesBody tr.row-click').forEach(tr => tr.onclick = () => openDetail(tr));
+}
+
+async function openDetail(tr) {
+  const row = ROWS.find(r => (r.url_norm || '') === tr.dataset.url) || {};
+  drawer.open({ eyebrow: 'Страница', title: row.path || row.url || 'Страница', body: '<div class="muted">Загружаем…</div>' });
+  try {
+    const data = await api.sitePageDetail(SITE.id, {
+      page_id: row.page_id || '', url_norm: row.page_id ? '' : row.url_norm, days: Math.max(DAYS, 90),
+    });
+    drawer.setBody(searchUI.detailHtml(data, row));
+  } catch (e) {
+    drawer.setBody(`<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
+      `<div class="note-body">${escHtml(e.message)}</div></div>`);
+  }
+}
+
+async function loadQueries() {
+  const mode = TAB === 'cannibal' ? 'cannibal' : 'top';
+  const target = mode === 'top' ? $('#qBody') : $('#cannBody');
+  if (mode === 'top') target.innerHTML = skeletonRows(6, 5);
+  else target.innerHTML = '<div class="muted">Загружаем…</div>';
+  let res;
+  try { res = await api.siteQueries(SITE.id, { mode, limit: 200 }); }
+  catch (e) {
+    if (mode === 'top') target.innerHTML = emptyRow(6, 'Не удалось загрузить', e.message);
+    else target.innerHTML = `<div class="note bad"><div class="note-body">${escHtml(e.message)}</div></div>`;
+    return;
+  }
+  if (mode === 'top') {
+    $('#qSub').textContent = res.period
+      ? 'По чему нас показывают · период ' + res.period
+      : 'Запросы появятся после синхронизации';
+    target.innerHTML = (res.rows || []).length
+      ? res.rows.map(r =>
+          `<tr><td>${escHtml(r.query)}${r.ours ? '' : ' <span class="pill warn">не наша страница</span>'}</td>` +
+          `<td>${fmtNum(r.clicks)}</td><td>${fmtNum(r.impressions)}</td>` +
+          `<td>${searchUI.ctr(r.ctr)}</td><td>${searchUI.pos(r.position)}</td>` +
+          `<td>${fmtNum(r.pages)}</td></tr>`).join('')
+      : emptyRow(6, 'Запросов нет', 'Нажмите «Синхронизировать» — запросы снимаются вместе со страницами.');
+    return;
+  }
+  const rows = res.rows || [];
+  target.innerHTML = rows.length
+    ? rows.map(r =>
+        `<div class="fb-card" style="margin-bottom:12px">` +
+          `<h4>${escHtml(r.query)}</h4>` +
+          `<div class="fb-note">${fmtNum(r.pages)} наших страниц делят один запрос · ` +
+          `${fmtNum(r.impressions)} показов · ${fmtNum(r.clicks)} кликов. ` +
+          `Оставьте одну целевую, остальные переориентируйте или свяжите ссылкой.</div>` +
+          `<table class="tbl"><thead><tr><th>Страница</th><th style="width:90px;">Клики</th>` +
+          `<th style="width:100px;">Показы</th><th style="width:100px;">Позиция</th></tr></thead><tbody>` +
+          r.urls.map(u => `<tr><td class="mono">${escHtml(u.path)}</td><td>${fmtNum(u.clicks)}</td>` +
+            `<td>${fmtNum(u.impressions)}</td><td>${searchUI.pos(u.position)}</td></tr>`).join('') +
+          `</tbody></table>` +
+        `</div>`).join('')
+    : '<div class="muted">Пересечений нет: каждый запрос тянет одну нашу страницу. Это хорошо.</div>';
+}
+
+function renderSlices() {
+  if (!DATA) return;
+  $('#byProject').innerHTML = searchUI.breakdown(DATA.by_project, 'Проект');
+  $('#byType').innerHTML = searchUI.breakdown(DATA.by_type, 'Шаблон или тип');
+}
+
+async function loadFeedback() {
+  $('#fbGrid').innerHTML = '<div class="muted">Считаем…</div>';
+  let res;
+  try { res = await api.siteFeedback(SITE.id, { days: DAYS }); }
+  catch (e) { $('#fbGrid').innerHTML = `<div class="note bad"><div class="note-body">${escHtml(e.message)}</div></div>`; return; }
+
+  $('#fbGrid').innerHTML = (res.cards || []).map(c =>
+    `<div class="fb-card">` +
+      `<h4>${escHtml(c.title)}</h4>` +
+      `<div class="fb-n">${fmtNum(c.count)}</div>` +
+      `<div class="fb-note">${escHtml(c.note)}</div>` +
+      (c.count
+        ? `<button class="btn btn-sm ${c.action === 'exclude_keys' ? 'btn-danger' : 'btn-primary'}" ` +
+          `data-fb="${c.id}" data-act="${c.action}">` +
+          (c.action === 'exclude_keys' ? 'Отсеять ключи' : 'Отправить в регенерацию') + `</button> ` +
+          `<button class="btn btn-sm" data-list="${c.id}">Показать список</button>`
+        : '<span class="muted">Нечего делать</span>') +
+    `</div>`).join('');
+
+  const w = res.weights_hint || {};
+  $('#fbHint').innerHTML =
+    `<div class="note info"><span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
+    `<b>Что видно по вашим данным.</b> Средний балл качества у страниц в индексе — ` +
+    `<b>${w.score_indexed == null ? '—' : w.score_indexed}</b>, у молчащих — ` +
+    `<b>${w.score_silent == null ? '—' : w.score_silent}</b>. ` +
+    `Уникальность: <b>${w.uniqueness_indexed == null ? '—' : w.uniqueness_indexed}</b> против ` +
+    `<b>${w.uniqueness_silent == null ? '—' : w.uniqueness_silent}</b>. ` +
+    (w.best_type ? `Лучше всех индексируется «${escHtml(w.best_type)}»` : '') +
+    (w.worst_type ? `, хуже всех — «${escHtml(w.worst_type)}».` : '.') +
+    ` Если разрыв по баллу больше 5 пунктов — поднимайте порог гейта, если его нет — ` +
+    `дело не в качестве текста, а в структуре и ссылках.` +
+    `</div></div>`;
+
+  const cards = res.cards || [];
+  $$('#fbGrid [data-list]').forEach(b => b.onclick = () => {
+    const card = cards.find(c => c.id === b.dataset.list);
+    drawer.open({
+      eyebrow: 'Список', title: card.title,
+      body: `<table class="tbl"><thead><tr><th>Страница</th><th style="width:80px;">Клики</th>` +
+            `<th style="width:90px;">Показы</th><th style="width:90px;">Позиция</th></tr></thead><tbody>` +
+            card.rows.map(r => `<tr><td class="mono">${escHtml(r.path)}` +
+              (r.key ? `<div class="muted" style="font-size:12px">${escHtml(r.key)}</div>` : '') + `</td>` +
+              `<td>${fmtNum(r.clicks)}</td><td>${fmtNum(r.impressions)}</td>` +
+              `<td>${searchUI.pos(r.position)}</td></tr>`).join('') +
+            `</tbody></table>`,
+    });
+  });
+
+  $$('#fbGrid [data-fb]').forEach(b => b.onclick = async () => {
+    const card = cards.find(c => c.id === b.dataset.fb);
+    const isKeys = b.dataset.act === 'exclude_keys';
+    const ok = await confirmDialog({
+      title: isKeys ? 'Отсеять ключи этих страниц?' : 'Отправить страницы в регенерацию?',
+      text: isKeys
+        ? `${card.count} ключей больше не попадут в новые запуски генерации. Вернуть можно кнопкой в списке ключей проекта.`
+        : `${card.count} страниц будут переписаны заново. Это стоит денег на модели и займёт время.`,
+      confirm: isKeys ? 'Отсеять' : 'Регенерировать', danger: isKeys,
+    });
+    if (!ok) return;
+    await withBusy(b, async () => {
+      try {
+        const payload = isKeys
+          ? { exclude_keys: card.rows.map(r => r.key_item_id).filter(Boolean), reason: 'нет показов в Search Console' }
+          : { regenerate: card.rows.map(r => r.page_id).filter(Boolean) };
+        const r = await api.applyFeedback(SITE.id, payload);
+        toast.ok(isKeys ? 'Ключи отсеяны' : 'Поставлено в очередь',
+          isKeys ? `Исключено: ${r.excluded_keys}` : `Задач: ${r.queued}`);
+        loadFeedback();
+      } catch (e) { toast.err('Не получилось', e); }
+    });
+  });
+}
+
+/* ---------- подключение ---------- */
+
+function renderConnection() {
+  const sel = $('#resourceSel');
+  const cur = SITE.gsc_site_url || '';
+  sel.innerHTML = `<option value="">— ресурс не выбран —</option>` +
+    (cur ? `<option value="${escAttr(cur)}" selected>${escHtml(cur)}</option>` : '');
+  const mine = new Set((SITE.projects || []).map(p => p.id));
+  $('#projBoxes').innerHTML = PROJECTS.map(p =>
+    `<button type="button" data-proj="${p.id}" class="${mine.has(p.id) ? 'is-on' : ''}">` +
+    `${escHtml(p.name)} <span class="muted">${escHtml(p.domain || 'без домена')}</span></button>`).join('')
+    || '<span class="muted">Проектов нет.</span>';
+  $$('#projBoxes button').forEach(b => b.onclick = () => b.classList.toggle('is-on'));
+}
+
+async function loadResources(btn) {
+  await withBusy(btn, async () => {
+    try {
+      const r = await api.siteResources(SITE.id);
+      const sel = $('#resourceSel');
+      sel.innerHTML = `<option value="">— ресурс не выбран —</option>` +
+        (r.sites || []).map(s =>
+          `<option value="${escAttr(s.site_url)}">${escHtml(s.site_url)} — ${escHtml(s.level)}</option>`).join('');
+      sel.value = SITE.gsc_site_url || r.suggested || '';
+      toast.ok('Ресурсы загружены',
+        (r.sites || []).length ? `Доступно: ${r.sites.length}` : 'Аккаунт ' + r.client_email + ' не добавлен ни в один ресурс');
+    } catch (e) { toast.err('Не вышло', e); }
+  });
+}
+
+async function saveResource(btn) {
+  await withBusy(btn, async () => {
+    try {
+      SITE = Object.assign(SITE, await api.updateSite(SITE.id, { gsc_site_url: $('#resourceSel').value }));
+      toast.ok('Ресурс сохранён', SITE.gsc_site_url || 'снят');
+      reload();
+    } catch (e) { toast.err('Не сохранилось', e); }
+  });
+}
+
+async function saveProjects(btn) {
+  await withBusy(btn, async () => {
+    try {
+      const ids = $$('#projBoxes button.is-on').map(b => Number(b.dataset.proj));
+      SITE = Object.assign(SITE, await api.setSiteProjects(SITE.id, ids));
+      toast.ok('Состав сохранён', ids.length + ' проектов');
+      reload();
+    } catch (e) { toast.err('Не сохранилось', e); }
+  });
+}
+
+async function sync(btn) {
+  await withBusy(btn, async () => {
+    try {
+      const r = await api.siteSync(SITE.id, 90);
+      const s = r.summary || {};
+      toast.ok('Данные сняты',
+        `Адресов: ${fmtNum(s.rows_from_google || 0)} · совпало: ${fmtNum(s.matched_urls || 0)}`);
+      reload();
+    } catch (e) { toast.err('Синхронизация не прошла', e); }
+  });
+}
+
+function exportCsv() {
+  const head = ['url', 'состояние', 'тип', 'возраст_дней', 'клики', 'показы', 'ctr', 'позиция', 'балл', 'ключ'];
+  const lines = [head.join(';')].concat(ROWS.map(r => [
+    r.url || r.path, r.state, r.template || r.type || '', r.age_days == null ? '' : r.age_days,
+    r.clicks, r.impressions, r.ctr, r.position == null ? '' : r.position,
+    r.score == null ? '' : r.score, (r.key || '').replace(/;/g, ','),
+  ].join(';')));
+  downloadText(`search-${SITE.domain}-${DAYS}d.csv`, lines.join('\n'), 'text/csv');
+}
+
+/* ---------- вкладки и события ---------- */
+
+function setTab(name) {
+  TAB = name;
+  $$('#tabSeg button').forEach(b => b.classList.toggle('is-on', b.dataset.tab === name));
+  ['pages', 'queries', 'cannibal', 'slices', 'feedback'].forEach(t => {
+    $('#tab-' + t).hidden = t !== name;
+  });
+  if (name === 'queries' || name === 'cannibal') loadQueries();
+  if (name === 'slices') renderSlices();
+  if (name === 'feedback') loadFeedback();
+}
+
+wire.onChange(w => {
+  const dot = $('#wireDot'), txt = $('#wireText');
+  if (w.ok === null) { dot.className = 'nav-state'; txt.textContent = 'Проверка связи…'; return; }
+  dot.className = 'nav-state ' + (w.ok ? 'ok' : 'bad');
+  txt.textContent = w.ok ? 'Бэкенд отвечает' : 'Нет связи с бэкендом: ' + (w.lastError || '');
+});
+
+hydrateIcons();
+$('#themeBtn').onclick = () => { toggleTheme(); hydrateIcons(); };
+$('#siteSwitch').onchange = e => { location.href = 'site.html?id=' + e.target.value; };
+$('#syncBtn').onclick = e => sync(e.currentTarget);
+$('#loadResBtn').onclick = e => loadResources(e.currentTarget);
+$('#saveResBtn').onclick = e => saveResource(e.currentTarget);
+$('#saveProjBtn').onclick = e => saveProjects(e.currentTarget);
+$('#guideBtn').onclick = () => openGscGuide();
+$('#exportCsv').onclick = exportCsv;
+$('#pagesFilter').oninput = () => { clearTimeout(window._pf); window._pf = setTimeout(loadPages, 250); };
+$$('#tabSeg button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+$$('#daysSeg button').forEach(b => b.onclick = () => {
+  $$('#daysSeg button').forEach(x => x.classList.toggle('is-on', x === b));
+  DAYS = Number(b.dataset.days); reload();
+});
+$('#connToggle').onclick = e => {
+  const body = $('#connBody');
+  body.hidden = !body.hidden;
+  e.currentTarget.textContent = body.hidden ? 'Развернуть' : 'Свернуть';
+};
+$('#delSiteBtn').onclick = async () => {
+  const ok = await confirmDialog({
+    title: 'Удалить сайт «' + (SITE.name || SITE.domain) + '»?',
+    text: 'Проекты и страницы останутся, исчезнет только история метрик и привязка.',
+    confirm: 'Удалить', danger: true,
+  });
+  if (!ok) return;
+  try { await api.deleteSite(SITE.id); localStorage.removeItem('seo_last_site'); location.href = 'index.html'; }
+  catch (e) { toast.err('Не удалось удалить', e); }
+};
+
+boot();
+
+})();
+</script>
+
+</body>
+</html>
