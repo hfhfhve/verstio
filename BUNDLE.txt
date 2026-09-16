@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: 772d65f5647fbecb475d84e7eec5232be34a3e57
+# commit: 83e3e7319f7fa17238cf28e3acc00b11c7a79354
 # built:  2026-09-16 18:38 UTC
 
 ## Состав
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (1972 строк)
 app/index.html  (424 строк)
 app/login.html  (382 строк)
-app/project.html  (3622 строк)
+app/project.html  (3641 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (800 строк)
 app/site.html  (650 строк)
@@ -4246,7 +4246,7 @@ form.addEventListener('submit', async (e) => {
     document.documentElement.setAttribute('data-fx', f === 'off' ? 'off' : 'on');
   } catch (e) {}
 </script>
-<link rel="stylesheet" href="style.css?v=44">
+<link rel="stylesheet" href="style.css?v=45">
 </head>
 <body class="is-app">
 
@@ -4378,6 +4378,8 @@ form.addEventListener('submit', async (e) => {
       </button>
 
       <div class="crumbs">
+        <a id="crumbSite" href="#" hidden>Сайт</a>
+        <span class="sep" id="crumbSiteSep" hidden>/</span>
         <span id="crumbProject">Проект</span>
         <span class="sep">/</span>
         <b id="crumbView">Данные</b>
@@ -5594,7 +5596,7 @@ form.addEventListener('submit', async (e) => {
   </div>
 </div>
 
-<script src="app.js?v=44"></script>
+<script src="app.js?v=45"></script>
 
 <script>
 /* ==========================================================================
@@ -5715,6 +5717,7 @@ function paintProjectHead() {
   $('#crumbProject').textContent = p.name;
   $('#projDot').className = 'proj-switch-dot ' + statusTone(p.status);
   $('#projCaret').innerHTML = ico('chevron', 14);
+  paintSiteCrumb();
 
   const t = (p.templates || []).slice(-1)[0] || p.template || null;
   S.template = t;
@@ -5895,6 +5898,22 @@ async function runGscSync(btn) {
 }
 
 /* ---------- привязка проекта к сайту ---------- */
+
+/** Ссылка «вверх», к домену: проект всегда часть какого-то сайта. */
+async function paintSiteCrumb() {
+  const id = Number((S.project && S.project.settings && S.project.settings.site_id) || 0);
+  const link = $('#crumbSite'), sep = $('#crumbSiteSep');
+  if (!id) { link.hidden = true; sep.hidden = true; return; }
+  link.hidden = false; sep.hidden = false;
+  link.href = 'site.html?id=' + id;
+  link.textContent = '…';
+  try {
+    const site = await api.getSite(id);
+    link.textContent = site.name || site.domain;
+    link.title = 'Сайт целиком: сводка по домену, запросы, каннибализация';
+  } catch (e) { link.textContent = 'сайт'; }
+}
+
 
 async function initProjectSite() {
   let sites = [];
