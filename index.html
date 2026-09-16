@@ -1,14 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Verstio — программный SEO с измеримым качеством каждой страницы</title>
-<meta name="description" content="Verstio делает pSEO-страницы из ваших данных: паспорт данных до генерации, 16 измерений качества во время, Search Console после. Каждая страница получает балл 0–100 и причины.">
+<meta name="description" content="Verstio собирает pSEO-страницы на пяти системах добавленной ценности: паспорт данных, каркас и схема полей, анализ добавленной ценности страницы, гейт качества из 16 измерений и контроль в Search Console после публикации.">
 <link rel="canonical" href="https://verstio.ru/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Verstio — программный SEO с измеримым качеством">
-<meta property="og:description" content="Не 2000 текстов от ИИ и не копирайтеры на потоке. Конвейер с паспортом данных, гейтом качества и контролем после публикации.">
+<meta property="og:description" content="Не 2000 текстов от ИИ и не копирайтеры на потоке. Пять систем добавленной ценности: данные, каркас, анализ добавленной ценности, гейт качества и контроль после публикации.">
 <meta property="og:url" content="https://verstio.ru/">
 <meta property="og:image" content="https://verstio.ru/assets/hero.webp">
 <meta name="theme-color" content="#0D1013">
@@ -224,6 +225,9 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   .contact li{grid-template-columns:1fr}
   .contact li span{margin-bottom:-6px}
 }
+.reveal{opacity:0;transform:translateY(22px);will-change:opacity,transform;transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
+.reveal.is-in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -249,14 +253,14 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 <section class="band hero shell">
   <div class="hero-grid">
     <div>
-      <p class="kicker">Программный SEO из ваших данных</p>
+      <p class="kicker">Программный SEO: пять систем добавленной ценности</p>
       <h1>Мы не пишем две тысячи страниц.<br>Мы их <em>измеряем</em> и публикуем только те, что выживут в индексе.</h1>
-      <p class="lede">Verstio — небольшая студия с собственной системой pSEO. Каждая страница собирается из вашей таблицы данных, проходит девять блокирующих проверок и шестнадцать взвешенных измерений, получает балл от 0 до 100 и объяснение, где именно она теряет баллы.</p>
+      <p class="lede">Verstio — небольшая студия с собственной системой pSEO. За каждой страницей работают пять систем добавленной ценности: паспорт данных, проектирование каркаса и схемы полей, анализ добавленной ценности страницы, гейт качества из девяти блокеров и шестнадцати измерений и контроль после публикации. На выходе — балл от 0 до 100 и объяснение, где именно страница теряет баллы.</p>
       <div class="btn-row">
         <a class="btn" href="#form">Оставить заявку</a>
         <a class="btn btn--ghost" href="#pipeline">Посмотреть конвейер</a>
       </div>
-      <p class="hero-note">Бесплатный разбор данных до начала работы: скажем честный потолок страниц по вашей таблице и что в ней нужно добавить.</p>
+      <p class="hero-note">Бесплатный разбор до начала работы: скажем честный потолок страниц, чем ваши страницы будут полезнее того, что уже есть в выдаче, и чего не хватает для этого сейчас.</p>
     </div>
 
     <div class="card" aria-label="Пример отчёта по странице">
@@ -737,7 +741,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="faq">
       <details open>
         <summary>Это не дорвеи? Нас не забанят?</summary>
-        <p>Дорвей — это страница без собственной ценности: один скелет с подменёнными словами. Именно против этого построена половина нашей системы: паспорт данных отсекает проекты, где страницы отличать нечем, а движок уникальности блокирует всё, что похоже на другую страницу проекта больше чем на 25%. Мы делаем страницы из ваших фактов, а не из синонимов.</p>
+        <p>Дорвей — это страница без собственной ценности: один скелет с подменёнными словами. Именно против этого построена половина нашей системы: паспорт данных отсекает проекты, где страницы отличать нечем, а движок уникальности блокирует всё, что похоже на другую страницу проекта больше чем на 25%. Мы делаем страницы из ваших фактов, а не из синонимов. Сверх этого отдельный модуль оценивает добавленную ценность страницы — то, на что Google сейчас смотрит в первую очередь: есть ли на странице факты, расчёты и сравнения, которых нет у тех, кто уже в топе.</p>
       </details>
       <details>
         <summary>Что нужно от меня для старта?</summary>
@@ -767,7 +771,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 
 <footer>
   <div class="shell foot">
-    <div><span class="brand" style="font-size:20px">Verstio</span> — программный SEO из ваших данных</div>
+    <div><span class="brand" style="font-size:20px">Verstio</span> — программный SEO: пять систем добавленной ценности</div>
     <div style="display:flex;gap:20px;flex-wrap:wrap">
       <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
       <a href="mailto:support@verstio.ru">support@verstio.ru</a>
@@ -781,7 +785,50 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   'use strict';
 
   /* Куда отправлять заявки. Пока пусто — форма откроет письмо на hello@verstio.ru. */
-  var LEAD_ENDPOINT = '';
+  /* Плавное появление блоков при скролле.
+     Классы навешиваем из JS, чтобы не засорять разметку и чтобы без JS
+     страница осталась полностью видимой. */
+  (function () {
+    var slow = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (slow || !('IntersectionObserver' in window)) return;
+
+    var nodes = [];
+    document.querySelectorAll('.band').forEach(function (band) {
+      var shell = band.querySelector('.shell') || band;
+      Array.prototype.forEach.call(shell.children, function (el) {
+        nodes.push(el);
+      });
+    });
+    if (!nodes.length) return;
+
+    nodes.forEach(function (el) { el.classList.add('reveal'); });
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        /* Небольшая задержка внутри одного экрана: блоки выезжают друг за другом,
+           а не все сразу — именно это делает движение заметным. */
+        var peers = el.parentNode ? Array.prototype.indexOf.call(el.parentNode.children, el) : 0;
+        el.style.transitionDelay = Math.min(peers * 70, 280) + 'ms';
+        el.classList.add('is-in');
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+
+    nodes.forEach(function (el) {
+      /* Что уже видно на первом экране — показываем сразу, без мигания. */
+      if (el.getBoundingClientRect().top < innerHeight * 0.9) {
+        el.classList.add('is-in');
+      } else {
+        io.observe(el);
+      }
+    });
+  })();
+
+  /* Адрес бэкенда: заявка уходит в БД и в телеграм.
+     Если очистить строку, форма вернётся к письму на hello@verstio.ru. */
+  var LEAD_ENDPOINT = 'https://api.verstio.ru/api/public/lead';
 
   /* Раскрытие участков конвейера */
   document.querySelectorAll('.stage-head').forEach(function(btn){
