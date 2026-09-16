@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: 3fa89a96ac5b56a06ab78db2dc67c7e68095b4a8
+# commit: efcad191570ef2ba8d13c4a9cbdea7853c1acda7
 # built:  2026-09-16 20:41 UTC
 
 ## Состав
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2056 строк)
 app/index.html  (424 строк)
 app/login.html  (382 строк)
-app/project.html  (3641 строк)
+app/project.html  (3659 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (835 строк)
 app/site.html  (809 строк)
@@ -4330,7 +4330,7 @@ form.addEventListener('submit', async (e) => {
     document.documentElement.setAttribute('data-fx', f === 'off' ? 'off' : 'on');
   } catch (e) {}
 </script>
-<link rel="stylesheet" href="style.css?v=45">
+<link rel="stylesheet" href="style.css?v=46">
 </head>
 <body class="is-app">
 
@@ -5404,8 +5404,8 @@ form.addEventListener('submit', async (e) => {
               <div class="view-eyebrow"><i class="dot"></i>После публикации</div>
               <h1>Результаты в поиске</h1>
               <p class="view-sub">
-                Только страницы этого проекта. Домен целиком, запросы и каннибализация —
-                на экране сайта.
+                Что Яндекс сделал со страницами этого проекта: взял в поиск, выкинул
+                с причиной или ещё не дошёл. Домен целиком — на экране сайта.
               </p>
             </div>
             <div class="view-actions">
@@ -5418,21 +5418,21 @@ form.addEventListener('submit', async (e) => {
                 <span data-ico-sm="radar"></span> Открыть сайт целиком
               </a>
               <button class="btn btn-dark btn-lg" id="connectGscBtn">
-                <span data-ico-sm="refresh"></span> Синхронизировать
+                <span data-ico-sm="refresh"></span> Обновить данные
               </button>
             </div>
           </div>
 
           <div id="gscBind"></div>
           <div id="gscWarn"></div>
-          <div class="metrics" id="gscTiles"></div>
+          <div class="kpis" id="gscTiles"></div>
 
           <div class="panel">
             <div class="panel-head">
               <div class="panel-head-body">
                 <div class="panel-title">Страницы проекта</div>
                 <div class="panel-sub" id="gscTableSub">
-                  Клик по строке — карточка с динамикой по дням и запросами
+                  Клик по строке — карточка с вердиктом Яндекса и историей страницы
                 </div>
               </div>
               <div class="panel-tools">
@@ -5451,7 +5451,7 @@ form.addEventListener('submit', async (e) => {
             <div class="panel-foot">
               <span class="muted" id="gscCount">—</span>
               <span class="grow"></span>
-              <span class="muted">Данные Google приходят с задержкой около трёх дней</span>
+              <span class="muted">Яндекс отдаёт статистику с задержкой в пару дней</span>
             </div>
           </div>
 
@@ -5486,7 +5486,7 @@ form.addEventListener('submit', async (e) => {
               <div class="panel-head-body">
                 <div class="panel-title">Сайт</div>
                 <div class="panel-sub">
-                  Домен с подключённой Search Console. Один сайт — несколько проектов-разделов
+                  Домен, подключённый к Яндекс.Вебмастеру. Один сайт — несколько проектов-разделов
                 </div>
               </div>
               <div class="panel-tools" id="siteBindPill"></div>
@@ -5680,7 +5680,7 @@ form.addEventListener('submit', async (e) => {
   </div>
 </div>
 
-<script src="app.js?v=45"></script>
+<script src="app.js?v=46"></script>
 
 <script>
 /* ==========================================================================
@@ -5816,9 +5816,9 @@ function paintProjectHead() {
 /* ======================================================================
    РЕЗУЛЬТАТЫ В ПОИСКЕ — срез проекта
 
-   Данные считает сайт (домен + ресурс Search Console), проект показывает
-   только свою часть. Поэтому здесь нет ни ключа, ни выбора ресурса:
-   и то и другое задаётся один раз на сайте.
+   Данные считает сайт (домен + хост Яндекс.Вебмастера), проект показывает
+   только свою часть. Поэтому здесь нет ни токена, ни выбора хоста:
+   и то и другое задаётся один раз — в настройках и на экране сайта.
    ====================================================================== */
 
 let GSC = { data: null, rows: [], filter: 'all', days: 28, sites: [] };
@@ -5832,14 +5832,14 @@ async function initGsc(force) {
   if (GSC.data && !force) return;
   GSC.days = gscDays();
   $('#gscHead').innerHTML = searchUI.tableHead();
-  $('#gscBody').innerHTML = skeletonRows(8, 5);
+  $('#gscBody').innerHTML = skeletonRows(8, 7);
   let res;
   try {
     res = await api.projectSearch(PID, {
       days: GSC.days, filter: GSC.filter, q: $('#gscFilter').value.trim(), limit: 400,
     });
   } catch (e) {
-    $('#gscBody').innerHTML = emptyRow(8, 'Не удалось загрузить', e.message);
+    $('#gscBody').innerHTML = emptyRow(7, 'Не удалось загрузить', e.message);
     return;
   }
 
@@ -5859,8 +5859,8 @@ async function initGsc(force) {
 /** Проект ещё не привязан к сайту — предлагаем сделать это одной кнопкой. */
 async function renderGscUnbound(res) {
   $('#gscTiles').innerHTML = '';
-  $('#gscBody').innerHTML = emptyRow(8, 'Проект не привязан к сайту',
-    'Сайт — это домен с подключённой Search Console. Он один на несколько проектов.');
+  $('#gscBody').innerHTML = emptyRow(7, 'Проект не привязан к сайту',
+    'Сайт — это домен, подключённый к Яндекс.Вебмастеру. Он один на несколько проектов.');
   try { GSC.sites = await api.listSites() || []; } catch (e) { GSC.sites = []; }
   const domain = (S.project && S.project.domain) || '';
   $('#gscBind').innerHTML =
@@ -5914,7 +5914,7 @@ async function openGscDetail(tr) {
     });
     drawer.setBody(searchUI.detailHtml(data, row));
   } catch (e) {
-    drawer.setBody(`<div class="note bad"><div class="note-body">${escHtml(e.message)}</div></div>`);
+    drawer.setBody(`<div class="alert bad"><span class="alert-text">${escHtml(e.message)}</span></div>`);
   }
 }
 
@@ -5925,43 +5925,60 @@ async function loadGscFeedback() {
   try { res = await api.siteFeedback(GSC.data.site_id, { days: GSC.days, project_id: PID }); }
   catch (e) { $('#gscFb').innerHTML = `<div class="muted">${escHtml(e.message)}</div>`; return; }
 
-  const cards = res.cards || [];
-  $('#gscFb').innerHTML = cards.map(c =>
-    `<div class="fb-card"><h4>${escHtml(c.title)}</h4>` +
-    `<div class="fb-n">${fmtNum(c.count)}</div>` +
-    `<div class="fb-note">${escHtml(c.note)}</div>` +
-    (c.count
-      ? `<button class="btn btn-sm ${c.action === 'exclude_keys' ? 'btn-danger' : 'btn-primary'}" data-fb="${c.id}">` +
-        (c.action === 'exclude_keys' ? 'Отсеять ключи' : 'Отправить в регенерацию') + `</button>`
-      : '<span class="muted">Нечего делать</span>') + `</div>`).join('');
+  const LBL = { regenerate: 'Переписать заново', exclude_keys: 'Отсеять ключи',
+                recrawl: 'Отправить на переобход' };
+  const cards = (res.cards || []).filter(c => c.count > 0);
+  $('#gscFb').innerHTML = cards.length
+    ? cards.map(c =>
+        `<div class="fb-card is-${c.tone || 'neutral'}"><h4>${escHtml(c.title)}</h4>` +
+        `<div class="fb-n">${fmtNum(c.count)}</div>` +
+        `<div class="fb-note">${escHtml(c.note)}</div>` +
+        `<div class="fb-acts"><button class="btn btn-sm ` +
+        `${c.action === 'exclude_keys' ? 'btn-danger' : 'btn-primary'}" data-fb="${c.id}">` +
+        `${escHtml(LBL[c.action] || 'Применить')}</button></div></div>`).join('')
+    : `<div class="empty span-all"><div class="empty-title">Делать нечего</div>` +
+      `<div class="empty-text">Ни одна страница проекта не попала в проблемные списки.</div></div>`;
 
   const w = res.weights_hint || {};
   $('#gscFbHint').innerHTML =
-    `<div class="note info"><span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
-    `Балл качества: в индексе <b>${w.score_indexed == null ? '—' : w.score_indexed}</b>, ` +
-    `без показов <b>${w.score_silent == null ? '—' : w.score_silent}</b>. ` +
-    `Если разрыва нет, дело не в тексте, а в структуре сайта и ссылках.` +
-    `</div></div>`;
+    `<div class="alert info"><span class="alert-ico">${ico('info', 15)}</span><span class="alert-text">` +
+    `Средний балл: у страниц в поиске <b>${w.score_ok == null ? '—' : w.score_ok}</b>, ` +
+    `у исключённых <b>${w.score_bad == null ? '—' : w.score_bad}</b>. ` +
+    (w.score_gap == null
+      ? 'Сравнивать пока не с чем.'
+      : (Math.abs(w.score_gap) >= 5
+          ? `Разрыв ${w.score_gap} — балл что-то ловит.`
+          : `Разрыв всего ${w.score_gap} — дело не в тексте, а в структуре сайта и ссылках.`)) +
+    `</span></div>`;
 
   $$('#gscFb [data-fb]').forEach(b => b.onclick = async () => {
     const card = cards.find(c => c.id === b.dataset.fb);
-    const isKeys = card.action === 'exclude_keys';
+    const act = card.action;
+    const isKeys = act === 'exclude_keys';
     const ok = await confirmDialog({
-      title: isKeys ? 'Отсеять ключи этих страниц?' : 'Отправить страницы в регенерацию?',
+      title: isKeys ? 'Отсеять ключи этих страниц?'
+           : act === 'recrawl' ? 'Отправить страницы роботу?'
+           : 'Переписать страницы заново?',
       text: isKeys
         ? card.count + ' ключей больше не попадут в новые запуски генерации.'
-        : card.count + ' страниц будут переписаны заново: это время и деньги на модели.',
-      confirm: isKeys ? 'Отсеять' : 'Регенерировать', danger: isKeys,
+        : act === 'recrawl'
+          ? card.count + ' адресов уйдут в очередь переобхода Яндекса.'
+          : card.count + ' страниц будут переписаны заново: это время и деньги на модели.',
+      confirm: isKeys ? 'Отсеять' : act === 'recrawl' ? 'Отправить' : 'Переписать',
+      danger: isKeys,
     });
     if (!ok) return;
     await withBusy(b, async () => {
       try {
-        const payload = isKeys
-          ? { exclude_keys: card.rows.map(r => r.key_item_id).filter(Boolean) }
-          : { regenerate: card.rows.map(r => r.page_id).filter(Boolean) };
+        const payload =
+          isKeys              ? { exclude_keys: card.rows.map(r => r.key_item_id).filter(Boolean) }
+        : act === 'recrawl'   ? { recrawl: card.rows.map(r => r.page_id).filter(Boolean) }
+        :                       { regenerate: card.rows.map(r => r.page_id).filter(Boolean) };
         const r = await api.applyFeedback(GSC.data.site_id, payload);
-        toast.ok(isKeys ? 'Ключи отсеяны' : 'Поставлено в очередь',
-          isKeys ? 'Исключено: ' + r.excluded_keys : 'Задач: ' + r.queued);
+        toast.ok('Готово',
+          isKeys            ? 'Исключено ключей: ' + r.excluded_keys
+          : act === 'recrawl' ? 'Отправлено: ' + r.recrawled
+          :                     'Задач в очереди: ' + r.queued);
         loadGscFeedback();
       } catch (e) { toast.err('Не получилось', e); }
     });
@@ -5975,9 +5992,10 @@ async function runGscSync(btn) {
       const r = await api.siteSync(GSC.data.site_id, 90);
       const s = r.summary || {};
       toast.ok('Данные сняты',
-        `Адресов от Google: ${fmtNum(s.rows_from_google || 0)} · совпало: ${fmtNum(s.matched_urls || 0)}`);
+        `В поиске: ${fmtNum(s.in_search || 0)} · исключено: ${fmtNum(s.excluded || 0)} · ` +
+        `совпало с нашими: ${fmtNum(s.matched_urls || 0)}`);
       initGsc(true);
-    } catch (e) { toast.err('Синхронизация не прошла', e); }
+    } catch (e) { toast.err('Не получилось снять данные', e); }
   });
 }
 
