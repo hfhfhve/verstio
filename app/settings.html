@@ -414,6 +414,7 @@ async function load() {
 
   const gk = val('gsc_service_account');
   $('#gscKey').value = typeof gk === 'string' ? gk : (gk ? JSON.stringify(gk, null, 2) : '');
+  gscSaved = ($('#gscKey').value || '').trim();
   paintGscPill();
 
   renderRaw();
@@ -703,13 +704,19 @@ async function addEp(btn) {
   });
 }
 
-/** Плашка «ключ задан / ключа нет» в шапке панели Search Console. */
+/* Что реально лежит на сервере: пока ключ не сохранён, проекты его не видят. */
+let gscSaved = '';
+
+/** Плашка в шапке панели Search Console: нет / не сохранён / сохранён. */
 function paintGscPill() {
   const box = $('#gscKeyPill');
   if (!box) return;
-  box.innerHTML = ($('#gscKey').value || '').trim()
-    ? '<span class="pill ok"><i class="dot"></i>ключ задан</span>'
-    : '<span class="pill neutral"><i class="dot"></i>ключа нет</span>';
+  const now = ($('#gscKey').value || '').trim();
+  box.innerHTML = !now
+    ? '<span class="pill neutral"><i class="dot"></i>ключа нет</span>'
+    : (now === gscSaved
+        ? '<span class="pill ok"><i class="dot"></i>ключ сохранён</span>'
+        : '<span class="pill warn"><i class="dot"></i>не сохранён</span>');
 }
 
 /** Проверка ключа: Google говорит, кто мы и к каким ресурсам есть доступ. */
@@ -727,7 +734,15 @@ async function checkGsc(btn) {
           ? 'Доступные ресурсы: ' + sites.map(x => escHtml(x.site_url)).join(', ')
           : 'Ресурсов нет: добавьте этот e-mail в Search Console как пользователя ресурса.') +
         `</div></div>`;
-      toast.ok('Ключ рабочий', sites.length ? ('Ресурсов: ' + sites.length) : 'Добавьте аккаунт в Search Console');
+      // Проверка шла по тексту из поля. Если его ещё не сохранили,
+      // сервер ключа не знает и проекты отвечают 400 — сохраняем сразу.
+      if (key && key !== gscSaved) {
+        await api.updateSettings({ gsc_service_account: { value: key } });
+        gscSaved = key;
+        paintGscPill();
+      }
+      toast.ok('Ключ рабочий и сохранён',
+        sites.length ? ('Ресурсов: ' + sites.length) : 'Добавьте аккаунт в Search Console как пользователя ресурса');
     } catch (e) {
       $('#gscTestResult').innerHTML =
         `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
