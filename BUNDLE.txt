@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: a0745939f78c264b3fd1538b8dd840536e7eb3bc
+# commit: 0c633278176aacea34d869a8dda3af7342a09e5a
 # built:  2026-09-16 16:29 UTC
 
 ## Состав
@@ -14,7 +14,7 @@ app/index.html  (329 строк)
 app/login.html  (382 строк)
 app/project.html  (3563 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (783 строк)
+app/settings.html  (785 строк)
 app/style.css  (3115 строк)
 
 ════════════════════════════════════════════════════════
@@ -7491,7 +7491,6 @@ Disallow: /
   app/settings.html
 ════════════════════════════════════════════════════════
 
-
 <!doctype html>
 <html lang="ru" data-theme="light">
 <head>
@@ -7722,6 +7721,7 @@ Disallow: /
               </div>
               <div class="up-row">
                 <button class="btn" id="gscTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить ключ</button>
+                <button class="btn" id="gscGuideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
                 <span class="muted" id="gscEmail"></span>
               </div>
               <div id="gscTestResult"></div>
@@ -8251,6 +8251,7 @@ $('#modelsReload').onclick = () => loadModels();
 $('#epTestBtn').onclick = e => testEp(e.currentTarget);
 $('#epAddBtn').onclick = e => addEp(e.currentTarget);
 $('#gscTestBtn').onclick = e => checkGsc(e.currentTarget);
+$('#gscGuideBtn').onclick = () => openGscGuide();
 $('#gscKey').oninput = () => paintGscPill();
 $('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
 $('#copyRawBtn').onclick = () => copyText(JSON.stringify(SET, null, 2), 'JSON настроек');
