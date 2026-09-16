@@ -107,7 +107,7 @@ h3{font-family:var(--sans);font-weight:600;font-size:19px;line-height:1.35}
 .card-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line-d);display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;color:var(--dim-d)}
 .ok{color:var(--green)}
 
-/* ── общие сетки ───────────────────────────────────── */
+/* ── общие сетки ─────────────────────────────���─────── */
 .cols{display:grid;gap:clamp(18px,2.4vw,28px)}
 .cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -185,6 +185,11 @@ h3{font-family:var(--sans);font-weight:600;font-size:19px;line-height:1.35}
 .form .btn{width:100%;justify-content:center;padding:16px;font-size:17px}
 .form-note{font-size:13.5px;color:var(--dim-d);margin:14px 0 0;line-height:1.55}
 .form-note a{color:#E7E3DB}
+.consent{display:flex;gap:10px;align-items:flex-start;margin:16px 0 0;font-size:13.5px;color:var(--dim-d);line-height:1.55;cursor:pointer}
+.consent input{width:17px;height:17px;margin:2px 0 0;flex:none;accent-color:#E7E3DB;cursor:pointer}
+.consent a{color:#E7E3DB}
+.consent-err{display:none;color:var(--red);font-size:13.5px;margin:8px 0 0}
+.consent-err.show{display:block}
 .done{display:none;text-align:left}
 .form.sent .form-inner{display:none}
 .form.sent .done{display:block}
@@ -303,7 +308,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="cols cols-3">
       <div class="panel">
         <h3>Откуда берётся трафик</h3>
-        <p style="color:var(--dim-d);font-size:15.5px;margin:12px 0 0">Люди ищут не «купить тур», а «Кемер в сентябре с детьми первая линия». Таких запросов тысячи: по каждому людей мало, вместе — основной объём поиска. Конкуренция там почти нулевая: никто не пишет статью под запрос, который задают двадцать раз в месяц.</p>
+        <p style="color:var(--dim-d);font-size:15.5px;margin:12px 0 0">Люди ищут не «купить тур», а «Кемер в сентябре с детьми первая линия». Таких запросов тысячи: по каждому людей мало, вместе — основной объём поиска. Конкуренция там почти нулевая: никто не пишет статью под запрос, который задают двадцать раз в ��есяц.</p>
       </div>
       <div class="panel">
         <h3>Почему нужны сотни страниц</h3>
@@ -435,7 +440,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
         <li>Выбираем тип страниц под задачу: услуга в городе, сравнение, срез каталога, справочник.</li>
         <li>Проектируем страницу целиком: заголовки, блоки, таблицы, хлебные крошки, перелинковку, форму заявки и техническую разметку для поисковиков.</li>
         <li>Оформление подбирается из готовых тем — стиль можно сменить позже, без переписывания текстов.</li>
-        <li>Реквизиты, контакты и блоки доверия берём только от вас — ничего такого мы не выдумываем.</li>
+        <li>Реквизиты, контакты и блоки доверия берём только от вас — ничего таког�� мы не выдумываем.</li>
       </ul>
     </div>
   </div>
@@ -531,7 +536,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div class="cols cols-2" style="gap:24px;align-items:start">
         <div>
           <h3 style="color:#16191D">Чего здесь нет намеренно</h3>
-          <p style="margin:12px 0 0;color:var(--dim-l);font-size:15.5px">Тошноты, водности и индексов читаемости. Это метрики копирайтерских бирж, а не поисковой системы: Google прямо говорит, что не использует ни плотность слов, ни формулы читаемости. Мы проверяем то, что влияет на результат.</p>
+          <p style="margin:12px 0 0;color:var(--dim-l);font-size:15.5px">Тошноты, водности и индексов читаемости. Это метрики копирайтерских бирж, а не поисковой системы: Google прямо г��ворит, что не использует ни плотность слов, ни формулы читаемости. Мы проверяем то, что влияет на результат.</p>
         </div>
         <div>
           <h3 style="color:#16191D">Что видите вы</h3>
@@ -665,8 +670,8 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="cols cols-2" style="align-items:start">
       <div class="panel">
         <p class="kicker" style="margin-bottom:10px">Шаг 1 · бесплатно</p>
-        <h3>Разбор проекта</h3>
-        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Смотрим данные и сайт, называем честный потолок страниц и стоимость. Если проект не имеет смысла — скажем об этом и не возьмём денег.</p>
+        <h3>��азбор проекта</h3>
+        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Смотрим данные и сайт, называем честный потолок страниц и стоимость. Если проект не имеет смысл�� — скажем об этом и не возьмём денег.</p>
       </div>
       <div class="panel">
         <p class="kicker" style="margin-bottom:10px">Шаг 2 · пилот</p>
@@ -755,7 +760,12 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
           <textarea name="comment" placeholder="Сроки, конкуренты, прошлый опыт с SEO"></textarea>
         </label>
         <button class="btn" type="submit">Отправить заявку</button>
-        <p class="form-note">Нажимая кнопку, вы соглашаетесь на обработку указанных данных для ответа на заявку. Не любите формы — напишите на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a> или в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>.</p>
+        <label class="consent" for="leadConsent">
+          <input type="checkbox" id="leadConsent" data-consent>
+          <span>Я согласен(на) с <a href="/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="/offer.html" target="_blank" rel="noopener">договором-офертой</a> и разрешаю обработку указанных данных для ответа на заявку.</span>
+        </label>
+        <p class="consent-err" data-consent-err>Отметьте согласие, чтобы отправить заявку</p>
+        <p class="form-note">Не любите формы — напишите на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a> или в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>.</p>
       </div>
 
       <div class="done" role="status">
@@ -789,15 +799,15 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       </details>
       <details>
         <summary>Сколько идёт работа?</summary>
-        <p>Около двух недель на обычный проект — вместе с разбором данных, согласованием образца страницы, сборкой и проверками. Срок растёт, если данные нужно собирать с нуля. Показы в поиске появляются позже: индексирование зависит от Google, а не от нас.</p>
+        <p>Около двух недель на обычный проект — вместе с разбором данных, согласованием образца страницы, сборкой и проверка��и. Срок растёт, если данные нужно собирать с нуля. Показы в поиске появляются позже: индексирование зависит от Google, а не от нас.</p>
       </details>
       <details>
         <summary>Сколько страниц можно сделать?</summary>
         <p>Столько, сколько выдерживают данные. Потолок считается арифметически: строки без фактов и дубликаты отбрасываются до генерации. Если таблица даёт 300 осмысленных страниц, мы не будем продавать 2000.</p>
       </details>
       <details>
-        <summary>Почему нельзя просто попросить ИИ написать тысячу текстов?</summary>
-        <p>Можно, и результат будет ровно таким: модель не знает ваших цен и характеристик, поэтому напишет обобщённый текст с выдуманными фактами и одинаковой структурой. У нас модель заполняет строго заданные поля значениями из вашей таблицы, а всё, что не прошло девять блокеров и не набрало балл, не публикуется.</p>
+        <summary>Почему нельзя просто попросить ИИ написать тыс��чу текстов?</summary>
+        <p>Можно, и результат будет ровно таким: модель не знает ваших цен и характеристик, поэтому напишет обобщённый текст с выдуманными фактами и одинаковой структурой. У нас модель заполняет строго заданные поля значениями из вашей таблицы, а всё, что не пр��шло девять блокеров и не набрало балл, не публикуется.</p>
       </details>
       <details>
         <summary>Чем занимаетесь вы, если генерирует система?</summary>
@@ -805,7 +815,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       </details>
       <details>
         <summary>Как вы отчитываетесь?</summary>
-        <p>Таблицей по каждой странице: балл, оценка, значения измерений, блокеры. После публикации добавляются показы, клики, CTR и средняя позиция из Search Console с делением на живые и мёртвые адреса.</p>
+        <p>Таблицей по каждой странице: балл, оценка, значения измерений, блокеры. После публикации добавляются показы, клики, CTR и средняя позиция из Search Console с делением на живые и м��ртвые адреса.</p>
       </details>
     </div>
   </div>
@@ -820,6 +830,8 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
       <a href="mailto:support@verstio.ru">support@verstio.ru</a>
       <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>
+      <a href="/privacy.html">Политика конфиденциальности</a>
+      <a href="/offer.html">Договор-оферта</a>
     </div>
   </div>
 </footer>
@@ -830,8 +842,8 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 
   /* Куда отправлять заявки. Пока пусто — форма откроет письмо на hello@verstio.ru. */
   /* Плавное появление блоков при скролле.
-     Классы навешиваем из JS, чтобы не засорять разметку и чтобы без JS
-     страница осталась полностью видимой. */
+     Классы наве��иваем из JS, чтобы не засорять разметку и чтобы без JS
+     ст��аница осталась полностью видимой. */
   (function () {
     var slow = matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (slow || !('IntersectionObserver' in window)) return;
@@ -916,8 +928,27 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       if (!good && ok) { input.focus(); }
       ok = ok && good;
     });
+
+    var consent = form.querySelector('[data-consent]');
+    var consentErr = form.querySelector('[data-consent-err]');
+    if (consent) {
+      var agreed = consent.checked;
+      if (consentErr) { consentErr.classList.toggle('show', !agreed); }
+      if (!agreed && ok) { consent.focus(); }
+      ok = ok && agreed;
+    }
     return ok;
   }
+
+  (function(){
+    var consent = form.querySelector('[data-consent]');
+    var consentErr = form.querySelector('[data-consent-err]');
+    if (consent && consentErr) {
+      consent.addEventListener('change', function(){
+        if (consent.checked) { consentErr.classList.remove('show'); }
+      });
+    }
+  })();
 
   form.querySelectorAll('input').forEach(function(i){
     i.addEventListener('input', function(){
