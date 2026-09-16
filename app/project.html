@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru" data-theme="light">
 <head>
@@ -1141,6 +1140,7 @@
                 </select>
                 <button class="btn" id="gscLoadSites"><span data-ico-sm="radar"></span> Загрузить ресурсы</button>
                 <button class="btn btn-primary" id="gscSaveSite">Сохранить ресурс</button>
+                <button class="btn" id="gscGuideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
               </div>
               <div class="field-hint mt-2">
                 Ресурс — это сайт в Search Console: <b>sc-domain:example.com</b> для домена
@@ -1739,6 +1739,10 @@ function bindStatic() {
 
   $('#mediaScope').onchange = syncMediaTarget;
   $('#mediaUploadBtn').onclick = e => uploadMediaFiles(e.currentTarget);
+  $('#mediaFiles').onchange = e => {
+    const { bad } = pickImages(Array.from(e.currentTarget.files || []));
+    if (bad.length) { e.currentTarget.value = ''; toast.warn('Только JPEG, PNG, WebP или GIF', bad.join('\n')); }
+  };
   $('#mediaUrlBtn').onclick = e => importMediaUrl(e.currentTarget);
 
   $('#addKeysBtn').onclick = e => addKeys(e.currentTarget);
@@ -1853,6 +1857,7 @@ function bindStatic() {
   $('#connectGscBtn').onclick = e => runGscSync(e.currentTarget);
   $('#gscLoadSites').onclick = e => loadGscSites(e.currentTarget);
   $('#gscSaveSite').onclick = e => saveGscSite(e.currentTarget);
+  $('#gscGuideBtn').onclick = () => openGscGuide();
   $$('#gscDays button').forEach(b => b.onclick = () => {
     $$('#gscDays button').forEach(x => x.classList.toggle('is-on', x === b));
   });
@@ -2031,9 +2036,29 @@ function renderMedia() {
   });
 }
 
+/* Пропускаем только картинки: браузерный accept можно обойти,
+   выбрав «Все файлы», поэтому проверяем тип и расширение сами. */
+const MEDIA_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MEDIA_EXT = /\.(jpe?g|png|webp|gif)$/i;
+const MEDIA_MAX_MB = 15;
+
+function pickImages(files) {
+  const ok = [], bad = [];
+  files.forEach(f => {
+    const typeOk = f.type ? MEDIA_MIME.includes(f.type) : MEDIA_EXT.test(f.name);
+    if (!typeOk || !MEDIA_EXT.test(f.name)) bad.push(f.name + ' — не изображение');
+    else if (f.size > MEDIA_MAX_MB * 1024 * 1024) bad.push(f.name + ' — больше ' + MEDIA_MAX_MB + ' МБ');
+    else ok.push(f);
+  });
+  return { ok, bad };
+}
+
 async function uploadMediaFiles(btn) {
-  const files = Array.from($('#mediaFiles').files || []);
-  if (!files.length) { toast.warn('Выберите файл'); return; }
+  const chosen = Array.from($('#mediaFiles').files || []);
+  if (!chosen.length) { toast.warn('Выберите файл'); return; }
+  const { ok: files, bad } = pickImages(chosen);
+  if (bad.length) toast.warn('Пропущены файлы', bad.join('\n'));
+  if (!files.length) { $('#mediaFiles').value = ''; return; }
   await withBusy(btn, async () => {
     try {
       const meta = mediaPayload();
@@ -3534,3 +3559,4 @@ boot();
 
 </body>
 </html>
+
