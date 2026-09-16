@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ru" data-theme="light">
 <head>
@@ -229,6 +228,7 @@
               </div>
               <div class="up-row">
                 <button class="btn" id="gscTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить ключ</button>
+                <button class="btn" id="gscGuideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
                 <span class="muted" id="gscEmail"></span>
               </div>
               <div id="gscTestResult"></div>
@@ -758,6 +758,7 @@ $('#modelsReload').onclick = () => loadModels();
 $('#epTestBtn').onclick = e => testEp(e.currentTarget);
 $('#epAddBtn').onclick = e => addEp(e.currentTarget);
 $('#gscTestBtn').onclick = e => checkGsc(e.currentTarget);
+$('#gscGuideBtn').onclick = () => openGscGuide();
 $('#gscKey').oninput = () => paintGscPill();
 $('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
 $('#copyRawBtn').onclick = () => copyText(JSON.stringify(SET, null, 2), 'JSON настроек');
@@ -780,3 +781,4 @@ load();
 
 </body>
 </html>
+
