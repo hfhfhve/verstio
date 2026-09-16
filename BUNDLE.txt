@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: cd18f25cf64a4fb6b6cf7f7e3c32767e8108e8b8
+# commit: 49e0820ada5e5e436761c2c670212752ce5aed81
 # built:  2026-09-16 18:12 UTC
 
 ## Состав
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (1972 строк)
 app/index.html  (329 строк)
 app/login.html  (382 строк)
-app/project.html  (3563 строк)
+app/project.html  (3622 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (800 строк)
 app/site.html  (592 строк)
@@ -4152,7 +4152,7 @@ form.addEventListener('submit', async (e) => {
     document.documentElement.setAttribute('data-fx', f === 'off' ? 'off' : 'on');
   } catch (e) {}
 </script>
-<link rel="stylesheet" href="style.css?v=42">
+<link rel="stylesheet" href="style.css?v=44">
 </head>
 <body class="is-app">
 
@@ -5216,7 +5216,7 @@ form.addEventListener('submit', async (e) => {
         </section>
 
         <!-- ══════════════════════════════════════════════════════════
-             ЭКРАН 9 — ОБРАТНАЯ СВЯЗЬ (БЛОК 8) — ЗАГЛУШКА
+             ЭКРАН 9 — РЕЗУЛЬТАТЫ В ПОИСКЕ (срез проекта внутри сайта)
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-feedback">
           <div class="view-head">
@@ -5224,7 +5224,8 @@ form.addEventListener('submit', async (e) => {
               <div class="view-eyebrow"><i class="dot"></i>После публикации</div>
               <h1>Результаты в поиске</h1>
               <p class="view-sub">
-                Данные Search Console: показы, клики, позиции и страницы без трафика.
+                Только страницы этого проекта. Домен целиком, запросы и каннибализация —
+                на экране сайта.
               </p>
             </div>
             <div class="view-actions">
@@ -5233,115 +5234,57 @@ form.addEventListener('submit', async (e) => {
                 <button data-days="28" class="is-on">28 дней</button>
                 <button data-days="90">90 дней</button>
               </div>
+              <a class="btn" id="openSiteBtn" href="#" hidden>
+                <span data-ico-sm="radar"></span> Открыть сайт целиком
+              </a>
               <button class="btn btn-dark btn-lg" id="connectGscBtn">
                 <span data-ico-sm="refresh"></span> Синхронизировать
               </button>
             </div>
           </div>
 
-          <div class="metrics">
-            <div class="metric">
-              <div class="metric-k">Показы</div>
-              <div class="metric-v ph" id="gscImpr">—</div>
-              <div class="metric-note" id="gscPeriod">ещё не синхронизировано</div>
-            </div>
-            <div class="metric">
-              <div class="metric-k">Клики</div>
-              <div class="metric-v ph" id="gscClicks">—</div>
-              <div class="metric-note">переходы из поиска</div>
-            </div>
-            <div class="metric">
-              <div class="metric-k">Средняя позиция</div>
-              <div class="metric-v ph" id="gscPos">—</div>
-              <div class="metric-note">взвешено по показам</div>
-            </div>
-            <div class="metric">
-              <div class="metric-k">Живые страницы</div>
-              <div class="metric-v ph" id="gscAlive">—</div>
-              <div class="metric-note" id="gscDead">хотя бы один показ за период</div>
-            </div>
-          </div>
-
-          <div class="panel" id="gscSetup">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Подключение</div>
-                <div class="panel-sub">Ключ задаётся один раз в настройках, ресурс — здесь</div>
-              </div>
-            </div>
-            <div class="panel-body">
-              <div id="gscKeyNote"></div>
-              <div class="up-row mt-3">
-                <select class="select input-sm" id="gscSite">
-                  <option value="">— ресурс не выбран —</option>
-                </select>
-                <button class="btn" id="gscLoadSites"><span data-ico-sm="radar"></span> Загрузить ресурсы</button>
-                <button class="btn btn-primary" id="gscSaveSite">Сохранить ресурс</button>
-                <button class="btn" id="gscGuideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
-              </div>
-              <div class="field-hint mt-2">
-                Ресурс — это сайт в Search Console: <b>sc-domain:example.com</b> для домена
-                или <b>https://example.com/</b> для префикса. Страницы сопоставляются по домену проекта из «Правил».
-              </div>
-              <div id="gscState" class="mt-3"></div>
-            </div>
-          </div>
+          <div id="gscBind"></div>
+          <div id="gscWarn"></div>
+          <div class="metrics" id="gscTiles"></div>
 
           <div class="panel">
             <div class="panel-head">
               <div class="panel-head-body">
-                <div class="panel-title">Страницы в поиске</div>
-                <div class="panel-sub">Клики, показы и позиция по каждому URL проекта</div>
+                <div class="panel-title">Страницы проекта</div>
+                <div class="panel-sub" id="gscTableSub">
+                  Клик по строке — карточка с динамикой по дням и запросами
+                </div>
               </div>
+              <div class="panel-tools">
+                <input class="input input-sm" id="gscFilter" placeholder="Путь или ключ…" autocomplete="off">
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="chipbar" id="gscChips"></div>
             </div>
             <div class="tbl-scroll">
               <table class="tbl">
-                <thead><tr>
-                  <th>Страница</th>
-                  <th style="width:110px;">Клики</th>
-                  <th style="width:110px;">Показы</th>
-                  <th style="width:120px;">Позиция</th>
-                </tr></thead>
+                <thead id="gscHead"></thead>
                 <tbody id="gscBody"></tbody>
               </table>
+            </div>
+            <div class="panel-foot">
+              <span class="muted" id="gscCount">—</span>
+              <span class="grow"></span>
+              <span class="muted">Данные Google приходят с задержкой около трёх дней</span>
             </div>
           </div>
 
           <div class="panel">
             <div class="panel-head">
               <div class="panel-head-body">
-                <div class="panel-title">Как обратная связь меняет систему</div>
-                <div class="panel-sub">Именно это отличает контур от одноразовой генерации</div>
+                <div class="panel-title">Что делать с этими страницами</div>
+                <div class="panel-sub">Списки с действием, а не просто графики</div>
               </div>
             </div>
             <div class="panel-body">
-              <div class="flow">
-                <div class="flow-node">
-                  <div class="flow-n">Search Console</div>
-                  <div class="flow-t">индекс, показы, позиции по каждому URL</div>
-                </div>
-                <span class="flow-arrow" data-ico="chevron"></span>
-                <div class="flow-node">
-                  <div class="flow-n">Блок 5.4</div>
-                  <div class="flow-t">веса измерений сдвигаются в сторону того, что реально индексируется</div>
-                </div>
-                <span class="flow-arrow" data-ico="chevron"></span>
-                <div class="flow-node">
-                  <div class="flow-n">Блок 1</div>
-                  <div class="flow-t">правила отсева ключей становятся точнее с каждым проектом</div>
-                </div>
-              </div>
-
-              <div class="note info mt-3">
-                <span class="note-ico" data-ico="info"></span>
-                <div class="note-body">
-                  <b>Порядок подключения.</b>
-                  1. Настройки ��� Search Console: вставьте JSON сервисного аккаунта Google.
-                  2. В самой Search Console добавьте e-mail этого аккаунта в пользователи ресурса.
-                  3. Здесь выберите ресурс и нажмите «Синхронизировать».
-                  Автоматического сбора по расписанию пока нет — снимается по кнопке.
-                </div>
-              </div>
+              <div class="fb-grid" id="gscFb"></div>
+              <div id="gscFbHint" class="mt-3"></div>
             </div>
           </div>
         </section>
@@ -5355,6 +5298,32 @@ form.addEventListener('submit', async (e) => {
               <div class="view-eyebrow"><i class="dot"></i>Настройки</div>
               <h1>Настройки проекта</h1>
               <p class="view-sub">Эти параметры действуют только в текущем проекте.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Сайт</div>
+                <div class="panel-sub">
+                  Домен с подключённой Search Console. Один сайт — несколько проектов-разделов
+                </div>
+              </div>
+              <div class="panel-tools" id="siteBindPill"></div>
+            </div>
+            <div class="panel-body">
+              <div class="up-row">
+                <select class="select input-sm" id="prjSiteSel" style="min-width:260px">
+                  <option value="">— без сайта —</option>
+                </select>
+                <button class="btn btn-primary" id="prjSiteSave">Сохранить</button>
+                <button class="btn" id="prjSiteNew">Создать сайт по домену проекта</button>
+                <a class="btn" id="prjSiteOpen" href="#" hidden><span data-ico-sm="radar"></span> Открыть сайт</a>
+              </div>
+              <div class="field-hint mt-2">
+                Пока проект не привязан, экран «Результаты в поиске» пуст: метрики снимаются
+                на уровне домена, а не отдельного проекта.
+              </div>
             </div>
           </div>
 
@@ -5531,7 +5500,7 @@ form.addEventListener('submit', async (e) => {
   </div>
 </div>
 
-<script src="app.js?v=42"></script>
+<script src="app.js?v=44"></script>
 
 <script>
 /* ==========================================================================
@@ -5663,118 +5632,204 @@ function paintProjectHead() {
    SEARCH CONSOLE (блок 8)
    ====================================================================== */
 
-async function initGsc(force) {
-  if (S.gsc && !force) { renderGsc(); return; }
-  try { S.gsc = await api.getGsc(PID); }
-  catch (e) { toast.err('Search Console не загрузился', e); return; }
-  renderGsc();
-}
+/* ======================================================================
+   РЕЗУЛЬТАТЫ В ПОИСКЕ — срез проекта
+
+   Данные считает сайт (домен + ресурс Search Console), проект показывает
+   только свою часть. Поэтому здесь нет ни ключа, ни выбора ресурса:
+   и то и другое задаётся один раз на сайте.
+   ====================================================================== */
+
+let GSC = { data: null, rows: [], filter: 'all', days: 28, sites: [] };
 
 function gscDays() {
   const on = $('#gscDays .is-on');
   return on ? (Number(on.dataset.days) || 28) : 28;
 }
 
-function renderGsc() {
-  const g = S.gsc || {};
-  const sum = g.summary || {};
-
-  const note = $('#gscKeyNote');
-  if (note) {
-    note.innerHTML = g.key_ready
-      ? `<div class="note ok"><span class="note-ico" data-ico="ok"></span><div class="note-body">` +
-        `<b>Ключ на месте.</b> Сервисный аккаунт задан в настройках.</div></div>`
-      : `<div class="note warn"><span class="note-ico" data-ico="alert"></span><div class="note-body">` +
-        `<b>Ключа нет.</b> Откройте <a href="settings.html#s-gsc">Настройки → Search Console</a> ` +
-        `и вставьте JSON сервисного аккаунта.</div></div>`;
-    hydrateIcons(note);
+async function initGsc(force) {
+  if (GSC.data && !force) return;
+  GSC.days = gscDays();
+  $('#gscHead').innerHTML = searchUI.tableHead();
+  $('#gscBody').innerHTML = skeletonRows(8, 5);
+  let res;
+  try {
+    res = await api.projectSearch(PID, {
+      days: GSC.days, filter: GSC.filter, q: $('#gscFilter').value.trim(), limit: 400,
+    });
+  } catch (e) {
+    $('#gscBody').innerHTML = emptyRow(8, 'Не удалось загрузить', e.message);
+    return;
   }
 
-  const sel = $('#gscSite');
-  if (sel && g.site_url) {
-    const has = Array.from(sel.options).some(o => o.value === g.site_url);
-    if (!has) sel.insertAdjacentHTML('beforeend',
-      `<option value="${escAttr(g.site_url)}">${escHtml(g.site_url)}</option>`);
-    sel.value = g.site_url;
-  }
+  if (!res.bound) { renderGscUnbound(res); return; }
 
-  const set = (id, v) => {
-    const el = $(id);
-    if (!el) return;
-    el.classList.toggle('ph', v == null);
-    el.textContent = v == null ? '—' : v;
-  };
-  set('#gscImpr',   sum.impressions == null ? null : fmtNum(sum.impressions));
-  set('#gscClicks', sum.clicks == null ? null : fmtNum(sum.clicks));
-  set('#gscPos',    sum.position == null ? null : String(sum.position));
-  set('#gscAlive',  sum.pages_alive == null ? null : sum.pages_alive + ' из ' + (sum.pages_total || 0));
-
-  if ($('#gscPeriod')) $('#gscPeriod').textContent = sum.period || 'ещё не синхронизировано';
-  if ($('#gscDead')) $('#gscDead').textContent = sum.pages_dead
-    ? 'без показов: ' + fmtNum(sum.pages_dead)
-    : 'хотя бы один показ за период';
-
-  const st = $('#gscState');
-  if (st) {
-    const bits = [];
-    if (g.site_url) bits.push('Ресурс: <b>' + escHtml(g.site_url) + '</b>');
-    if (!g.domain) bits.push('<span class="bad">у проекта не задан домен — URL не с чем сопоставлять</span>');
-    if (sum.synced_at) bits.push('Снято: ' + escHtml(String(sum.synced_at).replace('T', ' ').slice(0, 16)));
-    if (sum.rows_from_google != null) bits.push('строк от Google: ' + fmtNum(sum.rows_from_google) +
-      ', совпало страниц: ' + fmtNum(sum.pages_matched || 0));
-    st.innerHTML = bits.length ? '<div class="muted">' + bits.join(' · ') + '</div>' : '';
-  }
-
-  const body = $('#gscBody');
-  const rows = g.pages || [];
-  if (body) {
-    body.innerHTML = rows.length
-      ? rows.map(r =>
-          `<tr><td>${escHtml(r.slug || '')}</td>` +
-          `<td>${fmtNum(r.clicks || 0)}</td>` +
-          `<td>${fmtNum(r.impressions || 0)}</td>` +
-          `<td>${r.position == null ? '—' : r.position}</td></tr>`).join('')
-      : `<tr><td colspan="4" class="muted">Данных пока нет. Выберите ресурс и нажмите «Синхронизировать».</td></tr>`;
-  }
+  GSC.data = res;
+  GSC.rows = (res.table || {}).rows || [];
+  $('#gscBind').innerHTML = '';
+  $('#openSiteBtn').hidden = false;
+  $('#openSiteBtn').href = 'site.html?id=' + res.site_id;
+  $('#gscWarn').innerHTML = searchUI.warnings(res.warnings);
+  $('#gscTiles').innerHTML = searchUI.tiles(res);
+  renderGscTable();
+  loadGscFeedback();
 }
 
-async function loadGscSites(btn) {
+/** Проект ещё не привязан к сайту — предлагаем сделать это одной кнопкой. */
+async function renderGscUnbound(res) {
+  $('#gscTiles').innerHTML = '';
+  $('#gscBody').innerHTML = emptyRow(8, 'Проект не привязан к сайту',
+    'Сайт — это домен с подключённой Search Console. Он один на несколько проектов.');
+  try { GSC.sites = await api.listSites() || []; } catch (e) { GSC.sites = []; }
+  const domain = (S.project && S.project.domain) || '';
+  $('#gscBind').innerHTML =
+    `<div class="note warn"><span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
+    `<b>Проект пока сам по себе.</b> Привяжите его к сайту — тогда метрики будут сниматься ` +
+    `один раз на весь домен, а здесь останется срез по страницам проекта.` +
+    `<div class="up-row mt-2">` +
+      `<select class="select input-sm" id="bindSel" style="min-width:240px">` +
+        `<option value="">— выберите сайт —</option>` +
+        GSC.sites.map(x => `<option value="${x.id}">${escHtml(x.name || x.domain)}</option>`).join('') +
+      `</select>` +
+      `<button class="btn btn-primary btn-sm" id="bindBtn">Привязать</button>` +
+      (domain ? `<button class="btn btn-sm" id="bindNewBtn">Создать сайт ${escHtml(domain)}</button>` : '') +
+    `</div></div></div>`;
+  $('#bindBtn').onclick = e => bindSite(e.currentTarget, { site_id: $('#bindSel').value });
+  const nb = $('#bindNewBtn');
+  if (nb) nb.onclick = e => bindSite(e.currentTarget, { create: true, domain });
+}
+
+async function bindSite(btn, payload) {
+  if (!payload.site_id && !payload.create) { toast.warn('Выберите сайт'); return; }
   await withBusy(btn, async () => {
     try {
-      const r = await api.testGsc('');
-      const sites = r.sites || [];
-      const sel = $('#gscSite');
-      sel.innerHTML = `<option value="">— ресурс не выбран —</option>` +
-        sites.map(s => `<option value="${escAttr(s.site_url)}">${escHtml(s.site_url)}` +
-          (s.level ? ` · ${escHtml(s.level)}` : '') + `</option>`).join('');
-      if (S.gsc && S.gsc.site_url) sel.value = S.gsc.site_url;
-      if (sites.length) toast.ok('Ключ рабочий', 'Доступно ресурсов: ' + sites.length);
-      else toast.warn('Ресурсов нет',
-        'Добавьте ' + (r.client_email || 'аккаунт') + ' в пользователи ресурса Search Console.');
-    } catch (e) { toast.err('Не получилось', e); }
+      await api.bindProjectSite(PID, payload);
+      toast.ok('Проект привязан', 'Теперь метрики общие для домена');
+      initGsc(true);
+    } catch (e) { toast.err('Не вышло', e); }
   });
 }
 
-async function saveGscSite(btn) {
-  await withBusy(btn, async () => {
-    try {
-      S.gsc = await api.saveGsc(PID, { site_url: $('#gscSite').value });
-      renderGsc();
-      toast.ok('Ресурс сохранён', $('#gscSite').value || 'ресурс снят');
-    } catch (e) { toast.err('Не сохранилось', e); }
+function renderGscTable() {
+  const table = (GSC.data && GSC.data.table) || {};
+  $('#gscHead').innerHTML = searchUI.tableHead();
+  $('#gscChips').innerHTML = searchUI.chips(GSC.filter, table.buckets || {});
+  $$('#gscChips button').forEach(b => b.onclick = () => {
+    GSC.filter = b.dataset.chip; initGsc(true);
+  });
+  $('#gscBody').innerHTML = searchUI.rows(GSC.rows);
+  $('#gscCount').textContent =
+    `Показано ${fmtNum(GSC.rows.length)} из ${fmtNum(table.total || 0)} · период ${table.period || ''}`;
+  $$('#gscBody tr.row-click').forEach(tr => tr.onclick = () => openGscDetail(tr));
+}
+
+async function openGscDetail(tr) {
+  const row = GSC.rows.find(r => (r.url_norm || '') === tr.dataset.url) || {};
+  drawer.open({ eyebrow: 'Страница', title: row.path || 'Страница',
+                body: '<div class="muted">Загружаем…</div>' });
+  try {
+    const data = await api.sitePageDetail(GSC.data.site_id, {
+      page_id: row.page_id || '', url_norm: row.page_id ? '' : row.url_norm, days: 90,
+    });
+    drawer.setBody(searchUI.detailHtml(data, row));
+  } catch (e) {
+    drawer.setBody(`<div class="note bad"><div class="note-body">${escHtml(e.message)}</div></div>`);
+  }
+}
+
+async function loadGscFeedback() {
+  if (!GSC.data || !GSC.data.site_id) return;
+  $('#gscFb').innerHTML = '<div class="muted">Считаем…</div>';
+  let res;
+  try { res = await api.siteFeedback(GSC.data.site_id, { days: GSC.days, project_id: PID }); }
+  catch (e) { $('#gscFb').innerHTML = `<div class="muted">${escHtml(e.message)}</div>`; return; }
+
+  const cards = res.cards || [];
+  $('#gscFb').innerHTML = cards.map(c =>
+    `<div class="fb-card"><h4>${escHtml(c.title)}</h4>` +
+    `<div class="fb-n">${fmtNum(c.count)}</div>` +
+    `<div class="fb-note">${escHtml(c.note)}</div>` +
+    (c.count
+      ? `<button class="btn btn-sm ${c.action === 'exclude_keys' ? 'btn-danger' : 'btn-primary'}" data-fb="${c.id}">` +
+        (c.action === 'exclude_keys' ? 'Отсеять ключи' : 'Отправить в регенерацию') + `</button>`
+      : '<span class="muted">Нечего делать</span>') + `</div>`).join('');
+
+  const w = res.weights_hint || {};
+  $('#gscFbHint').innerHTML =
+    `<div class="note info"><span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
+    `Балл качества: в индексе <b>${w.score_indexed == null ? '—' : w.score_indexed}</b>, ` +
+    `без показов <b>${w.score_silent == null ? '—' : w.score_silent}</b>. ` +
+    `Если разрыва нет, дело не в тексте, а в структуре сайта и ссылках.` +
+    `</div></div>`;
+
+  $$('#gscFb [data-fb]').forEach(b => b.onclick = async () => {
+    const card = cards.find(c => c.id === b.dataset.fb);
+    const isKeys = card.action === 'exclude_keys';
+    const ok = await confirmDialog({
+      title: isKeys ? 'Отсеять ключи этих страниц?' : 'Отправить страницы в регенерацию?',
+      text: isKeys
+        ? card.count + ' ключей больше не попадут в новые запуски генерации.'
+        : card.count + ' страниц будут переписаны заново: это время и деньги на модели.',
+      confirm: isKeys ? 'Отсеять' : 'Регенерировать', danger: isKeys,
+    });
+    if (!ok) return;
+    await withBusy(b, async () => {
+      try {
+        const payload = isKeys
+          ? { exclude_keys: card.rows.map(r => r.key_item_id).filter(Boolean) }
+          : { regenerate: card.rows.map(r => r.page_id).filter(Boolean) };
+        const r = await api.applyFeedback(GSC.data.site_id, payload);
+        toast.ok(isKeys ? 'Ключи отсеяны' : 'Поставлено в очередь',
+          isKeys ? 'Исключено: ' + r.excluded_keys : 'Задач: ' + r.queued);
+        loadGscFeedback();
+      } catch (e) { toast.err('Не получилось', e); }
+    });
   });
 }
 
 async function runGscSync(btn) {
+  if (!GSC.data || !GSC.data.site_id) { toast.warn('Сначала привяжите проект к сайту'); return; }
   await withBusy(btn, async () => {
     try {
-      S.gsc = await api.syncGsc(PID, gscDays());
-      renderGsc();
-      const s = S.gsc.summary || {};
+      const r = await api.siteSync(GSC.data.site_id, 90);
+      const s = r.summary || {};
       toast.ok('Данные сняты',
-        'Показов ' + fmtNum(s.impressions || 0) + ', кликов ' + fmtNum(s.clicks || 0) + '.');
-      if (s.hint) toast.warn('Не с чем сопоставлять', s.hint);
+        `Адресов от Google: ${fmtNum(s.rows_from_google || 0)} · совпало: ${fmtNum(s.matched_urls || 0)}`);
+      initGsc(true);
     } catch (e) { toast.err('Синхронизация не прошла', e); }
+  });
+}
+
+/* ---------- привязка проекта к сайту ---------- */
+
+async function initProjectSite() {
+  let sites = [];
+  try { sites = await api.listSites() || []; } catch (e) { sites = []; }
+  const current = Number((S.project && S.project.settings && S.project.settings.site_id) || 0);
+  const sel = $('#prjSiteSel');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— без сайта —</option>' +
+    sites.map(x => `<option value="${x.id}" ${x.id === current ? 'selected' : ''}>` +
+      `${escHtml(x.name || x.domain)}</option>`).join('');
+  const pill = $('#siteBindPill');
+  pill.innerHTML = current
+    ? '<span class="pill ok"><i class="dot"></i>привязан</span>'
+    : '<span class="pill warn"><i class="dot"></i>не привязан</span>';
+  const open = $('#prjSiteOpen');
+  open.hidden = !current;
+  if (current) open.href = 'site.html?id=' + current;
+  hydrateIcons($('#prjSiteOpen').parentElement);
+}
+
+async function saveProjectSite(btn, payload) {
+  await withBusy(btn, async () => {
+    try {
+      await api.bindProjectSite(PID, payload);
+      S.project = await api.getProject(PID);
+      GSC.data = null;
+      toast.ok('Сохранено');
+      initProjectSite();
+    } catch (e) { toast.err('Не вышло', e); }
   });
 }
 
@@ -5796,7 +5851,7 @@ function go(view) {
   if (view === 'passport') initPassport();
   if (view === 'gate')  { renderGate(); initGateConfig(); }
   if (view === 'waves') renderWaves();
-  if (view === 'rules') { fillRules(); initDesign(); }
+  if (view === 'rules') { fillRules(); initDesign(); initProjectSite(); }
   if (view === 'export') renderExport();
   if (view === 'wiring') renderWiring();
   if (view === 'feedback') initGsc();
@@ -5992,12 +6047,16 @@ function bindStatic() {
     ['Решение', 'Больше 50% — следующая волна. Меньше — стоп.'],
   ]);
   $('#connectGscBtn').onclick = e => runGscSync(e.currentTarget);
-  $('#gscLoadSites').onclick = e => loadGscSites(e.currentTarget);
-  $('#gscSaveSite').onclick = e => saveGscSite(e.currentTarget);
-  $('#gscGuideBtn').onclick = () => openGscGuide();
+  $('#gscFilter').oninput = () => { clearTimeout(window._gf); window._gf = setTimeout(() => initGsc(true), 250); };
   $$('#gscDays button').forEach(b => b.onclick = () => {
     $$('#gscDays button').forEach(x => x.classList.toggle('is-on', x === b));
+    initGsc(true);
   });
+
+  /* --- сайт проекта --- */
+  $('#prjSiteSave').onclick = e => saveProjectSite(e.currentTarget, { site_id: $('#prjSiteSel').value });
+  $('#prjSiteNew').onclick = e => saveProjectSite(e.currentTarget, {
+    create: true, domain: (S.project && S.project.domain) || '' });
 
   /* --- правила --- */
   $('#saveRulesBtn').onclick = e => saveRules(e.currentTarget);
