@@ -306,19 +306,28 @@ const api = {
   deleteSite:     (sid)     => req(`/sites/${sid}`, { method: 'DELETE' }),
   setSiteProjects:(sid, ids)=> req(`/sites/${sid}/projects`, {
                                  method: 'POST', body: JSON.stringify({ project_ids: ids }) }),
-  siteResources:  (sid)     => req(`/sites/${sid}/resources`),
+  siteHosts:      (sid)     => req(`/sites/${sid}/hosts`),
   siteSync:       (sid, d)  => req(`/sites/${sid}/sync?days=${d || 90}`, { method: 'POST' }),
   siteOverview:   (sid, q)  => req(`/sites/${sid}/overview${qs(q)}`),
   sitePages:      (sid, q)  => req(`/sites/${sid}/pages${qs(q)}`),
   siteQueries:    (sid, q)  => req(`/sites/${sid}/queries${qs(q)}`),
+  siteExcluded:   (sid, q)  => req(`/sites/${sid}/excluded${qs(q)}`),
   sitePageDetail: (sid, q)  => req(`/sites/${sid}/page-detail${qs(q)}`),
   siteFeedback:   (sid, q)  => req(`/sites/${sid}/feedback${qs(q)}`),
   applyFeedback:  (sid, d)  => req(`/sites/${sid}/feedback/apply`, {
+                                 method: 'POST', body: JSON.stringify(d) }),
+  recrawlQuota:   (sid)     => req(`/sites/${sid}/recrawl`),
+  recrawl:        (sid, d)  => req(`/sites/${sid}/recrawl`, {
                                  method: 'POST', body: JSON.stringify(d) }),
   restoreKeys:    (sid, ids)=> req(`/sites/${sid}/keys/restore`, {
                                  method: 'POST', body: JSON.stringify({ key_ids: ids }) }),
   projectSearch:  (id, q)   => req(`/projects/${id}/search${qs(q)}`),
   bindProjectSite:(id, d)   => req(`/projects/${id}/site`, { method: 'POST', body: JSON.stringify(d) }),
+
+  /* ---- ЯНДЕКС.ВЕБМАСТЕР: один токен на всю установку ---- */
+  yandexStatus:   ()        => req('/yandex/status'),
+  yandexToken:    (token)   => req('/yandex/token', {
+                                 method: 'POST', body: JSON.stringify({ token: token || '' }) }),
 
   /* ---- БЛОК 8 — Search Console (готово) ---- */
   getGsc:   (id)       => req(`/projects/${id}/gsc`),
@@ -573,21 +582,26 @@ const THEMES = {
 
 const searchUI = (() => {
 
-  /** Рабочие списки. Это и есть главное отличие от графиков в GSC. */
+  /* Рабочие списки. Главное отличие от самого Вебмастера: тут сразу видно,
+     какие страницы наши, чем они были сгенерированы и что с ними делать. */
   const CHIPS = [
-    { id: 'all',         label: 'Все страницы', hint: 'всё, что знаем о домене' },
-    { id: 'indexed',     label: 'В индексе',    hint: 'был хотя бы один показ' },
-    { id: 'not_indexed', label: 'Не в индексе', hint: 'Google не показывал ни разу' },
-    { id: 'no_clicks',   label: 'Без кликов',   hint: 'показы есть, переходов нет — переписать title' },
-    { id: 'threshold',   label: 'На пороге',    hint: 'позиция 8–20: доработка даёт максимум' },
-    { id: 'dropped',     label: 'Просели',      hint: 'хуже, чем в прошлом периоде' },
-    { id: 'new',         label: 'Новые',        hint: 'опубликованы недавно, судить рано' },
-    { id: 'orphan',      label: 'Чужие адреса', hint: 'есть в Google, но не наши страницы' },
+    { id: 'all',         label: 'Все',            hint: 'всё, что мы знаем о домене' },
+    { id: 'in_search',   label: 'В поиске',       hint: 'Яндекс держит страницу в выдаче' },
+    { id: 'excluded',    label: 'Исключены',      hint: 'были в поиске и выпали — с причиной' },
+    { id: 'low_quality', label: 'Малоценные',     hint: 'вердикт Яндекса о качестве текста' },
+    { id: 'duplicate',   label: 'Склеены',        hint: 'дубль или неканоническая' },
+    { id: 'unknown',     label: 'Робот не дошёл', hint: 'Яндекс о странице ещё ничего не сказал' },
+    { id: 'no_clicks',   label: 'Без кликов',     hint: 'показы есть, переходов нет' },
+    { id: 'threshold',   label: 'На пороге',      hint: 'позиция 8–20: правки дают максимум' },
+    { id: 'dropped',     label: 'Просели',        hint: 'хуже, чем в прошлом периоде' },
+    { id: 'new',         label: 'Новые',          hint: 'опубликованы недавно, судить рано' },
+    { id: 'orphan',      label: 'Чужие адреса',   hint: 'есть у Яндекса, но не наши страницы' },
   ];
 
   const num = v => (v == null ? '—' : fmtNum(v));
-  const pos = v => (v == null ? '—' : String(Math.round(v * 10) / 10).replace('.', ','));
+  const pos = v => (v == null || v === 0 ? '—' : String(Math.round(v * 10) / 10).replace('.', ','));
   const ctr = v => (v ? (v * 100).toFixed(1).replace('.', ',') + '%' : '—');
+  const pct = v => Math.round((v || 0) * 100) + '%';
 
   /** Дельта к прошлому периоду. lower=true — когда меньше значит лучше. */
   function delta(value, lower) {
@@ -596,129 +610,203 @@ const searchUI = (() => {
     const sign = value > 0 ? '+' : '−';
     const body = lower ? Math.abs(Math.round(value * 10) / 10).toString().replace('.', ',')
                        : fmtNum(Math.abs(value));
-    return ` <span class="${good ? 'ok' : 'bad'}" style="font-size:12px">${sign}${body}</span>`;
+    return ` <span class="trend ${good ? 'up' : 'down'}">${sign}${body}</span>`;
   }
 
-  /** Четыре плитки сверху: сами цифры и как они изменились. */
+  /* ---------- шапка с цифрами ---------- */
+
+  /** Крупная плитка слева (состав поиска) плюс три обычные. */
   function tiles(d) {
     const s = d.summary || {}, x = d.delta || {};
-    const cell = (k, v, note) =>
-      `<div class="metric"><div class="metric-k">${k}</div>` +
-      `<div class="metric-v">${v}</div><div class="metric-note">${note}</div></div>`;
-    return (
-      cell('Клики', num(s.clicks) + delta(x.clicks), 'переходы из поиска') +
-      cell('Показы', num(s.impressions) + delta(x.impressions), escHtml(d.period || '')) +
-      cell('Средняя позиция', pos(s.position) + delta(x.position, true), 'взвешено по показам') +
-      cell('Страницы в индексе',
-           `${fmtNum(s.pages_indexed || 0)} <span class="muted">из ${fmtNum(s.pages_total || 0)}</span>`,
-           (s.orphan_urls ? fmtNum(s.orphan_urls) + ' чужих адресов домена' : 'считаем только свои страницы'))
-    );
+    const total = s.pages_total || 0;
+    const inSearch = s.pages_in_search || 0;
+    const excluded = s.pages_excluded || 0;
+    const unknown = s.pages_unknown || 0;
+    const share = total ? inSearch / total : 0;
+    const top = (d.reasons || [])[0];
+
+    const seg = (n, cls, title) => (total && n)
+      ? `<span class="bar-seg ${cls}" style="width:${(n / total * 100).toFixed(2)}%" title="${escAttr(title)}"></span>` : '';
+
+    const hero =
+      `<div class="kpi kpi-hero">` +
+        `<div class="kpi-k">Страниц в поиске Яндекса</div>` +
+        `<div class="kpi-v">${fmtNum(inSearch)} <span class="kpi-of">из ${fmtNum(total)}</span>` +
+          `<span class="kpi-share">${pct(share)}</span></div>` +
+        `<div class="bar">` +
+          seg(inSearch, 'ok', 'в поиске') +
+          seg(excluded, 'bad', 'исключены') +
+          seg(unknown, 'mute', 'робот не дошёл') +
+        `</div>` +
+        `<div class="kpi-legend">` +
+          `<span><i class="sw ok"></i>в поиске ${fmtNum(inSearch)}</span>` +
+          `<span><i class="sw bad"></i>исключено ${fmtNum(excluded)}</span>` +
+          `<span><i class="sw mute"></i>робот не дошёл ${fmtNum(unknown)}</span>` +
+        `</div>` +
+      `</div>`;
+
+    const cell = (k, v, note, cls) =>
+      `<div class="kpi ${cls || ''}"><div class="kpi-k">${k}</div>` +
+      `<div class="kpi-v">${v}</div><div class="kpi-note">${note}</div></div>`;
+
+    return hero +
+      cell('Исключено с причиной', fmtNum(excluded),
+           top ? `чаще всего: ${escHtml(top.label)} — ${fmtNum(top.count)}` : 'исключённых нет',
+           excluded ? 'is-bad' : '') +
+      cell('Клики', num(s.clicks) + delta(x.clicks), 'переходы из поиска за период') +
+      cell('Средняя позиция', pos(s.position) + delta(x.position, true),
+           `показов: ${fmtNum(s.impressions || 0)}`);
   }
 
-  /** Полоса фильтров с количеством в каждом списке. */
+  /** Полоса фильтров с количеством в каждом списке. Пустые списки прячем. */
   function chips(active, buckets) {
     const b = buckets || {};
     return CHIPS.map(c => {
       const n = c.id === 'all' ? null : (b[c.id] || 0);
+      if (n === 0 && c.id !== active) return '';
       return `<button data-chip="${c.id}" title="${escAttr(c.hint)}" ` +
              `class="${c.id === active ? 'is-on' : ''}">${escHtml(c.label)}` +
-             (n === null ? '' : ` <span class="muted">${fmtNum(n)}</span>`) + `</button>`;
+             (n === null ? '' : ` <span class="chip-n">${fmtNum(n)}</span>`) + `</button>`;
     }).join('');
   }
+
+  /* ---------- таблица страниц ---------- */
 
   function tableHead() {
     return `<tr>` +
       `<th>Страница</th>` +
-      `<th style="width:150px;">Тип</th>` +
-      `<th style="width:92px;">Возраст</th>` +
-      `<th style="width:104px;">Клики</th>` +
-      `<th style="width:110px;">Показы</th>` +
-      `<th style="width:80px;">CTR</th>` +
-      `<th style="width:104px;">Позиция</th>` +
-      `<th style="width:76px;">Балл</th>` +
+      `<th style="width:210px;">Состояние в Яндексе</th>` +
+      `<th style="width:86px;">Возраст</th>` +
+      `<th style="width:92px;">Клики</th>` +
+      `<th style="width:100px;">Показы</th>` +
+      `<th style="width:96px;">Позиция</th>` +
+      `<th style="width:70px;">Балл</th>` +
     `</tr>`;
   }
 
-  const STATE_PILL = {
-    indexed:     '<span class="pill ok"><i class="dot"></i>в индексе</span>',
-    not_indexed: '<span class="pill neutral"><i class="dot"></i>нет показов</span>',
-    orphan:      '<span class="pill warn"><i class="dot"></i>не наша</span>',
-  };
+  /** Состояние строки одним понятным значком. */
+  function statePill(r) {
+    if (r.state === 'in_search') return '<span class="pill ok"><i class="dot"></i>в поиске</span>';
+    if (r.state === 'orphan')    return '<span class="pill warn"><i class="dot"></i>не наша страница</span>';
+    if (r.state === 'unknown')   return '<span class="pill neutral"><i class="dot"></i>робот не дошёл</span>';
+    const info = r.reason || {};
+    return `<span class="pill bad"><i class="dot"></i>${escHtml(info.label || 'исключена')}</span>`;
+  }
 
-  /** Строки таблицы. Клик по строке открывает карточку страницы. */
   function rows(list) {
     if (!list || !list.length) {
-      return `<tr><td colspan="8" class="muted" style="padding:18px 12px">` +
-             `В этом списке пусто — это хорошая новость.</td></tr>`;
+      return `<tr><td colspan="7" class="muted" style="padding:20px 14px">` +
+             `В этом списке пусто.</td></tr>`;
     }
     return list.map(r => {
-      const second = r.top_query
-        ? `запрос: ${escHtml(r.top_query)}`
-        : (r.key ? escHtml(r.key) : (r.state === 'orphan' ? 'нет в наших проектах' : ''));
+      const sub = r.key ? escHtml(r.key)
+                        : (r.state === 'orphan' ? 'нет в наших проектах' : '');
+      const why = (r.reason && r.reason.text) ? r.reason.text
+                : (r.state === 'unknown'
+                    ? 'Яндекс ещё не высказался об этой странице'
+                    : (r.template || r.type || ''));
       return `<tr data-url="${escAttr(r.url_norm || '')}" data-page="${r.page_id || ''}" class="row-click">` +
         `<td><div class="mono">${escHtml(r.path || r.url || '')}</div>` +
-          `<div class="muted" style="font-size:12px;margin-top:3px">${second}</div></td>` +
-        `<td>${STATE_PILL[r.state] || ''}` +
-          (r.template || r.type ? `<div class="muted" style="font-size:12px;margin-top:3px">${escHtml(r.template || r.type)}</div>` : '') + `</td>` +
+          (sub ? `<div class="cell-sub">${sub}</div>` : '') + `</td>` +
+        `<td>${statePill(r)}` +
+          (why ? `<div class="cell-sub">${escHtml(why)}</div>` : '') + `</td>` +
         `<td>${r.age_days == null ? '—' : r.age_days + ' дн.'}</td>` +
         `<td>${num(r.clicks)}${delta(r.d_clicks)}</td>` +
         `<td>${num(r.impressions)}${delta(r.d_impressions)}</td>` +
-        `<td>${ctr(r.ctr)}</td>` +
         `<td>${pos(r.position)}${delta(r.d_position, true)}</td>` +
         `<td>${r.score == null ? '—' : Math.round(r.score)}</td>` +
       `</tr>`;
     }).join('');
   }
 
-  /** Предупреждения: честно объясняют, почему цифры такие. */
+  /* ---------- сообщения и срезы ---------- */
+
+  /** Предупреждения одной строкой: почему цифры такие и куда нажать. */
   function warnings(list) {
     if (!list || !list.length) return '';
-    return list.map(w =>
-      `<div class="note ${w.kind === 'bad' ? 'bad' : 'warn'}">` +
-      `<span class="note-ico">${ico(w.kind === 'bad' ? 'alert' : 'info', 17)}</span>` +
-      `<div class="note-body">${escHtml(w.text)}</div></div>`).join('');
+    return `<div class="alerts">` + list.map(w =>
+      `<div class="alert ${w.kind === 'bad' ? 'bad' : 'warn'}">` +
+      `<span class="alert-ico">${ico(w.kind === 'bad' ? 'alert' : 'info', 15)}</span>` +
+      `<span class="alert-text">${escHtml(w.text)}</span>` +
+      (w.action_label
+        ? `<button class="link-btn" data-warn-act="${escAttr(w.action || '')}">${escHtml(w.action_label)}</button>`
+        : '') +
+      `</div>`).join('') + `</div>`;
+  }
+
+  /** Причины исключения карточками — самое ценное, что даёт Яндекс. */
+  function reasonCards(list) {
+    if (!list || !list.length) {
+      return `<div class="empty"><div class="empty-title">Ни одна страница не исключена</div>` +
+             `<div class="empty-text">Это лучший из возможных результатов: всё, что Яндекс ` +
+             `посмотрел, он оставил в поиске.</div></div>`;
+    }
+    return `<div class="reasons">` + list.map(g =>
+      `<div class="reason ${g.quality ? 'is-quality' : (g.duplicate ? 'is-dup' : '')}">` +
+        `<div class="reason-top"><span class="reason-label">${escHtml(g.label)}</span>` +
+        `<span class="reason-n">${fmtNum(g.count)}</span></div>` +
+        `<div class="reason-text">${escHtml(g.text)}</div>` +
+        (g.fix ? `<div class="reason-fix">${escHtml(g.fix)}</div>` : '') +
+        (g.rows || g.sample
+          ? `<button class="link-btn" data-reason="${escAttr(g.code)}">Показать страницы</button>` : '') +
+      `</div>`).join('') + `</div>`;
   }
 
   /** Срез: по проектам или по шаблонам — отвечает «что вообще работает». */
   function breakdown(list, firstCol) {
     if (!list || !list.length) return '<div class="muted">Данных пока нет.</div>';
     return `<table class="tbl"><thead><tr>` +
-      `<th>${escHtml(firstCol)}</th><th style="width:150px;">Страниц в индексе</th>` +
-      `<th style="width:110px;">Клики</th><th style="width:110px;">Показы</th>` +
-      `<th style="width:110px;">Позиция</th></tr></thead><tbody>` +
-      list.map(s => `<tr><td>${escHtml(s.name || s.label || '—')}</td>` +
-        `<td>${fmtNum(s.indexed || 0)} <span class="muted">из ${fmtNum(s.pages || 0)}</span></td>` +
-        `<td>${num(s.clicks)}</td><td>${num(s.impressions)}</td>` +
-        `<td>${pos(s.position)}</td></tr>`).join('') +
+      `<th>${escHtml(firstCol)}</th>` +
+      `<th style="width:190px;">Доля в поиске</th>` +
+      `<th style="width:110px;">Исключено</th>` +
+      `<th style="width:100px;">Клики</th><th style="width:100px;">Показы</th>` +
+      `<th style="width:96px;">Позиция</th></tr></thead><tbody>` +
+      list.map(s => {
+        const share = s.pages ? (s.in_search || 0) / s.pages : 0;
+        return `<tr><td>${escHtml(s.name || s.label || '—')}</td>` +
+          `<td><div class="minibar"><span style="width:${(share * 100).toFixed(1)}%"></span></div>` +
+          `<div class="cell-sub">${fmtNum(s.in_search || 0)} из ${fmtNum(s.pages || 0)} · ${pct(share)}</div></td>` +
+          `<td>${fmtNum(s.excluded || 0)}</td>` +
+          `<td>${num(s.clicks)}</td><td>${num(s.impressions)}</td>` +
+          `<td>${pos(s.position)}</td></tr>`;
+      }).join('') +
       `</tbody></table>`;
   }
 
-  /** Карточка одного адреса в правой панели. */
+  /* ---------- карточка страницы ---------- */
+
   function detailHtml(data, row) {
-    const m = data.meta || {}, h = data.halves || {};
-    const a = h.first || {}, b = h.second || {};
-    const spark = sparkline(data.series || []);
-    const queries = (data.queries || []).slice(0, 12);
+    const m = data.meta || {}, st = data.state || {};
+    const events = data.events || [];
+    const series = data.series || [];
+    const verdict = st.in_search === true
+      ? `<div class="verdict ok">Страница в поиске Яндекса</div>`
+      : (st.in_search === false
+          ? `<div class="verdict bad"><b>${escHtml((st.reason || {}).label || 'Исключена')}</b>` +
+            `<div>${escHtml((st.reason || {}).text || '')}</div>` +
+            ((st.reason || {}).fix ? `<div class="verdict-fix">${escHtml(st.reason.fix)}</div>` : '') +
+            `</div>`
+          : `<div class="verdict mute">Яндекс ещё ничего не сказал об этой странице. ` +
+            `Если ей больше трёх недель — отправьте на переобход.</div>`);
+
     return (
+      `<div class="drawer-sec">${verdict}</div>` +
       `<div class="drawer-sec"><div class="drawer-k">Адрес</div>` +
-        `<div class="mono">${escHtml((row && row.path) || '')}</div></div>` +
-      (m.key ? `<div class="drawer-sec"><div class="drawer-k">Ключ строки</div>${escHtml(m.key)}</div>` : '') +
-      `<div class="drawer-sec"><div class="drawer-k">Динамика по дням</div>${spark}</div>` +
-      `<div class="drawer-sec"><div class="drawer-k">Первая половина против второй</div>` +
-        `<table class="tbl"><thead><tr><th>Половина</th><th>Клики</th><th>Показы</th><th>Позиция</th></tr></thead>` +
-        `<tbody>` +
-        `<tr><td>до ${escHtml(h.split || '')}</td><td>${num(a.clicks)}</td><td>${num(a.impressions)}</td><td>${pos(a.position)}</td></tr>` +
-        `<tr><td>после</td><td>${num(b.clicks)}</td><td>${num(b.impressions)}</td><td>${pos(b.position)}</td></tr>` +
-        `</tbody></table></div>` +
-      `<div class="drawer-sec"><div class="drawer-k">Запросы этой страницы</div>` +
-        (queries.length
-          ? `<table class="tbl"><thead><tr><th>Запрос</th><th style="width:70px;">Клики</th>` +
-            `<th style="width:80px;">Показы</th><th style="width:80px;">Позиция</th></tr></thead><tbody>` +
-            queries.map(q => `<tr><td>${escHtml(q.query)}</td><td>${num(q.clicks)}</td>` +
-              `<td>${num(q.impressions)}</td><td>${pos(q.position)}</td></tr>`).join('') +
-            `</tbody></table>`
-          : '<div class="muted">Google не показывал эту страницу ни по одному запросу.</div>') +
+        `<div class="mono">${escHtml((row && row.path) || '')}</div>` +
+        (st.last_access ? `<div class="cell-sub">Робот заходил ${escHtml(st.last_access)}</div>` : '') +
       `</div>` +
+      (m.key ? `<div class="drawer-sec"><div class="drawer-k">Ключ строки</div>${escHtml(m.key)}</div>` : '') +
+      (events.length
+        ? `<div class="drawer-sec"><div class="drawer-k">История в поиске</div>` +
+          `<ul class="timeline">` + events.slice(0, 12).map(e =>
+            `<li class="${e.event === 'in' ? 'in' : 'out'}"><b>${escHtml(e.day)}</b> ` +
+            (e.event === 'in' ? 'появилась в поиске'
+                              : 'исключена — ' + escHtml((e.reason || {}).label || 'причина не указана')) +
+            `</li>`).join('') + `</ul></div>`
+        : '') +
+      (series.length > 1
+        ? `<div class="drawer-sec"><div class="drawer-k">Показы и клики</div>${sparkline(series)}</div>`
+        : '') +
       (m.score != null || m.uniqueness != null
         ? `<div class="drawer-sec"><div class="drawer-k">Что внутри страницы</div>` +
           `Балл качества: <b>${m.score == null ? '—' : Math.round(m.score)}</b> · ` +
@@ -728,27 +816,26 @@ const searchUI = (() => {
     );
   }
 
-  /** Микрографик показов: SVG без библиотек, чтобы не тянуть зависимости. */
+  /** Микрографик: SVG без библиотек, чтобы не тянуть зависимости. */
   function sparkline(series) {
     const pts = (series || []).filter(p => p && p.day);
     if (pts.length < 2) return '<div class="muted">Мало данных для графика.</div>';
     const w = 520, h = 90, pad = 4;
-    const max = Math.max(1, ...pts.map(p => p.impressions || 0));
+    const max = Math.max(1, ...pts.map(p => p.impressions || p.value || 0));
     const step = (w - pad * 2) / (pts.length - 1);
-    const line = pts.map((p, i) =>
-      `${(pad + i * step).toFixed(1)},${(h - pad - (p.impressions || 0) / max * (h - pad * 2)).toFixed(1)}`
-    ).join(' ');
-    const clicks = pts.map((p, i) =>
-      `${(pad + i * step).toFixed(1)},${(h - pad - (p.clicks || 0) / max * (h - pad * 2)).toFixed(1)}`
-    ).join(' ');
+    const at = (p, field) =>
+      (h - pad - (p[field] || 0) / max * (h - pad * 2)).toFixed(1);
+    const line = pts.map((p, i) => `${(pad + i * step).toFixed(1)},${at(p, 'impressions')}`).join(' ');
+    const clicks = pts.map((p, i) => `${(pad + i * step).toFixed(1)},${at(p, 'clicks')}`).join(' ');
     return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block">` +
       `<polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2"/>` +
       `<polyline points="${clicks}" fill="none" stroke="var(--ok)" stroke-width="2" stroke-dasharray="3 3"/>` +
-      `</svg><div class="muted" style="font-size:12px">Сплошная — показы, пунктир — клики. ` +
+      `</svg><div class="cell-sub">Сплошная — показы, пунктир — клики. ` +
       `${escHtml(pts[0].day)} → ${escHtml(pts[pts.length - 1].day)}</div>`;
   }
 
-  return { CHIPS, tiles, chips, tableHead, rows, warnings, breakdown, detailHtml, sparkline, num, pos, ctr, delta };
+  return { CHIPS, tiles, chips, tableHead, rows, statePill, warnings, reasonCards,
+           breakdown, detailHtml, sparkline, num, pos, ctr, pct, delta };
 })();
 
 function getTheme() {
@@ -954,45 +1041,42 @@ function infoModal(opts) {
 
 /* Пошаговый гайд по подключению Search Console. Лежит здесь, чтобы
    открываться и из настроек, и из карточки проекта. */
-function openGscGuide() {
+function openYandexGuide() {
   infoModal({
-    title: 'Как подключить Search Console',
+    title: 'Как подключить Яндекс.Вебмастер',
     icon: 'radar',
     html: `
       <div class="modal-text" style="margin:0 0 14px">
-        У Search Console нет входа «по логину»: любой доступ к её данным идёт через
-        Google Cloud. Сервисный аккаунт — самый короткий путь: ключ создаётся один раз,
-        ничего не протухает, подтверждать вход каждые пару месяцев не нужно.
-        Весь путь — 5–7 минут, всё бесплатно.
+        Нужен один токен на всю систему. Он выпускается за пару минут, ничего не стоит
+        и не протухает сам по себе. Дальше все сайты подключаются выбором из списка.
       </div>
       <ol style="margin:0;padding-left:20px;line-height:1.75;font-size:13.5px">
-        <li>Создайте проект в Google Cloud —
-          <a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">console.cloud.google.com/projectcreate</a>.
-          Название любое, платёжная карта не нужна.</li>
-        <li>Включите Search Console API —
-          <a href="https://console.cloud.google.com/apis/library/searchconsole.googleapis.com" target="_blank" rel="noopener">страница API</a>
-          → кнопка <b>Enable</b>.</li>
-        <li>Создайте сервисный аккаунт —
-          <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank" rel="noopener">Service accounts</a>
-          → <b>Create service account</b>. Имя любое, роли и доступы на шагах 2–3 можно пропустить.</li>
-        <li>Скачайте ключ: откройте созданный аккаунт → вкладка <b>Keys</b> →
-          <b>Add key</b> → <b>Create new key</b> → тип <b>JSON</b>. Скачается файл — это и есть ключ.</li>
-        <li>Откройте файл блокнотом, скопируйте всё содержимое и вставьте в поле
-          «JSON сервисного аккаунта», затем нажмите <b>Проверить ключ</b> — появится адрес вида
-          <span class="mono">имя@проект.iam.gserviceaccount.com</span>.</li>
-        <li>Дайте этому адресу доступ к сайту:
-          <a href="https://search.google.com/search-console/users" target="_blank" rel="noopener">Search Console → Пользователи и разрешения</a>
-          → выберите свой ресурс → <b>Добавить пользователя</b> → вставьте адрес сервисного аккаунта,
-          разрешение <b>Полный</b> или <b>Ограниченный</b>.</li>
-        <li>Вернитесь в проект → раздел «Обратная связь» → <b>Загрузить ресурсы</b> → выберите сайт →
-          <b>Сохранить ресурс</b> → <b>Синхронизировать</b>.</li>
+        <li>Подтвердите сайт в Вебмастере —
+          <a href="https://webmaster.yandex.ru/sites/add/" target="_blank" rel="noopener">webmaster.yandex.ru</a>.
+          Без подтверждения API не отдаст по нему ничего.</li>
+        <li>Создайте приложение —
+          <a href="https://oauth.yandex.ru/client/new" target="_blank" rel="noopener">oauth.yandex.ru/client/new</a>.
+          Платформа — <b>Веб-сервисы</b>, Redirect URI впишите
+          <span class="mono">https://oauth.yandex.ru/verification_code</span>.</li>
+        <li>В разделе доступов отметьте <b>Яндекс.Вебмастер</b> → право
+          <span class="mono">webmaster:hostinfo</span> и <span class="mono">webmaster:verify</span>.
+          Сохраните — появится <b>ClientID</b>.</li>
+        <li>Откройте в браузере ссылку, подставив свой ClientID:<br>
+          <span class="mono">https://oauth.yandex.ru/authorize?response_type=token&amp;client_id=ВАШ_CLIENT_ID</span><br>
+          Разрешите доступ — Яндекс покажет токен прямо на странице.</li>
+        <li>Скопируйте токен, вставьте его в поле ниже и нажмите <b>Проверить и сохранить</b>.
+          Появится список ваших сайтов.</li>
+        <li>Вернитесь на экран сайта → <b>Выбрать сайт в Вебмастере</b> → <b>Обновить данные</b>.</li>
       </ol>
       <div class="modal-text" style="margin-top:14px">
-        Ключ общий для всех проектов, на шаге 6 просто добавляйте новый адрес для каждого сайта.
-        Google отдаёт статистику с задержкой около трёх дней — свежие сутки в отчёте не появятся.
+        Токен общий: новые сайты после подтверждения в Вебмастере появятся в списке сами.
+        Статистика идёт с задержкой в пару дней — последние сутки в отчёте не появятся.
       </div>`,
   });
 }
+
+/** Старое имя оставлено, чтобы не ломать вызовы со старых страниц. */
+const openGscGuide = openYandexGuide;
 
 /* --------------------------------------------------------------------------
    9. ПРАВАЯ ПАНЕЛЬ  (замена модалок для деталей)
