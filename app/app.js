@@ -120,6 +120,14 @@ const wire = {
   },
 };
 
+/** Строка запроса из объекта: пустые и null-значения не попадают в URL. */
+function qs(params) {
+  const parts = Object.entries(params || {})
+    .filter(([, v]) => v !== undefined && v !== null && v !== '')
+    .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v));
+  return parts.length ? '?' + parts.join('&') : '';
+}
+
 async function req(path, opts = {}) {
   const url = API_BASE.replace(/\/+$/, '') + path;
   const token = auth.token();
@@ -289,6 +297,28 @@ const api = {
   listWaves:   (id)     => req(`/projects/${id}/waves`),
   createWave:  (id, d)  => req(`/projects/${id}/waves`, { method: 'POST', body: JSON.stringify(d) }),
   publishWave: (id, w)  => req(`/projects/${id}/waves/${w}/publish`, { method: 'POST' }),
+
+  /* ---- САЙТЫ: уровень над проектами ---- */
+  listSites:      ()        => req('/sites'),
+  getSite:        (sid)     => req(`/sites/${sid}`),
+  createSite:     (d)       => req('/sites', { method: 'POST', body: JSON.stringify(d) }),
+  updateSite:     (sid, d)  => req(`/sites/${sid}`, { method: 'PUT', body: JSON.stringify(d) }),
+  deleteSite:     (sid)     => req(`/sites/${sid}`, { method: 'DELETE' }),
+  setSiteProjects:(sid, ids)=> req(`/sites/${sid}/projects`, {
+                                 method: 'POST', body: JSON.stringify({ project_ids: ids }) }),
+  siteResources:  (sid)     => req(`/sites/${sid}/resources`),
+  siteSync:       (sid, d)  => req(`/sites/${sid}/sync?days=${d || 90}`, { method: 'POST' }),
+  siteOverview:   (sid, q)  => req(`/sites/${sid}/overview${qs(q)}`),
+  sitePages:      (sid, q)  => req(`/sites/${sid}/pages${qs(q)}`),
+  siteQueries:    (sid, q)  => req(`/sites/${sid}/queries${qs(q)}`),
+  sitePageDetail: (sid, q)  => req(`/sites/${sid}/page-detail${qs(q)}`),
+  siteFeedback:   (sid, q)  => req(`/sites/${sid}/feedback${qs(q)}`),
+  applyFeedback:  (sid, d)  => req(`/sites/${sid}/feedback/apply`, {
+                                 method: 'POST', body: JSON.stringify(d) }),
+  restoreKeys:    (sid, ids)=> req(`/sites/${sid}/keys/restore`, {
+                                 method: 'POST', body: JSON.stringify({ key_ids: ids }) }),
+  projectSearch:  (id, q)   => req(`/projects/${id}/search${qs(q)}`),
+  bindProjectSite:(id, d)   => req(`/projects/${id}/site`, { method: 'POST', body: JSON.stringify(d) }),
 
   /* ---- БЛОК 8 — Search Console (готово) ---- */
   getGsc:   (id)       => req(`/projects/${id}/gsc`),
@@ -532,6 +562,194 @@ const THEMES = {
   dark:  { name: 'Тёмная',  desc: 'Глубокий графит, мягкие границы, тот же акцент',
            swatches: ['#191919', '#202020', '#333331', '#ffffff', '#5e9fe8'] },
 };
+
+/* --------------------------------------------------------------------------
+   5.5 РЕЗУЛЬТАТЫ В ПОИСКЕ — общий рисовальщик
+
+   Один и тот же экран нужен и сайту целиком, и срезу одного проекта,
+   поэтому разметка живёт здесь, а страницы только подставляют данные
+   и вешают обработчики.
+   -------------------------------------------------------------------------- */
+
+const searchUI = (() => {
+
+  /** Рабочие списки. Это и есть главное отличие от графиков в GSC. */
+  const CHIPS = [
+    { id: 'all',         label: 'Все страницы', hint: 'всё, что знаем о домене' },
+    { id: 'indexed',     label: 'В индексе',    hint: 'был хотя бы один показ' },
+    { id: 'not_indexed', label: 'Не в индексе', hint: 'Google не показывал ни разу' },
+    { id: 'no_clicks',   label: 'Без кликов',   hint: 'показы есть, переходов нет — переписать title' },
+    { id: 'threshold',   label: 'На пороге',    hint: 'позиция 8–20: доработка даёт максимум' },
+    { id: 'dropped',     label: 'Просели',      hint: 'хуже, чем в прошлом периоде' },
+    { id: 'new',         label: 'Новые',        hint: 'опубликованы недавно, судить рано' },
+    { id: 'orphan',      label: 'Чужие адреса', hint: 'есть в Google, но не наши страницы' },
+  ];
+
+  const num = v => (v == null ? '—' : fmtNum(v));
+  const pos = v => (v == null ? '—' : String(Math.round(v * 10) / 10).replace('.', ','));
+  const ctr = v => (v ? (v * 100).toFixed(1).replace('.', ',') + '%' : '—');
+
+  /** Дельта к прошлому периоду. lower=true — когда меньше значит лучше. */
+  function delta(value, lower) {
+    if (value === null || value === undefined || value === 0) return '';
+    const good = lower ? value < 0 : value > 0;
+    const sign = value > 0 ? '+' : '−';
+    const body = lower ? Math.abs(Math.round(value * 10) / 10).toString().replace('.', ',')
+                       : fmtNum(Math.abs(value));
+    return ` <span class="${good ? 'ok' : 'bad'}" style="font-size:12px">${sign}${body}</span>`;
+  }
+
+  /** Четыре плитки сверху: сами цифры и как они изменились. */
+  function tiles(d) {
+    const s = d.summary || {}, x = d.delta || {};
+    const cell = (k, v, note) =>
+      `<div class="metric"><div class="metric-k">${k}</div>` +
+      `<div class="metric-v">${v}</div><div class="metric-note">${note}</div></div>`;
+    return (
+      cell('Клики', num(s.clicks) + delta(x.clicks), 'переходы из поиска') +
+      cell('Показы', num(s.impressions) + delta(x.impressions), escHtml(d.period || '')) +
+      cell('Средняя позиция', pos(s.position) + delta(x.position, true), 'взвешено по показам') +
+      cell('Страницы в индексе',
+           `${fmtNum(s.pages_indexed || 0)} <span class="muted">из ${fmtNum(s.pages_total || 0)}</span>`,
+           (s.orphan_urls ? fmtNum(s.orphan_urls) + ' чужих адресов домена' : 'считаем только свои страницы'))
+    );
+  }
+
+  /** Полоса фильтров с количеством в каждом списке. */
+  function chips(active, buckets) {
+    const b = buckets || {};
+    return CHIPS.map(c => {
+      const n = c.id === 'all' ? null : (b[c.id] || 0);
+      return `<button data-chip="${c.id}" title="${escAttr(c.hint)}" ` +
+             `class="${c.id === active ? 'is-on' : ''}">${escHtml(c.label)}` +
+             (n === null ? '' : ` <span class="muted">${fmtNum(n)}</span>`) + `</button>`;
+    }).join('');
+  }
+
+  function tableHead() {
+    return `<tr>` +
+      `<th>Страница</th>` +
+      `<th style="width:150px;">Тип</th>` +
+      `<th style="width:92px;">Возраст</th>` +
+      `<th style="width:104px;">Клики</th>` +
+      `<th style="width:110px;">Показы</th>` +
+      `<th style="width:80px;">CTR</th>` +
+      `<th style="width:104px;">Позиция</th>` +
+      `<th style="width:76px;">Балл</th>` +
+    `</tr>`;
+  }
+
+  const STATE_PILL = {
+    indexed:     '<span class="pill ok"><i class="dot"></i>в индексе</span>',
+    not_indexed: '<span class="pill neutral"><i class="dot"></i>нет показов</span>',
+    orphan:      '<span class="pill warn"><i class="dot"></i>не наша</span>',
+  };
+
+  /** Строки таблицы. Клик по строке открывает карточку страницы. */
+  function rows(list) {
+    if (!list || !list.length) {
+      return `<tr><td colspan="8" class="muted" style="padding:18px 12px">` +
+             `В этом списке пусто — это хорошая новость.</td></tr>`;
+    }
+    return list.map(r => {
+      const second = r.top_query
+        ? `запрос: ${escHtml(r.top_query)}`
+        : (r.key ? escHtml(r.key) : (r.state === 'orphan' ? 'нет в наших проектах' : ''));
+      return `<tr data-url="${escAttr(r.url_norm || '')}" data-page="${r.page_id || ''}" class="row-click">` +
+        `<td><div class="mono">${escHtml(r.path || r.url || '')}</div>` +
+          `<div class="muted" style="font-size:12px;margin-top:3px">${second}</div></td>` +
+        `<td>${STATE_PILL[r.state] || ''}` +
+          (r.template || r.type ? `<div class="muted" style="font-size:12px;margin-top:3px">${escHtml(r.template || r.type)}</div>` : '') + `</td>` +
+        `<td>${r.age_days == null ? '—' : r.age_days + ' дн.'}</td>` +
+        `<td>${num(r.clicks)}${delta(r.d_clicks)}</td>` +
+        `<td>${num(r.impressions)}${delta(r.d_impressions)}</td>` +
+        `<td>${ctr(r.ctr)}</td>` +
+        `<td>${pos(r.position)}${delta(r.d_position, true)}</td>` +
+        `<td>${r.score == null ? '—' : Math.round(r.score)}</td>` +
+      `</tr>`;
+    }).join('');
+  }
+
+  /** Предупреждения: честно объясняют, почему цифры такие. */
+  function warnings(list) {
+    if (!list || !list.length) return '';
+    return list.map(w =>
+      `<div class="note ${w.kind === 'bad' ? 'bad' : 'warn'}">` +
+      `<span class="note-ico">${ico(w.kind === 'bad' ? 'alert' : 'info', 17)}</span>` +
+      `<div class="note-body">${escHtml(w.text)}</div></div>`).join('');
+  }
+
+  /** Срез: по проектам или по шаблонам — отвечает «что вообще работает». */
+  function breakdown(list, firstCol) {
+    if (!list || !list.length) return '<div class="muted">Данных пока нет.</div>';
+    return `<table class="tbl"><thead><tr>` +
+      `<th>${escHtml(firstCol)}</th><th style="width:150px;">Страниц в индексе</th>` +
+      `<th style="width:110px;">Клики</th><th style="width:110px;">Показы</th>` +
+      `<th style="width:110px;">Позиция</th></tr></thead><tbody>` +
+      list.map(s => `<tr><td>${escHtml(s.name || s.label || '—')}</td>` +
+        `<td>${fmtNum(s.indexed || 0)} <span class="muted">из ${fmtNum(s.pages || 0)}</span></td>` +
+        `<td>${num(s.clicks)}</td><td>${num(s.impressions)}</td>` +
+        `<td>${pos(s.position)}</td></tr>`).join('') +
+      `</tbody></table>`;
+  }
+
+  /** Карточка одного адреса в правой панели. */
+  function detailHtml(data, row) {
+    const m = data.meta || {}, h = data.halves || {};
+    const a = h.first || {}, b = h.second || {};
+    const spark = sparkline(data.series || []);
+    const queries = (data.queries || []).slice(0, 12);
+    return (
+      `<div class="drawer-sec"><div class="drawer-k">Адрес</div>` +
+        `<div class="mono">${escHtml((row && row.path) || '')}</div></div>` +
+      (m.key ? `<div class="drawer-sec"><div class="drawer-k">Ключ строки</div>${escHtml(m.key)}</div>` : '') +
+      `<div class="drawer-sec"><div class="drawer-k">Динамика по дням</div>${spark}</div>` +
+      `<div class="drawer-sec"><div class="drawer-k">Первая половина против второй</div>` +
+        `<table class="tbl"><thead><tr><th>Половина</th><th>Клики</th><th>Показы</th><th>Позиция</th></tr></thead>` +
+        `<tbody>` +
+        `<tr><td>до ${escHtml(h.split || '')}</td><td>${num(a.clicks)}</td><td>${num(a.impressions)}</td><td>${pos(a.position)}</td></tr>` +
+        `<tr><td>после</td><td>${num(b.clicks)}</td><td>${num(b.impressions)}</td><td>${pos(b.position)}</td></tr>` +
+        `</tbody></table></div>` +
+      `<div class="drawer-sec"><div class="drawer-k">Запросы этой страницы</div>` +
+        (queries.length
+          ? `<table class="tbl"><thead><tr><th>Запрос</th><th style="width:70px;">Клики</th>` +
+            `<th style="width:80px;">Показы</th><th style="width:80px;">Позиция</th></tr></thead><tbody>` +
+            queries.map(q => `<tr><td>${escHtml(q.query)}</td><td>${num(q.clicks)}</td>` +
+              `<td>${num(q.impressions)}</td><td>${pos(q.position)}</td></tr>`).join('') +
+            `</tbody></table>`
+          : '<div class="muted">Google не показывал эту страницу ни по одному запросу.</div>') +
+      `</div>` +
+      (m.score != null || m.uniqueness != null
+        ? `<div class="drawer-sec"><div class="drawer-k">Что внутри страницы</div>` +
+          `Балл качества: <b>${m.score == null ? '—' : Math.round(m.score)}</b> · ` +
+          `уникальность: <b>${m.uniqueness == null ? '—' : m.uniqueness}</b> · ` +
+          `возраст: <b>${m.age_days == null ? '—' : m.age_days + ' дн.'}</b></div>`
+        : '')
+    );
+  }
+
+  /** Микрографик показов: SVG без библиотек, чтобы не тянуть зависимости. */
+  function sparkline(series) {
+    const pts = (series || []).filter(p => p && p.day);
+    if (pts.length < 2) return '<div class="muted">Мало данных для графика.</div>';
+    const w = 520, h = 90, pad = 4;
+    const max = Math.max(1, ...pts.map(p => p.impressions || 0));
+    const step = (w - pad * 2) / (pts.length - 1);
+    const line = pts.map((p, i) =>
+      `${(pad + i * step).toFixed(1)},${(h - pad - (p.impressions || 0) / max * (h - pad * 2)).toFixed(1)}`
+    ).join(' ');
+    const clicks = pts.map((p, i) =>
+      `${(pad + i * step).toFixed(1)},${(h - pad - (p.clicks || 0) / max * (h - pad * 2)).toFixed(1)}`
+    ).join(' ');
+    return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block">` +
+      `<polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2"/>` +
+      `<polyline points="${clicks}" fill="none" stroke="var(--ok)" stroke-width="2" stroke-dasharray="3 3"/>` +
+      `</svg><div class="muted" style="font-size:12px">Сплошная — показы, пунктир — клики. ` +
+      `${escHtml(pts[0].day)} → ${escHtml(pts[pts.length - 1].day)}</div>`;
+  }
+
+  return { CHIPS, tiles, chips, tableHead, rows, warnings, breakdown, detailHtml, sparkline, num, pos, ctr, delta };
+})();
 
 function getTheme() {
   try {
