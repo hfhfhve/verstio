@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: cf7d4ccdfbe623bacb380673c095170f5ef18fb3
-# built:  2026-09-16 14:05 UTC
+# commit: 282411464312105729726fa3d1a4d9f274c63537
+# built:  2026-09-16 16:28 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -9,7 +9,7 @@ index.html  (1008 строк)
 offer.html  (102 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (1683 строк)
+app/app.js  (1754 строк)
 app/index.html  (329 строк)
 app/login.html  (382 строк)
 app/project.html  (3537 строк)
@@ -1566,18 +1566,22 @@ async function req(path, opts = {}) {
   const url = API_BASE.replace(/\/+$/, '') + path;
   const token = auth.token();
   // noAuthRedirect — для самих эндпоинтов входа: их 401 обрабатывает форма.
-  const { noAuthRedirect, ...fetchOpts } = opts;
+  const { noAuthRedirect, headers: extraHeaders, ...fetchOpts } = opts;
+  // FormData сам выставляет Content-Type с boundary — свой заголовок ставить нельзя.
+  const isForm = typeof FormData !== 'undefined' && fetchOpts.body instanceof FormData;
+  const headers = {
+    ...(isForm ? {} : { 'Content-Type': 'application/json' }),
+    'X-Requested-With': 'XMLHttpRequest',
+    ...(token ? { Authorization: 'Bearer ' + token } : {}),
+    ...(extraHeaders || {}),
+  };
   let response;
   try {
+    // headers идут ПОСЛЕ ...fetchOpts: иначе headers из opts затирали токен (401).
     response = await fetch(url, {
       cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        ...(token ? { Authorization: 'Bearer ' + token } : {}),
-        ...(opts.headers || {}),
-      },
       ...fetchOpts,
+      headers,
     });
   } catch (e) {
     wire.set(false, 'сеть');
@@ -2145,6 +2149,72 @@ function confirmDialog(opts) {
     wrap.querySelector('.scrim').onclick     = () => done(false);
     document.addEventListener('keydown', onKey);
     setTimeout(() => wrap.querySelector('[data-yes]').focus(), 40);
+  });
+}
+
+/* Справочное окно: заголовок + готовый HTML внутри. Одна кнопка «Понятно». */
+function infoModal(opts) {
+  const o = Object.assign({ title: 'Справка', html: '', close: 'Понятно', icon: 'info' }, opts || {});
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML =
+    `<div class="scrim"></div>` +
+    `<div class="modal is-lg" role="dialog" aria-modal="true">` +
+      `<div class="modal-head">` +
+        `<div class="modal-ico info">` + ico(o.icon, 19) + `</div>` +
+        `<div class="modal-title">${escHtml(o.title)}</div>` +
+      `</div>` +
+      `<div class="modal-body" style="max-height:66vh;overflow:auto">${o.html}</div>` +
+      `<div class="modal-foot"><button class="btn btn-primary" data-ok>${escHtml(o.close)}</button></div>` +
+    `</div>`;
+  document.body.appendChild(wrap);
+  const done = () => { document.removeEventListener('keydown', onKey); wrap.remove(); };
+  const onKey = e => { if (e.key === 'Escape') done(); };
+  wrap.querySelector('[data-ok]').onclick = done;
+  wrap.querySelector('.scrim').onclick = done;
+  document.addEventListener('keydown', onKey);
+  setTimeout(() => wrap.querySelector('[data-ok]').focus(), 40);
+}
+
+/* Пошаговый гайд по подключению Search Console. Лежит здесь, чтобы
+   открываться и из настроек, и из карточки проекта. */
+function openGscGuide() {
+  infoModal({
+    title: 'Как подключить Search Console',
+    icon: 'radar',
+    html: `
+      <div class="modal-text" style="margin:0 0 14px">
+        У Search Console нет входа «по логину»: любой доступ к её данным идёт через
+        Google Cloud. Сервисный аккаунт — самый короткий путь: ключ создаётся один раз,
+        ничего не протухает, подтверждать вход каждые пару месяцев не нужно.
+        Весь путь — 5–7 минут, всё бесплатно.
+      </div>
+      <ol style="margin:0;padding-left:20px;line-height:1.75;font-size:13.5px">
+        <li>Создайте проект в Google Cloud —
+          <a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">console.cloud.google.com/projectcreate</a>.
+          Название любое, платёжная карта не нужна.</li>
+        <li>Включите Search Console API —
+          <a href="https://console.cloud.google.com/apis/library/searchconsole.googleapis.com" target="_blank" rel="noopener">страница API</a>
+          → кнопка <b>Enable</b>.</li>
+        <li>Создайте сервисный аккаунт —
+          <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank" rel="noopener">Service accounts</a>
+          → <b>Create service account</b>. Имя любое, роли и доступы на шагах 2–3 можно пропустить.</li>
+        <li>Скачайте ключ: откройте созданный аккаунт → вкладка <b>Keys</b> →
+          <b>Add key</b> → <b>Create new key</b> → тип <b>JSON</b>. Скачается файл — это и есть ключ.</li>
+        <li>Откройте файл блокнотом, скопируйте всё содержимое и вставьте в поле
+          «JSON сервисного аккаунта», затем нажмите <b>Проверить ключ</b> — появится адрес вида
+          <span class="mono">имя@проект.iam.gserviceaccount.com</span>.</li>
+        <li>Дайте этому адресу доступ к сайту:
+          <a href="https://search.google.com/search-console/users" target="_blank" rel="noopener">Search Console → Пользователи и разрешения</a>
+          → выберите свой ресурс → <b>Добавить пользователя</b> → вставьте адрес сервисного аккаунта,
+          разрешение <b>Полный</b> или <b>Ограниченный</b>.</li>
+        <li>Вернитесь в проект → раздел «Обратная связь» → <b>Загрузить ресурсы</b> → выберите сайт →
+          <b>Сохранить ресурс</b> → <b>Синхронизировать</b>.</li>
+      </ol>
+      <div class="modal-text" style="margin-top:14px">
+        Ключ общий для всех проектов, на шаге 6 просто добавляйте новый адрес для каждого сайта.
+        Google отдаёт статистику с задержкой около трёх дней — свежие сутки в отчёте не появятся.
+      </div>`,
   });
 }
 
