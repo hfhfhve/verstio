@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>Настройки — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=46">
 <script>
   try {
     var f = localStorage.getItem('seo_fx');
@@ -57,7 +57,7 @@
           <a class="set-nav-item" href="#s-prompts"><span data-ico-sm="keyboard"></span> Промпты</a>
           <a class="set-nav-item" href="#s-quality"><span data-ico-sm="shield"></span> Качество</a>
           <a class="set-nav-item" href="#s-endpoints"><span data-ico-sm="code"></span> Свои API</a>
-          <a class="set-nav-item" href="#s-gsc"><span data-ico-sm="radar"></span> Search Console</a>
+          <a class="set-nav-item" href="#s-yandex"><span data-ico-sm="radar"></span> Яндекс.Вебмастер</a>
           <a class="set-nav-item" href="#s-look"><span data-ico-sm="moon"></span> Внешний вид</a>
           <a class="set-nav-item" href="#s-raw"><span data-ico-sm="list"></span> Все значения</a>
         </nav>
@@ -205,33 +205,33 @@
           </section>
 
           <!-- ВНЕШНИЙ ВИД -->
-          <!-- SEARCH CONSOLE -->
-          <section class="panel" id="s-gsc">
+          <!-- ЯНДЕКС.ВЕБМАСТЕР -->
+          <section class="panel" id="s-yandex">
             <div class="panel-head">
               <div class="panel-head-body">
-                <div class="panel-title">Search Console</div>
-                <div class="panel-sub">Ключ сервисного аккаунта Google — один раз на все проекты</div>
+                <div class="panel-title">Яндекс.Вебмастер</div>
+                <div class="panel-sub">Один токен на все сайты. Отсюда берутся вердикты о страницах</div>
               </div>
-              <div class="panel-tools" id="gscKeyPill"></div>
+              <div class="panel-tools" id="yaPill"></div>
             </div>
             <div class="panel-body">
               <div class="field">
-                <label class="field-label" for="gscKey">JSON сервисного аккаунта</label>
-                <textarea class="textarea" id="gscKey" rows="6" spellcheck="false"
-                          placeholder='{"type": "service_account", "client_email": "...@....iam.gserviceaccount.com", "private_key": "-----BEGIN PRIVATE KEY-----..."}'></textarea>
+                <label class="field-label" for="yaToken">OAuth-токен</label>
+                <input class="input mono" id="yaToken" type="password" spellcheck="false"
+                       autocomplete="off" placeholder="y0_AgAAAA...">
                 <div class="field-hint">
-                  Google Cloud → APIs &amp; Services → Credentials → Create service account → Keys → Add key (JSON).
-                  Там же включите <b>Search Console API</b>. Затем в Search Console:
-                  ��астройки ресурса → Пользователи и разрешения → Добавить пользователя →
-                  e-mail сервисного аккаунта, доступ «Полный» или «Ограниченный». Пароли и OAuth не нужны.
+                  Токен выпускается на <b>oauth.yandex.ru</b> для приложения с правом
+                  <span class="mono">webmaster:hostinfo</span>. Сайт должен быть подтверждён
+                  в Вебмастере — иначе API по нему ничего не отдаст. Нажмите
+                  «Как подключить», там пошагово.
                 </div>
               </div>
               <div class="up-row">
-                <button class="btn" id="gscTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить ключ</button>
-                <button class="btn" id="gscGuideBtn" type="button"><span data-ico-sm="info"></span> Подробный гайд</button>
-                <span class="muted" id="gscEmail"></span>
+                <button class="btn btn-primary" id="yaTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить и сохранить</button>
+                <button class="btn" id="yaGuideBtn" type="button"><span data-ico-sm="info"></span> Как подключить</button>
+                <button class="btn btn-danger btn-sm" id="yaDropBtn" type="button">Удалить токен</button>
               </div>
-              <div id="gscTestResult"></div>
+              <div id="yaResult"></div>
             </div>
           </section>
 
@@ -318,7 +318,7 @@
   </main>
 </div>
 
-<script src="app.js?v=29"></script>
+<script src="app.js?v=46"></script>
 <script>
 (function () {
 'use strict';
@@ -412,10 +412,7 @@ async function load() {
   $('#cheapPrompt').value = promptText(val('cheap_system_prompt'));
   paintPromptLens();
 
-  const gk = val('gsc_service_account');
-  $('#gscKey').value = typeof gk === 'string' ? gk : (gk ? JSON.stringify(gk, null, 2) : '');
-  gscSaved = ($('#gscKey').value || '').trim();
-  paintGscPill();
+  loadYandex();
 
   renderRaw();
   if ($('#rawFilter')) $('#rawFilter').oninput = () => renderRaw();
@@ -650,7 +647,6 @@ async function saveAll(btn) {
     uniqueness_threshold: { value: Number($('#uniqRange').value) },
     min_text_length: { value: parseInt($('#minLen').value, 10) || 1800 },
     stop_words: { value: $('#stopWords').value.split('\n').map(s => s.trim()).filter(Boolean) },
-    gsc_service_account: { value: $('#gscKey').value.trim() },
     passport_system_prompt: { value: $('#passportPrompt').value },
     strong_system_prompt: { value: $('#strongPrompt').value },
     cheap_system_prompt: { value: $('#cheapPrompt').value },
@@ -704,52 +700,91 @@ async function addEp(btn) {
   });
 }
 
-/* Что реально лежит на сервере: пока ключ не сохранён, проекты его не видят. */
-let gscSaved = '';
+/* ---------- Яндекс.Вебмастер ----------
+   Токен хранится только на сервере. Здесь мы его не показываем: в поле
+   видно лишь, что он есть. Проверка и сохранение — одно действие, потому
+   что проверенный, но не сохранённый токен раньше был главным источником
+   недоумения «почему сайт всё ещё не подключён». */
 
-/** Плашка в шапке панели Search Console: нет / не сохранён / сохранён. */
-function paintGscPill() {
-  const box = $('#gscKeyPill');
+let YA = { saved: false, connected: false };
+
+function paintYaPill() {
+  const box = $('#yaPill');
   if (!box) return;
-  const now = ($('#gscKey').value || '').trim();
-  box.innerHTML = !now
-    ? '<span class="pill neutral"><i class="dot"></i>ключа нет</span>'
-    : (now === gscSaved
-        ? '<span class="pill ok"><i class="dot"></i>ключ сохранён</span>'
-        : '<span class="pill warn"><i class="dot"></i>не сохранён</span>');
+  box.innerHTML = YA.connected
+    ? '<span class="pill ok"><i class="dot"></i>подключено</span>'
+    : (YA.saved
+        ? '<span class="pill warn"><i class="dot"></i>токен есть, но не работает</span>'
+        : '<span class="pill neutral"><i class="dot"></i>токена нет</span>');
 }
 
-/** Проверка ключа: Google говорит, кто мы и к каким ресурсам есть доступ. */
-async function checkGsc(btn) {
-  const key = ($('#gscKey').value || '').trim();
+function paintYaHosts(hosts, hint) {
+  const list = hosts || [];
+  if (!list.length) {
+    $('#yaResult').innerHTML =
+      `<div class="alert warn"><span class="alert-ico">${ico('info', 15)}</span>` +
+      `<span class="alert-text">${escHtml(hint || 'В Вебмастере нет ни одного сайта.')}</span></div>`;
+    return;
+  }
+  $('#yaResult').innerHTML =
+    `<div class="alert info"><span class="alert-ico">${ico('ok', 15)}</span><span class="alert-text">` +
+    `<b>Токен работает.</b> Доступные сайты: ` +
+    list.map(h => escHtml(h.url) + (h.verified ? '' : ' (не подтверждён)')).join(', ') +
+    `. Дальше выберите сайт на экране самого сайта.</span></div>`;
+}
+
+async function loadYandex() {
+  try {
+    const r = await api.yandexStatus();
+    YA = { saved: !!r.saved, connected: !!r.connected };
+    $('#yaToken').placeholder = r.saved ? 'токен сохранён — введите новый, чтобы заменить' : 'y0_AgAAAA...';
+    paintYaPill();
+    if (r.connected) paintYaHosts(r.hosts, r.hint);
+    else if (r.saved) {
+      $('#yaResult').innerHTML =
+        `<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
+        `<span class="alert-text">${escHtml(r.hint || 'Токен не принят.')}</span></div>`;
+    }
+  } catch (e) { /* настройки не должны падать из-за одной панели */ }
+}
+
+async function checkYandex(btn) {
+  const token = ($('#yaToken').value || '').trim();
+  if (!token && !YA.saved) { toast.info('Вставьте токен'); return; }
   await withBusy(btn, async () => {
     try {
-      const r = await api.testGsc(key);
-      const sites = r.sites || [];
-      $('#gscEmail').textContent = r.client_email || '';
-      $('#gscTestResult').innerHTML =
-        `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span><div class="note-body">` +
-        `<b>Ключ рабочий.</b> Аккаунт: ${escHtml(r.client_email || '')}.<br>` +
-        (sites.length
-          ? 'Доступные ресурсы: ' + sites.map(x => escHtml(x.site_url)).join(', ')
-          : 'Ресурсов нет: добавьте этот e-mail в Search Console как пользователя ресурса.') +
-        `</div></div>`;
-      // Проверка шла по тексту из поля. Если его ещё не сохранили,
-      // сервер ключа не знает и проекты отвечают 400 — сохраняем сразу.
-      if (key && key !== gscSaved) {
-        await api.updateSettings({ gsc_service_account: { value: key } });
-        gscSaved = key;
-        paintGscPill();
-      }
-      toast.ok('Ключ рабочий и сохранён',
-        sites.length ? ('Ресурсов: ' + sites.length) : 'Добавьте аккаунт в Search Console как пользователя ресурса');
+      const r = token ? await api.yandexToken(token) : await api.yandexStatus();
+      YA = { saved: true, connected: !!r.connected };
+      paintYaPill();
+      paintYaHosts(r.hosts, r.hint);
+      $('#yaToken').value = '';
+      $('#yaToken').placeholder = 'токен сохранён — введите новый, чтобы заменить';
+      toast.ok('Токен сохранён', r.hint || '');
     } catch (e) {
-      $('#gscTestResult').innerHTML =
-        `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
-        `<div class="note-body"><b>Не вышло.</b> ${escHtml(e.message)}</div></div>`;
-      toast.err('Ключ не сработал', e);
+      $('#yaResult').innerHTML =
+        `<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
+        `<span class="alert-text"><b>Не вышло.</b> ${escHtml(e.message)}</span></div>`;
+      toast.err('Токен не сработал', e);
     }
   });
+}
+
+async function dropYandex() {
+  const ok = await confirmDialog({
+    title: 'Удалить токен Яндекса?',
+    text: 'Сайты перестанут получать данные из Вебмастера. История метрик останется.',
+    confirm: 'Удалить', danger: true,
+  });
+  if (!ok) return;
+  try {
+    await api.yandexToken('');
+    YA = { saved: false, connected: false };
+    $('#yaToken').value = '';
+    $('#yaToken').placeholder = 'y0_AgAAAA...';
+    $('#yaResult').innerHTML = '';
+    paintYaPill();
+    toast.ok('Токен удалён');
+  } catch (e) { toast.err('Не удалось', e); }
 }
 
 /* ---------- привязка ---------- */
@@ -772,9 +807,9 @@ $('#saveBaseBtn').onclick = () => {
 $('#modelsReload').onclick = () => loadModels();
 $('#epTestBtn').onclick = e => testEp(e.currentTarget);
 $('#epAddBtn').onclick = e => addEp(e.currentTarget);
-$('#gscTestBtn').onclick = e => checkGsc(e.currentTarget);
-$('#gscGuideBtn').onclick = () => openGscGuide();
-$('#gscKey').oninput = () => paintGscPill();
+$('#yaTestBtn').onclick = e => checkYandex(e.currentTarget);
+$('#yaGuideBtn').onclick = () => openYandexGuide();
+$('#yaDropBtn').onclick = () => dropYandex();
 $('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
 $('#copyRawBtn').onclick = () => copyText(JSON.stringify(SET, null, 2), 'JSON настроек');
 
