@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 6d3cfc3de26590c173063a552d1115d0c8cb4634
-# built:  2026-09-16 20:42 UTC
+# commit: 0e2929428468af54c2ef36c2b020ba42610b81e7
+# built:  2026-09-17 09:03 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -14,7 +14,7 @@ app/index.html  (428 строк)
 app/login.html  (382 строк)
 app/project.html  (3659 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (835 строк)
+app/settings.html  (985 строк)
 app/site.html  (809 строк)
 app/style.css  (3358 строк)
 
@@ -8048,6 +8048,7 @@ Disallow: /
           <a class="set-nav-item" href="#s-quality"><span data-ico-sm="shield"></span> Качество</a>
           <a class="set-nav-item" href="#s-endpoints"><span data-ico-sm="code"></span> Свои API</a>
           <a class="set-nav-item" href="#s-yandex"><span data-ico-sm="radar"></span> Яндекс.Вебмастер</a>
+          <a class="set-nav-item" href="#s-serp"><span data-ico-sm="search"></span> Яндекс Search API</a>
           <a class="set-nav-item" href="#s-look"><span data-ico-sm="moon"></span> Внешний вид</a>
           <a class="set-nav-item" href="#s-raw"><span data-ico-sm="list"></span> Все значения</a>
         </nav>
@@ -8222,6 +8223,69 @@ Disallow: /
                 <button class="btn btn-danger btn-sm" id="yaDropBtn" type="button">Удалить токен</button>
               </div>
               <div id="yaResult"></div>
+            </div>
+          </section>
+
+          <!-- ЯНДЕКС SEARCH API -->
+          <section class="panel" id="s-serp">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Яндекс Search API</div>
+                <div class="panel-sub">Выдача до генерации: тип страницы, обязательные разделы, склейка ключей</div>
+              </div>
+              <div class="panel-tools" id="serpPill"></div>
+            </div>
+            <div class="panel-body">
+              <div class="field">
+                <label class="field-label" for="serpKey">API-ключ сервисного аккаунта</label>
+                <input class="input mono" id="serpKey" type="password" spellcheck="false"
+                       autocomplete="off" placeholder="AQVN...">
+                <div class="field-hint">
+                  Ключ создаётся кнопкой «Создать API-ключ» в Yandex AI Studio или в консоли Cloud.
+                  Нужен именно API-ключ (<span class="mono">AQVN...</span>), а не IAM-токен — тот живёт 12 часов.
+                  Сервисному аккаунту нужна роль <span class="mono">search-api.webSearch.user</span>.
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="serpFolder">ID каталога (folder_id)</label>
+                <input class="input mono" id="serpFolder" type="text" spellcheck="false"
+                       autocomplete="off" placeholder="b1g...">
+                <div class="field-hint">Виден в консоли Cloud рядом с именем каталога. Грант должен быть привязан к этому же каталогу.</div>
+              </div>
+              <div class="grid-2">
+                <label class="field">
+                  <span class="field-label">Регион поиска</span>
+                  <input class="input" id="serpRegion" type="number" min="1" step="1" placeholder="225">
+                  <span class="field-hint">225 — Россия, 213 — Москва, 2 — Питер.</span>
+                </label>
+                <label class="field">
+                  <span class="field-label">Сколько мест берём из топа</span>
+                  <input class="input" id="serpTopN" type="number" min="3" max="20" step="1" placeholder="10">
+                  <span class="field-hint">По ним считается тип страницы и склейка ключей.</span>
+                </label>
+                <label class="field">
+                  <span class="field-label">Скачивать страниц конкурентов</span>
+                  <input class="input" id="serpFetchTop" type="number" min="0" max="10" step="1" placeholder="5">
+                  <span class="field-hint">Оттуда берутся разделы H2/H3 и объём. 0 — не скачивать.</span>
+                </label>
+                <label class="field">
+                  <span class="field-label">Одновременных запросов</span>
+                  <input class="input" id="serpConc" type="number" min="1" max="20" step="1" placeholder="8">
+                  <span class="field-hint">Если пойдут ошибки 429 — уменьшите.</span>
+                </label>
+              </div>
+              <div class="field">
+                <label class="switch">
+                  <input type="checkbox" id="serpAsync" checked>
+                  <span>Асинхронный режим (дешевле в разы, ответ ждём до минуты)</span>
+                </label>
+                <div class="field-hint">Выключать стоит только для отладки на одном-двух ключах.</div>
+              </div>
+              <div class="up-row">
+                <button class="btn btn-primary" id="serpSaveBtn" type="button"><span data-ico-sm="check"></span> Проверить и сохранить</button>
+                <button class="btn btn-danger btn-sm" id="serpDropBtn" type="button">Удалить ключ</button>
+              </div>
+              <div id="serpResult"></div>
             </div>
           </section>
 
@@ -8403,6 +8467,7 @@ async function load() {
   paintPromptLens();
 
   loadYandex();
+  fillSerp();
 
   renderRaw();
   if ($('#rawFilter')) $('#rawFilter').oninput = () => renderRaw();
@@ -8777,6 +8842,90 @@ async function dropYandex() {
   } catch (e) { toast.err('Не удалось', e); }
 }
 
+/* ---------- Яндекс Search API ---------- */
+
+function fillSerp() {
+  const saved = String(val('yandex_search_api_key') || '');
+  const folder = String(val('yandex_search_folder_id') || '');
+  // Сам ключ с сервера в поле не кладём: показываем только факт, что он есть.
+  if ($('#serpKey')) $('#serpKey').placeholder = saved
+    ? 'ключ сохранён — введите новый, чтобы заменить' : 'AQVN...';
+  if ($('#serpFolder')) $('#serpFolder').value = folder;
+  if ($('#serpRegion')) $('#serpRegion').value = Number(val('serp_region')) || 225;
+  if ($('#serpTopN')) $('#serpTopN').value = Number(val('serp_top_n')) || 10;
+  const ft = val('serp_fetch_top');
+  if ($('#serpFetchTop')) $('#serpFetchTop').value = (ft === 0 || ft) ? Number(ft) : 5;
+  if ($('#serpConc')) $('#serpConc').value = Number(val('serp_concurrency')) || 8;
+  const am = val('serp_async');
+  if ($('#serpAsync')) $('#serpAsync').checked = (am === undefined || am === null) ? true : !!am;
+  paintSerpPill(!!saved && !!folder);
+}
+
+function paintSerpPill(ready) {
+  if (!$('#serpPill')) return;
+  $('#serpPill').innerHTML = ready
+    ? '<span class="pill ok"><i class="dot"></i>ключ есть</span>'
+    : '<span class="pill"><i class="dot"></i>ключа нет</span>';
+}
+
+async function saveSerp(btn) {
+  const key = ($('#serpKey').value || '').trim();
+  const folder = ($('#serpFolder').value || '').trim();
+  const savedKey = String(val('yandex_search_api_key') || '');
+  if (!key && !savedKey) { toast.info('Вставьте API-ключ'); return; }
+  if (!folder) { toast.warn('Нужен ID каталога'); return; }
+
+  const payload = {
+    yandex_search_folder_id: { value: folder },
+    serp_region: { value: parseInt($('#serpRegion').value, 10) || 225 },
+    serp_top_n: { value: parseInt($('#serpTopN').value, 10) || 10 },
+    serp_fetch_top: { value: parseInt($('#serpFetchTop').value, 10) || 0 },
+    serp_concurrency: { value: parseInt($('#serpConc').value, 10) || 8 },
+    serp_async: { value: !!$('#serpAsync').checked },
+  };
+  // Пустое поле не должно стирать уже сохранённый ключ.
+  if (key) payload.yandex_search_api_key = { value: key };
+
+  await withBusy(btn, async () => {
+    try {
+      const res = await api.updateSettings(payload);
+      SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
+      renderRaw();
+      $('#serpKey').value = '';
+      fillSerp();
+      $('#serpResult').innerHTML =
+        `<div class="alert info"><span class="alert-ico">${ico('ok', 15)}</span><span class="alert-text">` +
+        `<b>Сохранено.</b> Теперь на странице проекта работает «Подготовка ключей». ` +
+        `Первый прогон сделайте на 5–10 ключах — проверите, что ключ принят.</span></div>`;
+      toast.ok('Настройки Search API сохранены');
+    } catch (e) {
+      $('#serpResult').innerHTML =
+        `<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
+        `<span class="alert-text"><b>Не сохранилось.</b> ${escHtml(e.message)}</span></div>`;
+      toast.err('Не удалось сохранить', e);
+    }
+  });
+}
+
+async function dropSerp() {
+  const ok = await confirmDialog({
+    title: 'Удалить ключ Search API?',
+    text: 'Подготовка ключей перестанет работать. Уже собранные техзадания останутся.',
+    confirm: 'Удалить', danger: true,
+  });
+  if (!ok) return;
+  try {
+    const res = await api.updateSettings({ yandex_search_api_key: { value: '' } });
+    SET = (res && res.settings) ? res.settings : SET;
+    if (SET && SET.yandex_search_api_key) SET.yandex_search_api_key = { value: '' };
+    renderRaw();
+    $('#serpKey').value = '';
+    $('#serpResult').innerHTML = '';
+    fillSerp();
+    toast.ok('Ключ удалён');
+  } catch (e) { toast.err('Не удалось', e); }
+}
+
 /* ---------- привязка ---------- */
 hydrateIcons();
 renderThemes();
@@ -8800,6 +8949,8 @@ $('#epAddBtn').onclick = e => addEp(e.currentTarget);
 $('#yaTestBtn').onclick = e => checkYandex(e.currentTarget);
 $('#yaGuideBtn').onclick = () => openYandexGuide();
 $('#yaDropBtn').onclick = () => dropYandex();
+$('#serpSaveBtn').onclick = e => saveSerp(e.currentTarget);
+$('#serpDropBtn').onclick = () => dropSerp();
 $('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
 $('#copyRawBtn').onclick = () => copyText(JSON.stringify(SET, null, 2), 'JSON настроек');
 
