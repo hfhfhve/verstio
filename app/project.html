@@ -2498,6 +2498,23 @@ async function loadSerp(collect) {
   paintGenNotice();
 }
 
+/* Режим запросов к Яндексу: берём из прогресса, иначе из настроек. */
+function serpMode() {
+  const st = S.serp || {}, prog = S.serpProgress || {}, run = S.serpRun || {};
+  let mode = prog.mode || (run.stats && run.stats.mode) || null;
+  if (!mode && typeof st.async_mode === 'boolean') mode = st.async_mode ? 'async' : 'sync';
+  if (!mode) return null;
+  const conc = prog.concurrency || st.concurrency ||
+    (run.stats && run.stats.concurrency) || null;
+  return {
+    async: mode === 'async',
+    label: mode === 'async' ? 'асинхронный' : 'синхронный',
+    conc: conc,
+    text: (mode === 'async' ? 'асинхронный режим' : 'синхронный режим') +
+      (conc ? ' · по ' + conc + ' запросов сразу' : ''),
+  };
+}
+
 function renderSerp() {
   const st = S.serp || {};
   const prog = S.serpProgress || {};
@@ -2507,10 +2524,12 @@ function renderSerp() {
 
   const upd = $('#serpUpdated');
   if (upd) {
-    upd.textContent = S.serpAt
-      ? '· статус обновлён в ' +
-        S.serpAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      : '';
+    const md = serpMode();
+    const bits = [];
+    if (md) bits.push(md.text);
+    if (S.serpAt) bits.push('статус обновлён в ' +
+      S.serpAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    upd.textContent = bits.length ? '· ' + bits.join(' · ') : '';
   }
 
   /* пилюля в заголовке: три разных состояния, а не два */
@@ -2521,7 +2540,9 @@ function renderSerp() {
       pillEl.innerHTML = `<i class="dot"></i>Статус не пришёл`;
     } else if (ready) {
       pillEl.className = 'pill ok';
-      pillEl.innerHTML = `<i class="dot"></i>Ключ задан · регион ${st.region || 225}`;
+      const md = serpMode();
+      pillEl.innerHTML = `<i class="dot"></i>Ключ задан · регион ${st.region || 225}` +
+        (md ? ` · ${md.label}` : '');
     } else {
       pillEl.className = 'pill bad';
       pillEl.innerHTML = `<i class="dot"></i>` +
@@ -2609,11 +2630,15 @@ function renderSerp() {
   });
   const tags = $('#serpStats');
   if (tags) {
-    tags.innerHTML = !S.briefs.length ? '' :
+    const md = serpMode();
+    const modeTag = md
+      ? `<span class="tag">Запросы: ${md.label}${md.conc ? ' · ' + md.conc + ' сразу' : ''}</span>`
+      : '';
+    tags.innerHTML = !S.briefs.length ? modeTag :
       `<span class="tag ok">Можно делать: ${counts.go}</span>` +
       `<span class="tag warn">С осторожностью: ${counts.caution}</span>` +
       `<span class="tag bad">Не делать: ${counts.stop}</span>` +
-      `<span class="tag">Склеено дублей: ${counts.merged}</span>`;
+      `<span class="tag">Склеено дублей: ${counts.merged}</span>` + modeTag;
   }
 
   /* кнопки */
