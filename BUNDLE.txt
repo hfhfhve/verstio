@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 31fcf86bb5bfa1debc1b50cb48fce2b6f9d81c1b
-# built:  2026-09-17 20:38 UTC
+# commit: 7d9270cf104c9f9dd1c1d2304e03f78b61dadcd8
+# built:  2026-09-17 20:39 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2077 строк)
 app/index.html  (428 строк)
 app/login.html  (382 строк)
-app/project.html  (4181 строк)
+app/project.html  (4251 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1059 строк)
 app/site.html  (809 строк)
@@ -4772,6 +4772,13 @@ form.addEventListener('submit', async (e) => {
             <div class="panel-body" id="columnsMap"></div>
           </div>
 
+          <style>
+            /* крутилка на кнопке обновления: видно, что запрос идёт */
+            #serpReload.busy { pointer-events: none; opacity: .75; }
+            #serpReload.busy svg { animation: spin .7s linear infinite; }
+            #serpPanel .serp-upd { font-size: 11.5px; color: var(--text-dim, #8b8b8b); }
+          </style>
+
           <div class="panel" id="serpPanel">
             <div class="panel-head">
               <div class="panel-head-body">
@@ -4779,6 +4786,7 @@ form.addEventListener('submit', async (e) => {
                 <div class="panel-sub">
                   Спрашиваем выдачу по каждому ключу, склеиваем дублирующие запросы и ставим вердикт —
                   стоит ли тратить модель на эту страницу. Без этого шага тексты пишутся вслепую.
+                  <span class="serp-upd" id="serpUpdated"></span>
                 </div>
               </div>
               <div class="panel-tools">
@@ -5801,11 +5809,13 @@ const S = {
   genTimer: null,
   chatWait: null,
   serp: null,          /* /serp/status — подключён ли Search API */
-  serpErr: null,       /* текст ошибки, если бэкенд не ответил */
+  serpErr: null,       /* текст ошибки, если запрос статуса не удался */
+  serpAt: null,        /* когда последний раз спрашивали статус */
   serpProgress: null,  /* /serp/progress — сколько выдач готово */
   serpRun: null,       /* /serp/prepare — итог последнего прогона */
   briefs: [],          /* техзадания по ключам */
   briefMap: {},        /* key_item_id -> техзадание */
+  serpBusy: false,
   serpTimer: null,
   loaded: {},
 };
@@ -6246,7 +6256,12 @@ function bindStatic() {
   $('#serpPrepareBtn').onclick = e => prepareKeys(e.currentTarget, false);
   $('#serpForceBtn').onclick = e => prepareKeys(e.currentTarget, true);
   $('#serpApplyStopBtn').onclick = e => applySerpStop(e.currentTarget);
-  $('#serpReload').onclick = () => loadSerp(true);
+  $('#serpReload').onclick = async () => {
+    if (S.serpBusy) return;
+    await loadSerp(true);
+    if (S.serpErr) toast.warn('Статус не пришёл', S.serpErr);
+    else toast.ok('Обновлено');
+  };
   $('#keysFilter').oninput = () => renderKeys();
   $('#keysInput').oninput = () => {
     const n = $('#keysInput').value.split('\n').map(s => s.trim()).filter(Boolean).length;
@@ -6715,6 +6730,31 @@ function renderKeys() {
    Повторное нажатие «Подготовить ключи» денег не тратит.
    ====================================================================== */
 
+/* Обращения к бэкенду идут через эту обёртку, а не напрямую через api.*:
+   если браузер держит в кеше старый app.js без serp-методов, панель
+   всё равно работает — адреса те же, вызов идёт через req(). */
+const serpApi = {
+  status: () => (api.serpStatus ? api.serpStatus() : req('/serp/status')),
+  prepare: (id, body) => (api.serpPrepare
+    ? api.serpPrepare(id, body)
+    : req(`/projects/${id}/serp/prepare`, { method: 'POST', body: JSON.stringify(body || {}) })),
+  prepareStatus: id => (api.serpPrepareStatus
+    ? api.serpPrepareStatus(id)
+    : req(`/projects/${id}/serp/prepare`)),
+  progress: (id, collect) => (api.serpProgress
+    ? api.serpProgress(id, collect)
+    : req(`/projects/${id}/serp/progress?collect=${collect === false ? 0 : 1}`)),
+  briefs: id => (api.briefs ? api.briefs(id) : req(`/projects/${id}/briefs`)),
+  brief: (id, kid) => (api.brief ? api.brief(id, kid) : req(`/projects/${id}/briefs/${kid}`)),
+  briefSave: (id, kid, body) => (api.briefSave
+    ? api.briefSave(id, kid, body)
+    : req(`/projects/${id}/briefs/${kid}`, { method: 'PUT', body: JSON.stringify(body || {}) })),
+  applyStop: id => (api.briefsApplyStop
+    ? api.briefsApplyStop(id)
+    : req(`/projects/${id}/briefs/apply-stop`, { method: 'POST' })),
+  gate: id => (api.serpGate ? api.serpGate(id) : req(`/projects/${id}/serp/gate`)),
+};
+
 const VERDICT = {
   go:      { label: 'Можно делать', tone: 'ok' },
   caution: { label: 'С осторожностью', tone: 'warn' },
@@ -6754,29 +6794,44 @@ function serpCell(k, br) {
             escHtml(bits.join(' · ')) + `</div>` : '');
 }
 
+/** Крутилка на кнопке обновления: видно, что запрос идёт. */
+function serpSpin(on) {
+  S.serpBusy = !!on;
+  const b = $('#serpReload');
+  if (b) b.classList.toggle('busy', !!on);
+  const upd = $('#serpUpdated');
+  if (upd && on) upd.textContent = '· обновляем…';
+}
+
 /** Статус Search API + прогресс + техзадания. Всё бесплатное.
     Ошибку запроса не выдаём за «ключ не задан»: это разные беды. */
 async function loadSerp(collect) {
+  serpSpin(true);
   try {
-    S.serp = await api.serpStatus();
-    S.serpErr = null;
-  } catch (e) {
-    S.serp = null;
-    S.serpErr = e && e.message ? e.message : 'бэкенд не ответил';
-  }
-
-  if (S.keys.length && S.serp && S.serp.ready) {
-    try { S.serpProgress = await api.serpProgress(PID, collect !== false); }
-    catch (e) { S.serpProgress = null; }
-    try { S.serpRun = await api.serpPrepareStatus(PID); }
-    catch (e) { S.serpRun = null; }
-  }
-  if (S.keys.length) {
     try {
-      S.briefs = await api.briefs(PID) || [];
-      S.briefMap = {};
-      S.briefs.forEach(b => { S.briefMap[b.key_item_id] = b; });
-    } catch (e) { S.briefs = []; S.briefMap = {}; }
+      S.serp = await serpApi.status();
+      S.serpErr = null;
+    } catch (e) {
+      S.serp = null;
+      S.serpErr = e && e.message ? e.message : 'бэкенд не ответил';
+    }
+
+    if (S.keys.length && S.serp && S.serp.ready) {
+      try { S.serpProgress = await serpApi.progress(PID, collect !== false); }
+      catch (e) { S.serpProgress = null; }
+      try { S.serpRun = await serpApi.prepareStatus(PID); }
+      catch (e) { S.serpRun = null; }
+    }
+    if (S.keys.length) {
+      try {
+        S.briefs = await serpApi.briefs(PID) || [];
+        S.briefMap = {};
+        S.briefs.forEach(b => { S.briefMap[b.key_item_id] = b; });
+      } catch (e) { S.briefs = []; S.briefMap = {}; }
+    }
+    S.serpAt = new Date();
+  } finally {
+    serpSpin(false);
   }
 
   renderSerp();
@@ -6790,6 +6845,14 @@ function renderSerp() {
   const run = S.serpRun || {};
   const err = S.serpErr;
   const ready = !err && !!st.ready;
+
+  const upd = $('#serpUpdated');
+  if (upd) {
+    upd.textContent = S.serpAt
+      ? '· статус обновлён в ' +
+        S.serpAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      : '';
+  }
 
   /* пилюля в заголовке: три разных состояния, а не два */
   const pillEl = $('#serpReadyPill');
@@ -6811,13 +6874,16 @@ function renderSerp() {
   /* главное сообщение */
   const box = $('#serpState');
   if (err) {
-    /* Чаще всего: бэкенд старого билда без router_brief, спавшая сессия или прокси. */
+    const stale = /is not a function|undefined is not/i.test(err);
     box.innerHTML = `<div class="note warn" style="margin:0;">` +
       `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-      `<b>Бэкенд не ответил на <code>GET /api/serp/status</code>.</b> ` +
-      `${escHtml(err)}<br>Ключ здесь ни при чём. Проверьте: бэкенд жив и обновлён ` +
-      `(этот адрес даёт brief.py), сессия не истекла, нет 503 от прокси. ` +
-      `Нажмите обновление справа сверху.</div></div>`;
+      (stale
+        ? `<b>Браузер держит старый app.js.</b> ${escHtml(err)}<br>` +
+          `Залейте новый app.js и откройте страницу через Ctrl+F5.`
+        : `<b>Бэкенд не ответил на <code>GET /api/serp/status</code>.</b> ` +
+          `${escHtml(err)}<br>Ключ здесь ни при чём. Проверьте: бэкенд жив и обновлён ` +
+          `(этот адрес даёт brief.py), сессия не истекла, нет 503 от прокси.`) +
+      `</div></div>`;
   } else if (!ready) {
     const what = st.has_key && !st.has_folder
       ? 'Ключ есть, но не задан ID каталога (folder_id).'
@@ -6902,7 +6968,7 @@ function renderSerp() {
     prep.disabled = !ready || !S.keys.length;
     const label = prog.pending ? ' Забрать готовое и собрать ТЗ'
       : S.briefs.length ? ' Пересобрать техзадания' : ' Подготовить ключи';
-    const iconSpan = prep.querySelector('[data-ico-sm]');
+    const iconSpan = prep.querySelector('[data-ico-sm], svg');
     prep.innerHTML = (iconSpan ? iconSpan.outerHTML : '') + label;
   }
   if (forceBtn) forceBtn.disabled = !ready || !S.keys.length;
@@ -6920,9 +6986,10 @@ async function prepareKeys(btn, force) {
   }
   await withBusy(btn, async () => {
     try {
-      await api.serpPrepare(PID, { force: !!force, use_llm: !!$('#serpUseLlm').checked });
+      await serpApi.prepare(PID, { force: !!force, use_llm: !!$('#serpUseLlm').checked });
       toast.ok('Подготовка запущена',
         'Спрашиваем выдачу и собираем техзадания. Прогресс обновляется сам.');
+      await loadSerp(true);
       startSerpPolling();
     } catch (e) {
       toast.err('Не удалось запустить подготовку', e);
@@ -6962,7 +7029,7 @@ async function applySerpStop(btn) {
   if (!ok) return;
   await withBusy(btn, async () => {
     try {
-      const res = await api.briefsApplyStop(PID);
+      const res = await serpApi.applyStop(PID);
       toast.ok('Снято с очереди', 'Ключей: ' + fmtNum(res.skipped_keys || 0));
       await loadKeys();
       await loadSerp(false);
@@ -6980,7 +7047,7 @@ async function openBrief(keyItemId) {
   });
 
   let b;
-  try { b = await api.brief(PID, keyItemId); }
+  try { b = await serpApi.brief(PID, keyItemId); }
   catch (e) {
     drawer.setBody(`<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
       `<div class="note-body">${escHtml(e.message || 'Техзадание не найдено')}</div></div>`);
@@ -7059,7 +7126,7 @@ async function openBrief(keyItemId) {
   const saveBtn = document.getElementById('briefSaveBtn');
   if (saveBtn) saveBtn.onclick = () => withBusy(saveBtn, async () => {
     try {
-      await api.briefSave(PID, keyItemId, {
+      await serpApi.briefSave(PID, keyItemId, {
         brief_text: document.getElementById('briefText').value,
         verdict: document.getElementById('briefVerdict').value,
         unmerge: !!(document.getElementById('briefUnmerge') || {}).checked,
@@ -7809,7 +7876,7 @@ async function startGeneration() {
      не снята каннибализация, не учтены вердикты stop. Спрашиваем подтверждение. */
   let force = false;
   try {
-    const gate = await api.serpGate(PID);
+    const gate = await serpApi.gate(PID);
     if (gate && gate.blocked) {
       const ok = await confirmDialog({
         title: 'Ключи не проверены по выдаче',
@@ -7830,7 +7897,10 @@ async function startGeneration() {
   const btn = $('#startGenBtn');
   await withBusy(btn, async () => {
     try {
-      const res = await api.startGeneration(PID, S.parallel, force);
+      const res = await (api.startGeneration.length >= 3
+        ? api.startGeneration(PID, S.parallel, force)
+        : req(`/projects/${PID}/generate?parallel=${S.parallel || 1}${force ? '&force=1' : ''}`,
+            { method: 'POST' }));
       if (!res.created) {
         toast.warn('Нечего запускать', res.reason || 'Все строки уже обработаны.');
       } else {
