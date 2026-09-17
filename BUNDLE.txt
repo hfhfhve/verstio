@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 15fd2c10bfb99e0c96997aef32bf8e6e28bf1391
-# built:  2026-09-17 09:25 UTC
+# commit: c403501c6aa348c20fd17d31fbaa04846e44ec80
+# built:  2026-09-17 09:26 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -9,7 +9,7 @@ index.html  (1008 строк)
 offer.html  (102 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2056 строк)
+app/app.js  (2058 строк)
 app/index.html  (428 строк)
 app/login.html  (382 строк)
 app/project.html  (3659 строк)
@@ -1706,6 +1706,9 @@ const api = {
   addCustomEndpoint:    (d)  => req('/settings/custom-endpoints', { method: 'POST', body: JSON.stringify(d) }),
   deleteCustomEndpoint: (id) => req(`/settings/custom-endpoints/${id}`, { method: 'DELETE' }),
   testCustomEndpoint:   (id) => req(`/settings/custom-endpoints/${id}/test`, { method: 'POST' }),
+  // Один живой запрос к Яндекс Search API: принят ли ключ и правильный ли каталог.
+  testSerp: (key, folder) => req('/settings/serp-test', {
+                             method: 'POST', body: JSON.stringify({ key: key, folder_id: folder }) }),
 
   /* ---- БЛОК 1 — Паспорт проекта (готово) ---- */
   analyzeData:  (id)     => req(`/projects/${id}/analyze`, { method: 'POST' }),
