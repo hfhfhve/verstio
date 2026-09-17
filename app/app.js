@@ -265,6 +265,23 @@ const api = {
   testCustomEndpoint:   (id) => req(`/settings/custom-endpoints/${id}/test`, { method: 'POST' }),
   // Один живой запрос к Яндекс Search API: принят ли ключ и правильный ли каталог.
   testSerp: (key, folder) => req('/settings/serp-test', {
+
+  /* Яндекс Search API: подготовка ключей в две фазы.
+     Отправка и сбор разделены: Яндекс считает отложенный запрос
+     от 5 минут до нескольких часов, а результат хранит 12 часов. */
+  serpStatus: () => req('/serp/status'),
+  serpPrepare: (id, body) => req(`/projects/${id}/serp/prepare`, {
+    method: 'POST', body: JSON.stringify(body || {}),
+  }),
+  serpPrepareStatus: id => req(`/projects/${id}/serp/prepare`),
+  /* collect=1 — попутно забрать готовое; проверка готовности бесплатна. */
+  serpProgress: (id, collect) => req(`/projects/${id}/serp/progress?collect=${collect === false ? 0 : 1}`),
+  briefs: (id, role) => req(`/projects/${id}/briefs${role ? '?role=' + encodeURIComponent(role) : ''}`),
+  brief: (id, keyItemId) => req(`/projects/${id}/briefs/${keyItemId}`),
+  briefSave: (id, keyItemId, body) => req(`/projects/${id}/briefs/${keyItemId}`, {
+    method: 'PUT', body: JSON.stringify(body || {}),
+  }),
+  briefsApplyStop: id => req(`/projects/${id}/briefs/apply-stop`, { method: 'POST' }),
                              method: 'POST', body: JSON.stringify({ key: key, folder_id: folder }) }),
 
   /* ---- БЛОК 1 — Паспорт проекта (готово) ---- */
