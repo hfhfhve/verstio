@@ -2483,17 +2483,45 @@ function renderPassport() {
       ((st.noise_names || []).length ? ` · шум (разнообразие есть, смысла нет): ${escHtml(st.noise_names.join(', '))}` : '') +
       `</div></div>`;
 
+  // Потолок считает скрипт, ИИ может только уменьшить его. Показываем оба числа,
+  // иначе непонятно, почему в итоге столько страниц.
   const cap = p.page_cap;
+  const capScript = (p.page_cap_script != null) ? p.page_cap_script : cap;
+  const capModel = p.pages_recommended_model;
+  const capFinal = (p.pages_recommended != null) ? p.pages_recommended : cap;
   const groups = st.fact_groups;
   const dupRows = st.duplicate_fact_rows || 0;
+  const entityCol = st.entity_column || '';
+  const metricNames = st.metric_names || [];
+  const conflicts = st.fact_conflicts || [];
+  const dims = st.dimension_candidates || [];
   $('#q4Box').innerHTML = (cap == null)
     ? passportSlot('Потолок страниц', null, 'Появится после анализа.')
     : `<div class="metric accent"><div class="metric-k">Потолок страниц</div>` +
-      `<div class="metric-v">${cap}</div>` +
+      `<div class="metric-v">${capFinal}</div>` +
       `<div class="metric-note">Строк в таблице: ${st.rows_total || 0}` +
       (groups != null ? ` · уникальных наборов фактов: ${groups}` : '') +
       (dupRows ? ` · строк-повторов по фактам: ${dupRows}` : '') +
       (p.drop_total ? ` · отброшено: ${p.drop_total}` : '') + `</div>` +
+      `<div class="metric-note">Скрипт: ${capScript != null ? capScript : '—'}` +
+      (capModel != null ? ` · ИИ: ${capModel}` : ' · ИИ: не ответила') +
+      ` · в работу берётся меньшее</div>` +
+      (entityCol
+        ? `<div class="metric-note">Страницы собраны вокруг колонки «${escHtml(entityCol)}»` +
+          (metricNames.length ? ` · метрики запроса (страниц не добавляют): ${escHtml(metricNames.join(', '))}` : '') +
+          `</div>`
+        : '') +
+      (conflicts.length
+        ? `<div class="metric-note">Противоречивых фактов: ${st.fact_conflicts_total || conflicts.length} — например ` +
+          `${escHtml(String(conflicts[0].entity || ''))} / ${escHtml(String(conflicts[0].column || ''))}</div>`
+        : '') +
+      (dims.length
+        ? `<div class="metric-note">Можно больше страниц, если добавить факты по разрезу «${escHtml(String(dims[0].column || ''))}»` +
+          (dims[0].pages_if_used ? ` (до ${dims[0].pages_if_used})` : '') + `</div>`
+        : '') +
+      (p.page_cap_alert
+        ? `<div class="note warn mt-2"><div class="note-body">${escHtml(p.page_cap_alert)}</div></div>`
+        : '') +
       (p.page_cap_blocked
         ? `<div class="metric-note">Генерация закрыта вердиктом «СТОП», а не нехваткой данных: фактов хватает на ${cap} страниц.</div>`
         : '') +
