@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: c403501c6aa348c20fd17d31fbaa04846e44ec80
-# built:  2026-09-17 09:26 UTC
+# commit: e563157f168621e792acbd3fc1840e2967fae776
+# built:  2026-09-17 09:45 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -9,7 +9,7 @@ index.html  (1008 строк)
 offer.html  (102 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2058 строк)
+app/app.js  (2075 строк)
 app/index.html  (428 строк)
 app/login.html  (382 строк)
 app/project.html  (3659 строк)
@@ -1708,6 +1708,23 @@ const api = {
   testCustomEndpoint:   (id) => req(`/settings/custom-endpoints/${id}/test`, { method: 'POST' }),
   // Один живой запрос к Яндекс Search API: принят ли ключ и правильный ли каталог.
   testSerp: (key, folder) => req('/settings/serp-test', {
+
+  /* Яндекс Search API: подготовка ключей в две фазы.
+     Отправка и сбор разделены: Яндекс считает отложенный запрос
+     от 5 минут до нескольких часов, а результат хранит 12 часов. */
+  serpStatus: () => req('/serp/status'),
+  serpPrepare: (id, body) => req(`/projects/${id}/serp/prepare`, {
+    method: 'POST', body: JSON.stringify(body || {}),
+  }),
+  serpPrepareStatus: id => req(`/projects/${id}/serp/prepare`),
+  /* collect=1 — попутно забрать готовое; проверка готовности бесплатна. */
+  serpProgress: (id, collect) => req(`/projects/${id}/serp/progress?collect=${collect === false ? 0 : 1}`),
+  briefs: (id, role) => req(`/projects/${id}/briefs${role ? '?role=' + encodeURIComponent(role) : ''}`),
+  brief: (id, keyItemId) => req(`/projects/${id}/briefs/${keyItemId}`),
+  briefSave: (id, keyItemId, body) => req(`/projects/${id}/briefs/${keyItemId}`, {
+    method: 'PUT', body: JSON.stringify(body || {}),
+  }),
+  briefsApplyStop: id => req(`/projects/${id}/briefs/apply-stop`, { method: 'POST' }),
                              method: 'POST', body: JSON.stringify({ key: key, folder_id: folder }) }),
 
   /* ---- БЛОК 1 — Паспорт проекта (готово) ---- */
