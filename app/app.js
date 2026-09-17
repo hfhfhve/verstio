@@ -230,7 +230,8 @@ const api = {
   deleteKey: (id, keyId) => req(`/projects/${id}/keys/${keyId}`, { method: 'DELETE' }),
 
   /* ---- Генерация ---- */
-  startGeneration:     (id, p)  => req(`/projects/${id}/generate?parallel=${p || 1}`, { method: 'POST' }),
+  /* force=1 — запустить генерацию, минуя проверку подготовки ключей по выдаче. */
+  startGeneration:     (id, p, force) => req(`/projects/${id}/generate?parallel=${p || 1}${force ? '&force=1' : ''}`, { method: 'POST' }),
   stopGeneration:      (id)     => req(`/projects/${id}/stop`, { method: 'POST' }),
   recomputeUniqueness: (id)     => req(`/projects/${id}/recompute-uniqueness`, { method: 'POST' }),
   listTasks:           (id)     => req(`/projects/${id}/tasks`),
@@ -270,6 +271,8 @@ const api = {
      Отправка и сбор разделены: Яндекс считает отложенный запрос
      от 5 минут до нескольких часов, а результат хранит 12 часов. */
   serpStatus: () => req('/serp/status'),
+  /* Гейт перед генерацией: у скольких строк уже есть техзадание из выдачи. */
+  serpGate: id => req(`/projects/${id}/serp/gate`),
   serpPrepare: (id, body) => req(`/projects/${id}/serp/prepare`, {
     method: 'POST', body: JSON.stringify(body || {}),
   }),
