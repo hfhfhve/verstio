@@ -441,7 +441,7 @@
                 </div>
               </div>
               <div class="panel-tools">
-                <button class="icon-btn" id="serpReload" title="Обновить прогресс" data-ico="refresh"></button>
+                <button class="icon-btn" id="serpReload" title="Обновить статус и прогресс" data-ico="refresh"></button>
               </div>
             </div>
             <div class="panel-body">
@@ -1460,6 +1460,7 @@ const S = {
   genTimer: null,
   chatWait: null,
   serp: null,          /* /serp/status — подключён ли Search API */
+  serpErr: null,       /* текст ошибки, если бэкенд не ответил */
   serpProgress: null,  /* /serp/progress — сколько выдач готово */
   serpRun: null,       /* /serp/prepare — итог последнего прогона */
   briefs: [],          /* техзадания по ключам */
@@ -2412,16 +2413,24 @@ function serpCell(k, br) {
             escHtml(bits.join(' · ')) + `</div>` : '');
 }
 
-/** Статус Search API + прогресс + техзадания. Всё бесплатное. */
+/** Статус Search API + прогресс + техзадания. Всё бесплатное.
+    Ошибку запроса не выдаём за «ключ не задан»: это разные беды. */
 async function loadSerp(collect) {
-  try { S.serp = await api.serpStatus(); }
-  catch (e) { S.serp = { ready: false, error: e.message }; }
+  try {
+    S.serp = await api.serpStatus();
+    S.serpErr = null;
+  } catch (e) {
+    S.serp = null;
+    S.serpErr = e && e.message ? e.message : 'бэкенд не ответил';
+  }
 
-  if (S.keys.length) {
+  if (S.keys.length && S.serp && S.serp.ready) {
     try { S.serpProgress = await api.serpProgress(PID, collect !== false); }
     catch (e) { S.serpProgress = null; }
     try { S.serpRun = await api.serpPrepareStatus(PID); }
     catch (e) { S.serpRun = null; }
+  }
+  if (S.keys.length) {
     try {
       S.briefs = await api.briefs(PID) || [];
       S.briefMap = {};
@@ -2438,29 +2447,51 @@ function renderSerp() {
   const st = S.serp || {};
   const prog = S.serpProgress || {};
   const run = S.serpRun || {};
+  const err = S.serpErr;
+  const ready = !err && !!st.ready;
 
-  /* пилюля в заголовке */
+  /* пилюля в заголовке: три разных состояния, а не два */
   const pillEl = $('#serpReadyPill');
   if (pillEl) {
-    pillEl.className = 'pill ' + (st.ready ? 'ok' : 'bad');
-    pillEl.innerHTML = `<i class="dot"></i>` +
-      (st.ready ? `Ключ задан · регион ${st.region || 225}` : 'Ключ не задан');
+    if (err) {
+      pillEl.className = 'pill warn';
+      pillEl.innerHTML = `<i class="dot"></i>Статус не пришёл`;
+    } else if (ready) {
+      pillEl.className = 'pill ok';
+      pillEl.innerHTML = `<i class="dot"></i>Ключ задан · регион ${st.region || 225}`;
+    } else {
+      pillEl.className = 'pill bad';
+      pillEl.innerHTML = `<i class="dot"></i>` +
+        (st.has_key && !st.has_folder ? 'Нет folder_id'
+          : !st.has_key && st.has_folder ? 'Нет ключа' : 'Ключ не задан');
+    }
   }
 
   /* главное сообщение */
   const box = $('#serpState');
-  if (!st.ready) {
+  if (err) {
+    /* Чаще всего: бэкенд старого билда без router_brief, спавшая сессия или прокси. */
+    box.innerHTML = `<div class="note warn" style="margin:0;">` +
+      `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
+      `<b>Бэкенд не ответил на <code>GET /api/serp/status</code>.</b> ` +
+      `${escHtml(err)}<br>Ключ здесь ни при чём. Проверьте: бэкенд жив и обновлён ` +
+      `(этот адрес даёт brief.py), сессия не истекла, нет 503 от прокси. ` +
+      `Нажмите обновление справа сверху.</div></div>`;
+  } else if (!ready) {
+    const what = st.has_key && !st.has_folder
+      ? 'Ключ есть, но не задан ID каталога (folder_id).'
+      : !st.has_key && st.has_folder
+        ? 'Каталог есть, но нет API-ключа сервисного аккаунта.'
+        : 'Не заданы ни API-ключ, ни ID каталога.';
     box.innerHTML = `<div class="note bad" style="margin:0;">` +
       `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-      `<b>Яндекс Search API не подключён.</b> ` +
-      `Задайте ключ сервисного аккаунта и folder_id в ` +
-      `<a href="settings.html#s-serp">Настройках</a>. ` +
-      `Без них ключи не проверяются и тексты пишутся вслепую.` +
+      `<b>Яндекс Search API не подключён.</b> ${escHtml(what)} ` +
+      `Заполните в <a href="settings.html#s-serp">Настройках</a> и нажмите здесь обновление.` +
       `</div></div>`;
   } else if (!S.keys.length) {
     box.innerHTML = `<div class="note info" style="margin:0;">` +
       `<span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
-      `Сначала добавьте строки — проверять пока нечего.</div></div>`;
+      `Ключ работает. Сначала добавьте строки — проверять пока нечего.</div></div>`;
   } else if (prog.pending) {
     box.innerHTML = `<div class="note warn" style="margin:0;">` +
       `<span class="note-ico">${ico('clock', 17)}</span><div class="note-body">` +
@@ -2471,9 +2502,9 @@ function renderSerp() {
   } else if (!S.briefs.length) {
     box.innerHTML = `<div class="note warn" style="margin:0;">` +
       `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-      `<b>Ключи ещё не проверялись.</b> Нажмите «Подготовить ключи»: ` +
-      `после этого у каждой строки появится вердикт и техзадание для модели.` +
-      `</div></div>`;
+      `<b>Ключ работает, но ключевые строки ещё не проверялись.</b> ` +
+      `Нажмите «Подготовить ключи»: после этого у каждой строки появится ` +
+      `вердикт и техзадание для модели.</div></div>`;
   } else {
     const stats = run.last_run && run.last_run.stats || {};
     const at = run.last_run && run.last_run.at ? fmtDate(run.last_run.at) : '';
@@ -2527,13 +2558,13 @@ function renderSerp() {
   }
   const prep = $('#serpPrepareBtn'), forceBtn = $('#serpForceBtn');
   if (prep) {
-    prep.disabled = !st.ready || !S.keys.length;
+    prep.disabled = !ready || !S.keys.length;
     const label = prog.pending ? ' Забрать готовое и собрать ТЗ'
       : S.briefs.length ? ' Пересобрать техзадания' : ' Подготовить ключи';
     const iconSpan = prep.querySelector('[data-ico-sm]');
     prep.innerHTML = (iconSpan ? iconSpan.outerHTML : '') + label;
   }
-  if (forceBtn) forceBtn.disabled = !st.ready || !S.keys.length;
+  if (forceBtn) forceBtn.disabled = !ready || !S.keys.length;
 }
 
 /** Запуск подготовки. force — игнорировать кэш выдачи (платно). */
@@ -2566,7 +2597,6 @@ function startSerpPolling() {
     ticks++;
     await loadSerp(true);
     const prog = S.serpProgress || {};
-    /* Выходим из поллинга: всё готово и техзадания собраны, либо 40 кругов (10 мин). */
     if ((!prog.pending && S.briefs.length) || ticks > 40) {
       stopSerpPolling();
       if (!prog.pending && S.briefs.length) {
