@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 24f735c8f6123d757220036d827a641365dd2319
-# built:  2026-09-17 09:45 UTC
+# commit: 1e15025f3bff7887f304618184c745015df99004
+# built:  2026-09-17 14:37 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2075 строк)
 app/index.html  (428 строк)
 app/login.html  (382 строк)
-app/project.html  (3659 строк)
+app/project.html  (3670 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1059 строк)
 app/site.html  (809 строк)
@@ -6786,6 +6786,9 @@ function renderPassport() {
             `<b>${escHtml(v[1])}</b> ${escHtml(p.reason || '')}` +
             (must ? `<div style="margin-top:8px;"><b>Обязательно на каждой странице:</b><ul>${must}</ul></div>` : '') +
             (avoid ? `<div style="margin-top:6px;"><b>Не писать:</b><ul>${avoid}</ul></div>` : '') +
+            (p.llm_failed
+              ? `<div class="pill warn" style="margin-top:8px;">Модель не ответила — вердикт собран расчётом</div>`
+              : '') +
             `<div class="muted" style="margin-top:6px;">Источник: ` +
             `${p.source === 'llm' ? escHtml((p.model || 'модель')) : 'только расчёт по таблице'}` +
             (p.llm_error ? ' · ' + escHtml(p.llm_error) : '') + `</div>` +
@@ -6816,15 +6819,24 @@ function renderPassport() {
       `<div class="metric-v">${varied} из ${st.columns_total || 0}</div>` +
       `<div class="metric-note">${escHtml((st.varied_names || []).join(', ') || 'нет ни одной')}` +
       ((st.constant_names || []).length ? ` · одинаковые везде: ${escHtml(st.constant_names.join(', '))}` : '') +
+      ((st.noise_names || []).length ? ` · шум (разнообразие есть, смысла нет): ${escHtml(st.noise_names.join(', '))}` : '') +
       `</div></div>`;
 
   const cap = p.page_cap;
+  const groups = st.fact_groups;
+  const dupRows = st.duplicate_fact_rows || 0;
   $('#q4Box').innerHTML = (cap == null)
     ? passportSlot('Потолок страниц', null, 'Появится после анализа.')
     : `<div class="metric accent"><div class="metric-k">Потолок страниц</div>` +
       `<div class="metric-v">${cap}</div>` +
       `<div class="metric-note">Строк в таблице: ${st.rows_total || 0}` +
-      (p.drop_total ? ` · отброшено: ${p.drop_total}` : '') + `</div></div>`;
+      (groups != null ? ` · уникальных наборов фактов: ${groups}` : '') +
+      (dupRows ? ` · строк-повторов по фактам: ${dupRows}` : '') +
+      (p.drop_total ? ` · отброшено: ${p.drop_total}` : '') + `</div>` +
+      (p.page_cap_blocked
+        ? `<div class="metric-note">Генерация закрыта вердиктом «СТОП», а не нехваткой данных: фактов хватает на ${cap} страниц.</div>`
+        : '') +
+      `</div>`;
 
   const drops = p.drop_keys || [];
   $('#q5Box').innerHTML = drops.length
