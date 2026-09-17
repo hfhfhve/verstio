@@ -251,8 +251,8 @@
                 <input class="input mono" id="serpKey" type="password" spellcheck="false"
                        autocomplete="off" placeholder="AQVN...">
                 <div class="field-hint">
-                  Ключ создаётся кнопкой «Создать API-ключ» в Yandex AI Studio или в консоли Cloud.
-                  Нужен именно API-ключ (<span class="mono">AQVN...</span>), а не IAM-токен — тот живёт 12 часов.
+                  Ключ даёт кнопка «Создать API-ключ» в Yandex AI Studio. Нужен именно API-ключ
+                  (<span class="mono">AQVN...</span>), а не IAM-токен — тот живёт 12 часов.
                   Сервисному аккаунту нужна роль <span class="mono">search-api.webSearch.user</span>.
                 </div>
               </div>
@@ -260,7 +260,10 @@
                 <label class="field-label" for="serpFolder">ID каталога (folder_id)</label>
                 <input class="input mono" id="serpFolder" type="text" spellcheck="false"
                        autocomplete="off" placeholder="b1g...">
-                <div class="field-hint">Виден в консоли Cloud рядом с именем каталога. Грант должен быть привязан к этому же каталогу.</div>
+                <div class="field-hint">
+                  Всегда начинается на <span class="mono">b1g</span>. Виден в консоли Cloud рядом с именем каталога.
+                  Если там другой префикс — вы взяли ID ключа или сервисного аккаунта, а не каталога.
+                </div>
               </div>
               <div class="grid-2">
                 <label class="field">
@@ -284,15 +287,20 @@
                   <span class="field-hint">Если пойдут ошибки 429 — уменьшите.</span>
                 </label>
               </div>
-              <div class="field">
-                <label class="switch">
-                  <input type="checkbox" id="serpAsync" checked>
-                  <span>Асинхронный режим (дешевле в разы, ответ ждём до минуты)</span>
+              <div class="field" style="margin-top:14px">
+                <label class="switch" id="serpAsyncSwitch">
+                  <input type="checkbox" id="serpAsync">
+                  <span class="switch-track"><i></i></span>
+                  <span class="switch-text">
+                    <span class="switch-title">Асинхронный режим</span>
+                    <span class="switch-desc" id="serpAsyncDesc"></span>
+                  </span>
                 </label>
-                <div class="field-hint">Выключать стоит только для отладки на одном-двух ключах.</div>
+                <div class="field-hint">Отключать стоит только для отладки на одном-двух ключах.</div>
               </div>
               <div class="up-row">
-                <button class="btn btn-primary" id="serpSaveBtn" type="button"><span data-ico-sm="check"></span> Проверить и сохранить</button>
+                <button class="btn btn-primary" id="serpTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить ключ и сохранить</button>
+                <button class="btn" id="serpSaveBtn" type="button"><span data-ico-sm="check"></span> Сохранить без проверки</button>
                 <button class="btn btn-danger btn-sm" id="serpDropBtn" type="button">Удалить ключ</button>
               </div>
               <div id="serpResult"></div>
@@ -390,6 +398,7 @@
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 let SET = {}, MODELS = [], RAW = null;
+let SERP_OK = null;  // null — не проверяли, true/false — ответ Яндекса
 
 function hydrateIcons(root) {
   const r = root || document;
@@ -854,39 +863,44 @@ async function dropYandex() {
 
 /* ---------- Яндекс Search API ---------- */
 
+function serpAsyncDesc(on) {
+  const el = $('#serpAsyncDesc');
+  if (!el) return;
+  el.textContent = on
+    ? 'Включён: дешевле в разы, ответ по каждому ключу ждём до минуты'
+    : 'Выключен: ответ сразу, но запросы стоят заметно дороже';
+}
+
 function fillSerp() {
-  const saved = String(val('yandex_search_api_key') || '');
-  const folder = String(val('yandex_search_folder_id') || '');
-  // Сам ключ с сервера в поле не кладём: показываем только факт, что он есть.
-  if ($('#serpKey')) $('#serpKey').placeholder = saved
+  const savedKey = String(val('yandex_search_api_key') || '');
+  if ($('#serpKey')) $('#serpKey').placeholder = savedKey
     ? 'ключ сохранён — введите новый, чтобы заменить' : 'AQVN...';
-  if ($('#serpFolder')) $('#serpFolder').value = folder;
+  if ($('#serpFolder')) $('#serpFolder').value = String(val('yandex_search_folder_id') || '');
   if ($('#serpRegion')) $('#serpRegion').value = Number(val('serp_region')) || 225;
   if ($('#serpTopN')) $('#serpTopN').value = Number(val('serp_top_n')) || 10;
   const ft = val('serp_fetch_top');
   if ($('#serpFetchTop')) $('#serpFetchTop').value = (ft === 0 || ft) ? Number(ft) : 5;
   if ($('#serpConc')) $('#serpConc').value = Number(val('serp_concurrency')) || 8;
   const am = val('serp_async');
-  if ($('#serpAsync')) $('#serpAsync').checked = (am === undefined || am === null) ? true : !!am;
-  paintSerpPill(!!saved && !!folder);
+  const on = (am === undefined || am === null) ? true : !!am;
+  if ($('#serpAsync')) $('#serpAsync').checked = on;
+  serpAsyncDesc(on);
+  paintSerpPill(SERP_OK);
 }
 
-function paintSerpPill(ready) {
+function paintSerpPill(state) {
   if (!$('#serpPill')) return;
-  $('#serpPill').innerHTML = ready
-    ? '<span class="pill ok"><i class="dot"></i>ключ есть</span>'
-    : '<span class="pill"><i class="dot"></i>ключа нет</span>';
+  const savedKey = String(val('yandex_search_api_key') || '');
+  let html = '<span class="pill"><i class="dot"></i>ключа нет</span>';
+  if (state === true) html = '<span class="pill ok"><i class="dot"></i>ключ работает</span>';
+  else if (state === false) html = '<span class="pill bad"><i class="dot"></i>ключ не принят</span>';
+  else if (savedKey) html = '<span class="pill warn"><i class="dot"></i>сохранён, не проверен</span>';
+  $('#serpPill').innerHTML = html;
 }
 
-async function saveSerp(btn) {
-  const key = ($('#serpKey').value || '').trim();
-  const folder = ($('#serpFolder').value || '').trim();
-  const savedKey = String(val('yandex_search_api_key') || '');
-  if (!key && !savedKey) { toast.info('Вставьте API-ключ'); return; }
-  if (!folder) { toast.warn('Нужен ID каталога'); return; }
-
+function serpPayload(withKey) {
   const payload = {
-    yandex_search_folder_id: { value: folder },
+    yandex_search_folder_id: { value: ($('#serpFolder').value || '').trim() },
     serp_region: { value: parseInt($('#serpRegion').value, 10) || 225 },
     serp_top_n: { value: parseInt($('#serpTopN').value, 10) || 10 },
     serp_fetch_top: { value: parseInt($('#serpFetchTop').value, 10) || 0 },
@@ -894,26 +908,84 @@ async function saveSerp(btn) {
     serp_async: { value: !!$('#serpAsync').checked },
   };
   // Пустое поле не должно стирать уже сохранённый ключ.
-  if (key) payload.yandex_search_api_key = { value: key };
+  if (withKey) payload.yandex_search_api_key = { value: withKey };
+  return payload;
+}
+
+async function storeSerp(payload) {
+  const res = await api.updateSettings(payload);
+  SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
+  renderRaw();
+  $('#serpKey').value = '';
+  fillSerp();
+}
+
+function serpNote(kind, html) {
+  const icons = { ok: 'ok', bad: 'alert', warn: 'info' };
+  $('#serpResult').innerHTML =
+    `<div class="alert ${kind === 'ok' ? 'info' : kind}"><span class="alert-ico">` +
+    `${ico(icons[kind] || 'info', 15)}</span><span class="alert-text">${html}</span></div>`;
+}
+
+/* Проверка сначала, запись потом: нерабочий ключ в базу не попадает. */
+async function testSerp(btn) {
+  const key = ($('#serpKey').value || '').trim();
+  const folder = ($('#serpFolder').value || '').trim();
+  const savedKey = String(val('yandex_search_api_key') || '');
+  if (!key && !savedKey) { toast.info('Вставьте API-ключ'); return; }
+  if (!folder) { toast.warn('Нужен ID каталога'); return; }
 
   await withBusy(btn, async () => {
+    serpNote('warn', 'Делаем один живой запрос к Яндексу… в асинхронном режиме это до минуты.');
+    let r;
     try {
-      const res = await api.updateSettings(payload);
-      SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
-      renderRaw();
-      $('#serpKey').value = '';
-      fillSerp();
-      $('#serpResult').innerHTML =
-        `<div class="alert info"><span class="alert-ico">${ico('ok', 15)}</span><span class="alert-text">` +
-        `<b>Сохранено.</b> Теперь на странице проекта работает «Подготовка ключей». ` +
-        `Первый прогон сделайте на 5–10 ключах — проверите, что ключ принят.</span></div>`;
-      toast.ok('Настройки Search API сохранены');
+      r = await api.testSerp(key, folder);
     } catch (e) {
-      $('#serpResult').innerHTML =
-        `<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
-        `<span class="alert-text"><b>Не сохранилось.</b> ${escHtml(e.message)}</span></div>`;
+      SERP_OK = null;
+      paintSerpPill(null);
+      serpNote('bad', `<b>Бэкенд не ответил.</b> ${escHtml(e.message)}`);
+      toast.err('Проверка не вышла', e);
+      return;
+    }
+
+    if (!r || r.ok !== true) {
+      SERP_OK = false;
+      paintSerpPill(false);
+      serpNote('bad', `<b>Ключ не принят, ничего не сохранено.</b> ` +
+        `${escHtml((r && r.error) || 'Яндекс ответил ошибкой.')}`);
+      toast.bad('Ключ не работает', (r && r.error) || '');
+      return;
+    }
+
+    try {
+      await storeSerp(serpPayload(key));
+      SERP_OK = true;
+      paintSerpPill(true);
+      const doms = (r.domains || []).filter(Boolean).map(escHtml).join(', ');
+      serpNote('ok', `<b>Ключ работает.</b> Запрос «${escHtml(r.query || '')}», ` +
+        `режим ${r.mode === 'async' ? 'асинхронный' : 'синхронный'}, ` +
+        `ответ за ${escHtml(String(r.elapsed_sec || 0))} с.` +
+        (doms ? ` В топе видно: ${doms}.` : '') +
+        ` Настройки сохранены.`);
+      toast.ok('Ключ принят и сохранён');
+    } catch (e) {
+      serpNote('bad', `<b>Ключ рабочий, но не сохранился.</b> ${escHtml(e.message)}`);
       toast.err('Не удалось сохранить', e);
     }
+  });
+}
+
+async function saveSerp(btn) {
+  const key = ($('#serpKey').value || '').trim();
+  if (!($('#serpFolder').value || '').trim()) { toast.warn('Нужен ID каталога'); return; }
+  await withBusy(btn, async () => {
+    try {
+      await storeSerp(serpPayload(key));
+      SERP_OK = null;
+      paintSerpPill(null);
+      serpNote('warn', 'Сохранено без проверки. Работает ли ключ — неизвестно.');
+      toast.ok('Настройки сохранены');
+    } catch (e) { toast.err('Не удалось сохранить', e); }
   });
 }
 
@@ -927,10 +999,10 @@ async function dropSerp() {
   try {
     const res = await api.updateSettings({ yandex_search_api_key: { value: '' } });
     SET = (res && res.settings) ? res.settings : SET;
-    if (SET && SET.yandex_search_api_key) SET.yandex_search_api_key = { value: '' };
-    renderRaw();
+    SERP_OK = null;
     $('#serpKey').value = '';
     $('#serpResult').innerHTML = '';
+    renderRaw();
     fillSerp();
     toast.ok('Ключ удалён');
   } catch (e) { toast.err('Не удалось', e); }
@@ -959,8 +1031,10 @@ $('#epAddBtn').onclick = e => addEp(e.currentTarget);
 $('#yaTestBtn').onclick = e => checkYandex(e.currentTarget);
 $('#yaGuideBtn').onclick = () => openYandexGuide();
 $('#yaDropBtn').onclick = () => dropYandex();
+$('#serpTestBtn').onclick = e => testSerp(e.currentTarget);
 $('#serpSaveBtn').onclick = e => saveSerp(e.currentTarget);
 $('#serpDropBtn').onclick = () => dropSerp();
+if ($('#serpAsync')) $('#serpAsync').onchange = e => serpAsyncDesc(e.currentTarget.checked);
 $('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
 $('#copyRawBtn').onclick = () => copyText(JSON.stringify(SET, null, 2), 'JSON настроек');
 
