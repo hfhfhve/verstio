@@ -263,6 +263,9 @@ const api = {
   addCustomEndpoint:    (d)  => req('/settings/custom-endpoints', { method: 'POST', body: JSON.stringify(d) }),
   deleteCustomEndpoint: (id) => req(`/settings/custom-endpoints/${id}`, { method: 'DELETE' }),
   testCustomEndpoint:   (id) => req(`/settings/custom-endpoints/${id}/test`, { method: 'POST' }),
+  // Один живой запрос к Яндекс Search API: принят ли ключ и правильный ли каталог.
+  testSerp: (key, folder) => req('/settings/serp-test', {
+                             method: 'POST', body: JSON.stringify({ key: key, folder_id: folder }) }),
 
   /* ---- БЛОК 1 — Паспорт проекта (готово) ---- */
   analyzeData:  (id)     => req(`/projects/${id}/analyze`, { method: 'POST' }),
@@ -2052,4 +2055,3 @@ function mountLogoutButton() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
-
