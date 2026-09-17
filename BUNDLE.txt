@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: e563157f168621e792acbd3fc1840e2967fae776
+# commit: 24f735c8f6123d757220036d827a641365dd2319
 # built:  2026-09-17 09:45 UTC
 
 ## Состав
@@ -8877,7 +8877,7 @@ function serpAsyncDesc(on) {
   const el = $('#serpAsyncDesc');
   if (!el) return;
   el.textContent = on
-    ? 'Включён: дешевле в разы, ответ по каждому ключу ждём до минуты'
+    ? 'Включён: дешевле в 15–20 раз. Яндекс считает от 5 минут до нескольких часов, результат забираем позже кнопкой «Обновить»'
     : 'Выключен: ответ сразу, но запросы стоят заметно дороже';
 }
 
@@ -8946,7 +8946,7 @@ async function testSerp(btn) {
   if (!folder) { toast.warn('Нужен ID каталога'); return; }
 
   await withBusy(btn, async () => {
-    serpNote('warn', 'Делаем один живой запрос к Яндексу… в асинхронном режиме это до минуты.');
+    serpNote('warn', 'Делаем один живой синхронный запрос… обычно пара секунд.');
     let r;
     try {
       r = await api.testSerp(key, folder);
@@ -8973,7 +8973,7 @@ async function testSerp(btn) {
       paintSerpPill(true);
       const doms = (r.domains || []).filter(Boolean).map(escHtml).join(', ');
       serpNote('ok', `<b>Ключ работает.</b> Запрос «${escHtml(r.query || '')}», ` +
-        `режим ${r.mode === 'async' ? 'асинхронный' : 'синхронный'}, ` +
+        `проверка синхронным запросом, ` +
         `ответ за ${escHtml(String(r.elapsed_sec || 0))} с.` +
         (doms ? ` В топе видно: ${doms}.` : '') +
         ` Настройки сохранены.`);
