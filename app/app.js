@@ -303,6 +303,13 @@ const api = {
   deleteMedia: (id, aid)=> req(`/projects/${id}/media/${aid}`, { method: 'DELETE' }),
   mediaUrl:    (id, aid)=> auth.signUrl(`${API_BASE.replace(/\/+$/, '')}/projects/${id}/media/${aid}/file`),
 
+  /* ---- Документы проекта (та же таблица, роль doc) ---- */
+  listDocs:   (id)      => req(`/projects/${id}/docs`),
+  uploadDoc:  (id, fd)  => req(`/projects/${id}/docs/upload`, { method: 'POST', body: fd, headers: {} }),
+  updateDoc:  (id, aid, d) => req(`/projects/${id}/docs/${aid}`, { method: 'PATCH', body: JSON.stringify(d) }),
+  deleteDoc:  (id, aid) => req(`/projects/${id}/docs/${aid}`, { method: 'DELETE' }),
+  docUrl:     (id, aid) => auth.signUrl(`${API_BASE.replace(/\/+$/, '')}/projects/${id}/docs/${aid}/file`),
+
   /* ---- БЛОК 2 — Библиотеки и проектировщик (ещё нет) ---- */
   listLibraries: ()      => req('/libraries'),
   buildFrame:    (id, d) => req(`/projects/${id}/build-frame`, { method: 'POST', body: JSON.stringify(d) }),
@@ -865,7 +872,7 @@ function getTheme() {
     const t = localStorage.getItem('seo_theme');
     if (t === 'light' || t === 'dark') return t;
   } catch (e) {}
-  return 'dark';
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function applyTheme(name) {
