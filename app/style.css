@@ -3355,3 +3355,422 @@ tr.row-click:hover > td { background: var(--surface-2); }
   .kpis { grid-template-columns: 1fr 1fr; }
   .hero { flex-direction: column; align-items: flex-start; }
 }
+
+/* ==========================================================================
+   ATELIER v2 — слой переоформления (2026-09)
+
+   Правило слоя: он ТОЛЬКО переопределяет внешний вид уже существующих
+   классов. Ни одного нового требования к разметке, ни одного id, ни одного
+   data-атрибута. Поэтому app.js и инлайн-скрипты страниц продолжают
+   работать без изменений.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. ТОКЕНЫ · спокойнее, глубже, больше воздуха
+   -------------------------------------------------------------------------- */
+
+:root {
+  --rail-w: 244px;
+  --topbar-h: 54px;
+  --content-max: 1120px;
+
+  /* движение: чуть короче и мягче, чтобы интерфейс казался отзывчивым */
+  --t-fast: 110ms;
+  --t: 170ms;
+  --t-slow: 260ms;
+  --ease-spring: cubic-bezier(.34, 1.42, .64, 1);
+}
+
+[data-theme="dark"] {
+  --bg:            #171717;
+  --surface:       #1e1e1e;
+  --surface-2:     #252524;
+  --surface-3:     #303030;
+  --rail:          #141414;
+
+  --line:          rgba(255, 255, 255, .10);
+  --line-soft:     rgba(255, 255, 255, .06);
+  --line-strong:   rgba(255, 255, 255, .20);
+}
+
+/* --------------------------------------------------------------------------
+   2. РЕЛЬС · четыре шага вместо одиннадцати дверей
+   -------------------------------------------------------------------------- */
+
+.rail {
+  background: var(--rail);
+  border-right: 1px solid var(--line-soft);
+}
+
+.rail-head { padding: 16px 16px 12px; }
+
+.brand-mark {
+  transition: transform var(--t) var(--ease-spring),
+              box-shadow var(--t) var(--ease);
+}
+.brand:hover .brand-mark { transform: rotate(-4deg) scale(1.05); }
+
+.rail-nav { padding: 6px 10px 20px; }
+
+.nav-group + .nav-group {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.nav-group-title {
+  padding: 0 10px 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.nav-item {
+  position: relative;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--r-sm);
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: background var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              transform var(--t-fast) var(--ease);
+}
+.nav-item:hover { background: var(--surface-2); transform: translateX(1px); }
+.nav-item:active { transform: translateX(1px) scale(.985); }
+
+.nav-item.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.nav-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 3px;
+  height: 18px;
+  margin-top: -9px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  animation: railMark var(--t) var(--ease-out);
+}
+@keyframes railMark {
+  from { height: 4px; margin-top: -2px; opacity: 0; }
+  to   { height: 18px; margin-top: -9px; opacity: 1; }
+}
+
+/* Вложенные пункты: подшаги внутри группы отбиваются направляющей */
+.nav-group .nav-sub {
+  margin-left: 13px;
+  padding-left: 11px;
+  border-left: 1px solid var(--line);
+}
+.nav-group .nav-sub .nav-item { height: 31px; font-size: 13px; }
+.nav-group .nav-sub .nav-item.is-active::before { display: none; }
+.nav-group .nav-sub .nav-item .nav-ico { opacity: .75; }
+
+/* Номер шага — тихий круг слева */
+.nav-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  border-radius: 99px;
+  background: var(--surface-3);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.nav-item.is-active .nav-step { background: var(--accent); color: #fff; }
+
+.nav-count {
+  font-variant-numeric: tabular-nums;
+  transition: background var(--t-fast) var(--ease);
+}
+
+/* «блок 6/7/8» больше не кричит */
+.nav-soon {
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--faint);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.nav-state.live { animation: pulse 1.6s var(--ease) infinite; }
+
+.rail-foot {
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.rail-status { font-size: 12px; color: var(--muted); }
+
+/* --------------------------------------------------------------------------
+   3. ВЕРХНЯЯ ПОЛОСА
+   -------------------------------------------------------------------------- */
+
+.topbar {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(150%) blur(10px);
+  -webkit-backdrop-filter: saturate(150%) blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.proj-switch {
+  border-radius: var(--r-sm);
+  transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+.proj-switch:hover { background: var(--surface-2); }
+.proj-switch:active { transform: scale(.99); }
+
+.crumbs { color: var(--faint); font-size: 12.5px; }
+.crumbs b { color: var(--text-2); font-weight: 600; }
+
+.icon-btn {
+  border-radius: var(--r-sm);
+  transition: background var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              transform var(--t-fast) var(--ease-spring);
+}
+.icon-btn:hover { transform: translateY(-1px); }
+.icon-btn:active { transform: translateY(0) scale(.94); }
+
+/* --------------------------------------------------------------------------
+   4. ПОЛОТНО И ШАПКИ ЭКРАНОВ · больше воздуха
+   -------------------------------------------------------------------------- */
+
+.canvas { padding: 36px 32px 96px; }
+
+.view.is-active { animation: viewIn 300ms var(--ease-out); }
+@keyframes viewIn {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.view-head {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line-soft);
+  align-items: flex-end;
+}
+
+.view-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.view h1, .view-title { font-size: 27px; letter-spacing: -.022em; }
+.view-sub { font-size: 13.5px; line-height: 1.6; max-width: 68ch; }
+
+/* --------------------------------------------------------------------------
+   5. КНОПКИ · лёгкое нажатие и подъём
+   -------------------------------------------------------------------------- */
+
+.btn {
+  border-radius: var(--r-sm);
+  font-weight: 550;
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              box-shadow var(--t) var(--ease),
+              transform 90ms var(--ease-spring);
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0) scale(.975); }
+
+.btn-primary { box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.btn-primary:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .14),
+              0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.btn-lg { height: 42px; border-radius: var(--r-md); }
+
+.link-btn { transition: color var(--t-fast) var(--ease), gap var(--t-fast) var(--ease); }
+
+/* --------------------------------------------------------------------------
+   6. ПОВЕРХНОСТИ · карточки, панели, таблицы
+   -------------------------------------------------------------------------- */
+
+.card, .panel, .box, .tile {
+  border-radius: var(--r-lg);
+  transition: border-color var(--t) var(--ease),
+              box-shadow var(--t) var(--ease),
+              transform var(--t) var(--ease);
+}
+
+.card:hover, .tile:hover { border-color: var(--line-strong); }
+
+/* строки-карточки проектов и страниц — приподнимаются под курсором */
+.proj-row, .proj-card, .page-row, .row-card, .site-card {
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease),
+              transform var(--t) var(--ease-spring),
+              box-shadow var(--t) var(--ease);
+}
+.proj-row:hover, .proj-card:hover, .page-row:hover,
+.row-card:hover, .site-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  box-shadow: var(--sh-2);
+}
+.proj-row:active, .proj-card:active, .site-card:active { transform: translateY(-1px) scale(.995); }
+
+table tbody tr { transition: background var(--t-fast) var(--ease); }
+
+th {
+  font-size: 11px !important;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted) !important;
+  font-weight: 600 !important;
+}
+
+td, th { font-variant-numeric: tabular-nums; }
+
+/* --------------------------------------------------------------------------
+   7. МЕЛОЧИ · чипы, пилюли, поля, прогресс
+   -------------------------------------------------------------------------- */
+
+.chip, .filter-chip {
+  border-radius: 99px;
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              transform 90ms var(--ease-spring);
+}
+.chip:hover, .filter-chip:hover { transform: translateY(-1px); }
+.chip:active, .filter-chip:active { transform: scale(.96); }
+
+.pill { border-radius: 99px; font-weight: 600; letter-spacing: -.005em; }
+.pill .dot { animation: none; }
+.pill.ok .dot, .pill.live .dot { animation: pulse 1.8s var(--ease) infinite; }
+
+.input, .select, textarea, input[type="text"], input[type="search"], input[type="number"] {
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-fast) var(--ease),
+              box-shadow var(--t-fast) var(--ease),
+              background var(--t-fast) var(--ease);
+}
+.input:focus, .select:focus, textarea:focus,
+input[type="text"]:focus, input[type="search"]:focus, input[type="number"]:focus {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
+}
+
+/* прогресс генерации — живая полоса */
+.progress, .bar, .progress-track {
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress > *, .bar > *, .progress-fill {
+  transition: width var(--t-slow) var(--ease-out);
+}
+
+/* тосты и модальные — мягкое появление */
+.toast { animation: toastIn 240ms var(--ease-spring); }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.modal, .sheet, .pop, .cmdk-box { animation: popIn 200ms var(--ease-out); }
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(8px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+.cmdk-item { transition: background var(--t-fast) var(--ease), padding-left var(--t-fast) var(--ease); }
+.cmdk-item:hover, .cmdk-item.is-cur { padding-left: 14px; }
+
+/* фокус — заметный, но не грубый */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* уважаем системную настройку «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+  .nav-item:hover, .btn:hover, .icon-btn:hover,
+  .proj-row:hover, .proj-card:hover, .page-row:hover,
+  .row-card:hover, .site-card:hover, .chip:hover, .filter-chip:hover {
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ДОВОДКА ПОСЛЕ ВИЗУАЛЬНОЙ ПРОВЕРКИ
+   -------------------------------------------------------------------------- */
+
+/* верхняя полоса проекта: переключатель не должен съедать хлебные крошки */
+.topbar .proj-switch {
+  flex: 0 1 auto;
+  max-width: 270px;
+  min-width: 0;
+}
+.topbar .crumbs {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar .crumbs b, .topbar .crumbs a, .topbar .crumbs span { overflow: visible; }
+
+/* нижняя панель сохранения — плотный фон, чтобы не просвечивали поля */
+.savebar, .sticky-save, .set2-save, .save-dock {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 99px;
+  box-shadow: var(--sh-pop) !important;
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+}
+
+/* пункты навигации в настройках — такая же реакция, как в рельсе */
+.set2-item {
+  transition: background var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              transform var(--t-fast) var(--ease);
+}
+.set2-item:hover { transform: translateX(1px); }
+.set2-item:active { transform: translateX(1px) scale(.985); }
+
+/* карточки разделов настроек — больше воздуха между блоками */
+.set2-sec + .set2-sec { margin-top: 34px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .set2-item:hover, .set2-item:active { transform: none !important; }
+}
+
+/* плавающая панель сохранения в настройках */
+.set2-bar {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 99px !important;
+  box-shadow: var(--sh-pop) !important;
+  padding: 8px 10px 8px 18px !important;
+  gap: 14px !important;
+  transition: transform var(--t) var(--ease-spring), opacity var(--t) var(--ease);
+}
+.set2-bar.is-clean { opacity: .9; }
+.set2-bar:hover { transform: translateX(-50%) translateY(-1px); }
+.set2-bar-text { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .set2-bar:hover { transform: translateX(-50%) !important; }
+}
