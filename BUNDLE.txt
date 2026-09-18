@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: bac3c859ef497b9cb036be782aafb4671388500a
-# built:  2026-09-17 20:52 UTC
+# commit: d3714e0d049ec96a598ff8f1d0e6423ee6b923c2
+# built:  2026-09-18 07:44 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -14,7 +14,7 @@ app/index.html  (428 строк)
 app/login.html  (382 строк)
 app/project.html  (4276 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (1059 строк)
+app/settings.html  (1405 строк)
 app/site.html  (809 строк)
 app/style.css  (3358 строк)
 
@@ -8635,7 +8635,7 @@ Disallow: /
 <meta name="viewport" content="width=1280">
 <title>Настройки — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=46">
+<link rel="stylesheet" href="style.css?v=47">
 <script>
   try {
     var f = localStorage.getItem('seo_fx');
@@ -8645,6 +8645,65 @@ Disallow: /
     document.documentElement.setAttribute('data-theme', t);
   } catch (e) {}
 </script>
+<style>
+/* ===== Каркас настроек: слева меню, справа один раздел ===== */
+.set2{display:grid;grid-template-columns:266px minmax(0,1fr);gap:26px;align-items:start;padding-bottom:96px}
+.set2-side{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px}
+.set2-search .input{width:100%}
+.set2-nav{display:flex;flex-direction:column;gap:14px}
+.set2-group{display:flex;flex-direction:column;gap:3px}
+.set2-glabel{font-size:11px;letter-spacing:.09em;text-transform:uppercase;opacity:.45;padding:0 10px 4px}
+.set2-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;
+  font-size:13.5px;cursor:pointer;border:0;background:transparent;color:inherit;text-align:left;
+  text-decoration:none;transition:background .13s ease,color .13s ease}
+.set2-item:hover{background:var(--hover,#f2f4f7)}
+.set2-item.is-active{background:var(--accent-soft,#e8f1fc);color:var(--accent,#2783de);font-weight:600}
+.set2-item .set2-ico{display:inline-flex;width:17px;justify-content:center;opacity:.75}
+.set2-item.is-active .set2-ico{opacity:1}
+.set2-item .set2-dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:transparent}
+.set2-item .set2-dot.ok{background:var(--ok,#12b76a)}
+.set2-item .set2-dot.warn{background:var(--warn,#f79009)}
+.set2-item .set2-dot.bad{background:var(--bad,#f04438)}
+.set2-item.is-hidden{display:none}
+.set2-side-note{font-size:11.5px;line-height:1.5;opacity:.55;padding:0 10px}
+
+.set2-sec{display:none}
+.set2-sec.is-active{display:block;animation:set2in .18s ease}
+@keyframes set2in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.set2-sec-head{margin:0 0 16px}
+.set2-sec-title{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.set2-sec-sub{margin-top:5px;font-size:13.5px;line-height:1.55;opacity:.62;max-width:70ch}
+.set2-stack{display:flex;flex-direction:column;gap:16px}
+.set2-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:1180px){.set2-cols{grid-template-columns:1fr}}
+
+.set2-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:70;
+  display:flex;align-items:center;gap:14px;padding:11px 14px 11px 18px;border-radius:14px;
+  background:var(--panel,#fff);border:1px solid var(--line,#e3e6ea);
+  box-shadow:0 16px 40px rgba(16,24,40,.18);font-size:13px}
+.set2-bar.is-clean{opacity:.55}
+
+/* ===== Выбор модели: список + ручной ввод ===== */
+.mpick{position:relative;display:flex;gap:8px;align-items:stretch}
+.mpick .mpick-input{flex:1 1 auto;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.mpick-open{flex:0 0 auto;white-space:nowrap}
+.mpick-menu{position:absolute;z-index:60;top:calc(100% + 6px);left:0;right:0;
+  background:var(--panel,#fff);border:1px solid var(--line,#e3e6ea);border-radius:12px;
+  box-shadow:0 18px 44px rgba(16,24,40,.16);padding:8px;display:none}
+.mpick.is-open .mpick-menu{display:block}
+.mpick-search{width:100%;margin-bottom:6px}
+.mpick-list{max-height:290px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.mpick-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;
+  background:transparent;border-radius:8px;padding:7px 9px;cursor:pointer;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:inherit}
+.mpick-item:hover{background:var(--hover,#f2f4f7)}
+.mpick-item.is-cur{background:var(--accent-soft,#e8f1fc);color:var(--accent,#2783de)}
+.mpick-empty{padding:12px 10px;font-size:12.5px;opacity:.6;line-height:1.5}
+.mpick-foot{display:flex;gap:8px;padding:8px 9px 2px;margin-top:6px;font-size:11.5px;opacity:.6;
+  border-top:1px solid var(--line,#e3e6ea)}
+.mpick-state{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;margin-top:7px;opacity:.7}
+.mpick-state.is-manual{color:var(--accent,#2783de);opacity:1;font-weight:600}
+</style>
 </head>
 <body class="is-plain">
 
@@ -8671,82 +8730,145 @@ Disallow: /
         <div class="view-head-body">
           <div class="view-eyebrow"><i class="dot"></i> Общие для всех проектов</div>
           <h1 class="view-title">Настройки</h1>
-          <p class="view-sub">Здесь значения по умолчанию. Любой проект может переопределить их у себя в «Правилах».</p>
-        </div>
-        <div class="view-actions">
-          <button class="btn btn-primary btn-lg" id="saveAllBtn" type="button"><span data-ico="check"></span> Сохранить всё</button>
+          <p class="view-sub">Здесь значения по умолчанию. Любой проект может переопределить их у себя в «Настройках проекта».</p>
         </div>
       </div>
 
-      <div class="set-layout">
+      <div class="set2">
 
-        <!-- ======== боковое меню ======== -->
-        <nav class="set-nav">
-          <a class="set-nav-item is-active" href="#s-wire"><span data-ico-sm="link"></span> Связь с бэкендом</a>
-          <a class="set-nav-item" href="#s-models"><span data-ico-sm="spark"></span> Модели</a>
-          <a class="set-nav-item" href="#s-prompts"><span data-ico-sm="keyboard"></span> Промпты</a>
-          <a class="set-nav-item" href="#s-quality"><span data-ico-sm="shield"></span> Качество</a>
-          <a class="set-nav-item" href="#s-endpoints"><span data-ico-sm="code"></span> Свои API</a>
-          <a class="set-nav-item" href="#s-yandex"><span data-ico-sm="radar"></span> Яндекс.Вебмастер</a>
-          <a class="set-nav-item" href="#s-serp"><span data-ico-sm="search"></span> Яндекс Search API</a>
-          <a class="set-nav-item" href="#s-look"><span data-ico-sm="moon"></span> Внешний вид</a>
-          <a class="set-nav-item" href="#s-raw"><span data-ico-sm="list"></span> Все значения</a>
-        </nav>
+        <aside class="set2-side">
+          <div class="set2-search">
+            <input class="input input-sm" id="navSearch" type="search" placeholder="Найти раздел…" autocomplete="off">
+          </div>
 
-        <!-- ======== контент ======== -->
-        <div class="set-content">
+          <nav class="set2-nav" id="setNav">
+            <div class="set2-group">
+              <div class="set2-glabel">Генерация</div>
+              <a class="set2-item" href="#s-models" data-sec="s-models" data-words="модели model сильная дешёвая токены">
+                <span class="set2-ico" data-ico-sm="spark"></span> Модели <i class="set2-dot" data-dot="models"></i></a>
+              <a class="set2-item" href="#s-prompts" data-sec="s-prompts" data-words="промпты инструкции prompt">
+                <span class="set2-ico" data-ico-sm="keyboard"></span> Промпты</a>
+              <a class="set2-item" href="#s-quality" data-sec="s-quality" data-words="качество гейт уникальность стоп-слова">
+                <span class="set2-ico" data-ico-sm="shield"></span> Качество</a>
+            </div>
 
-          <!-- СВЯЗЬ -->
-          <section class="panel" id="s-wire">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Связь с бэкендом</div>
-                <div class="panel-sub">Адрес API хранится только в этом браузере.</div>
-              </div>
-              <div class="panel-tools" id="wirePill"></div>
+            <div class="set2-group">
+              <div class="set2-glabel">Яндекс</div>
+              <a class="set2-item" href="#s-serp" data-sec="s-serp" data-words="search api выдача serp регион ключ">
+                <span class="set2-ico" data-ico-sm="search"></span> Search API <i class="set2-dot" data-dot="serp"></i></a>
+              <a class="set2-item" href="#s-yandex" data-sec="s-yandex" data-words="вебмастер oauth токен индексация">
+                <span class="set2-ico" data-ico-sm="radar"></span> Вебмастер <i class="set2-dot" data-dot="ya"></i></a>
             </div>
-            <div class="panel-body">
-              <div class="field field-inline">
-                <label class="field">
-                  <span class="field-label">Адрес API</span>
-                  <input class="input" id="apiBase" placeholder="https://seo.waifubot.website/api" autocomplete="off" spellcheck="false">
-                  <span class="field-hint">Например: <code>http://localhost:8000/api</code></span>
-                </label>
-                <button class="btn" id="pingBtn" type="button"><span data-ico-sm="radar"></span> Проверить</button>
-              </div>
-              <div id="wireResult"></div>
-            </div>
-            <div class="panel-foot">
-              <button class="btn btn-primary" id="saveBaseBtn" type="button">Сохранить адрес и перезагрузить</button>
-              <span class="grow"></span>
-              <span class="faint" style="font-size:12px;">Ключи провайдеров живут на сервере, не в браузере.</span>
-            </div>
-          </section>
 
-          <!-- МОДЕЛИ -->
-          <section class="panel" id="s-models">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Модели по умолчанию</div>
-                <div class="panel-sub">Сильная рисует каркас один раз. Дешёвая заполняет каждую строку — именно она съедает бюджет.</div>
-              </div>
-              <div class="panel-tools">
-                <button class="icon-btn bordered" id="modelsReload" type="button" title="Обновить список"><span data-ico="refresh"></span></button>
-              </div>
+            <div class="set2-group">
+              <div class="set2-glabel">Подключения</div>
+              <a class="set2-item" href="#s-wire" data-sec="s-wire" data-words="бэкенд api адрес связь">
+                <span class="set2-ico" data-ico-sm="link"></span> Бэкенд <i class="set2-dot" data-dot="wire"></i></a>
+              <a class="set2-item" href="#s-endpoints" data-sec="s-endpoints" data-words="свои api точки custom openai">
+                <span class="set2-ico" data-ico-sm="code"></span> Свои API-точки</a>
             </div>
-            <div class="panel-body">
-              <div class="form-grid">
-                <label class="field">
-                  <span class="field-label">Сильная модель — каркас</span>
-                  <select class="select" id="strongModel"></select>
-                  <span class="field-hint">Вызывается 1–2 раза на проект.</span>
-                </label>
-                <label class="field">
-                  <span class="field-label">Дешёвая модель — заполнение</span>
-                  <select class="select" id="cheapModel"></select>
-                  <span class="field-hint">Вызывается на каждую строку таблицы.</span>
-                </label>
+
+            <div class="set2-group">
+              <div class="set2-glabel">Интерфейс</div>
+              <a class="set2-item" href="#s-look" data-sec="s-look" data-words="тема внешний вид оформление">
+                <span class="set2-ico" data-ico-sm="moon"></span> Внешний вид</a>
+              <a class="set2-item" href="#s-raw" data-sec="s-raw" data-words="все значения json диагностика">
+                <span class="set2-ico" data-ico-sm="list"></span> Диагностика</a>
+            </div>
+          </nav>
+
+          <div class="set2-side-note">Ключи провайдеров и токены хранятся на сервере. В браузере живёт только адрес API и тема.</div>
+        </aside>
+
+        <div class="set2-content" id="setContent">
+
+          <!-- ---------- МОДЕЛИ ---------- -->
+          <section class="set2-sec" id="s-models">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Модели по умолчанию</div>
+              <div class="set2-sec-sub">Сильная рисует каркас один раз на проект. Дешёвая работает на каждой странице и каждом кластере ключей — именно она решает, сколько вы заплатите и сколько будете ждать.</div>
+            </div>
+
+            <div class="set2-stack">
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Какая модель что делает</div>
+                    <div class="panel-sub">Можно выбрать из списка провайдера или ввести имя руками</div>
+                  </div>
+                  <div class="panel-tools">
+                    <button class="icon-btn bordered" id="modelsReload" type="button" title="Обновить список"><span data-ico="refresh"></span></button>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <label class="field">
+                    <span class="field-label">Сильная модель — каркас и диалог</span>
+                    <div class="mpick" data-mpick="strongModel">
+                      <input class="input mpick-input" id="strongModel" placeholder="например anthropic/claude-sonnet-4"
+                             autocomplete="off" spellcheck="false">
+                      <button class="btn btn-sm mpick-open" type="button">Из списка</button>
+                    </div>
+                    <span class="field-hint">Вызывается 1–2 раза на проект. Здесь можно не экономить.</span>
+                  </label>
+
+                  <label class="field" style="margin-top:16px">
+                    <span class="field-label">Дешёвая модель — заполнение и техзадания</span>
+                    <div class="mpick" data-mpick="cheapModel">
+                      <input class="input mpick-input" id="cheapModel" placeholder="например deepseek/deepseek-v4-flash-0731:nitro"
+                             autocomplete="off" spellcheck="false">
+                      <button class="btn btn-sm mpick-open" type="button">Из списка</button>
+                    </div>
+                    <span class="field-hint">Один вызов на страницу и один на кластер ключей. Берите быструю без reasoning — думающие модели тратят по минуте на вызов.</span>
+                  </label>
+                </div>
+              </section>
+
+              <div class="set2-cols">
+                <section class="panel">
+                  <div class="panel-head">
+                    <div class="panel-head-body">
+                      <div class="panel-title">Лимиты ответа</div>
+                      <div class="panel-sub">Сколько токенов разрешаем на один ответ</div>
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <div class="form-grid">
+                      <label class="field">
+                        <span class="field-label">Сильная модель</span>
+                        <input class="input" id="strongTokens" type="number" min="1000" step="1000" placeholder="16000">
+                        <span class="field-hint">Каркасу нужен запас: обрезанный JSON ломает страницу.</span>
+                      </label>
+                      <label class="field">
+                        <span class="field-label">Дешёвая модель</span>
+                        <input class="input" id="cheapTokens" type="number" min="1000" step="1000" placeholder="8000">
+                        <span class="field-hint">Ниже 3000 reasoning-модели отвечают пустотой.</span>
+                      </label>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="panel">
+                  <div class="panel-head">
+                    <div class="panel-head-body">
+                      <div class="panel-title">Скорость техзаданий</div>
+                      <div class="panel-sub">Сколько кластеров спрашиваем у модели одновременно</div>
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <label class="field">
+                      <span class="field-label">Одновременных вызовов</span>
+                      <input class="input" id="briefConc" type="number" min="1" max="32" step="1" placeholder="12">
+                      <span class="field-hint">12 — рабочее значение. На 1 кластеры пойдут по очереди и прогон затянется на часы.</span>
+                    </label>
+                    <label class="field" style="margin-top:14px">
+                      <span class="field-label">Таймаут одного вызова, секунд</span>
+                      <input class="input" id="genTimeout" type="number" min="30" max="900" step="10" placeholder="300">
+                      <span class="field-hint">После этого вызов считается проваленным.</span>
+                    </label>
+                  </div>
+                </section>
               </div>
+
               <div class="note info">
                 <span class="note-ico" data-ico="info"></span>
                 <div class="note-body" id="providersNote">Список провайдеров загружается…</div>
@@ -8754,263 +8876,318 @@ Disallow: /
             </div>
           </section>
 
-          <!-- КАЧЕСТВО -->
-          <section class="panel" id="s-quality">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Пороги гейта</div>
-                <div class="panel-sub">Страница ниже порога не попадает в выгрузку.</div>
-              </div>
+          <!-- ---------- ПРОМПТЫ ---------- -->
+          <section class="set2-sec" id="s-prompts">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Промпты моделей</div>
+              <div class="set2-sec-sub">Системные инструкции трёх шагов конвейера.</div>
             </div>
-            <div class="panel-body">
-              <label class="field">
-                <span class="field-label">Порог уникальности</span>
-                <div class="range-row">
-                  <input class="range" id="uniqRange" type="range" min="0.5" max="1" step="0.01" value="0.88">
-                  <span class="range-out" id="uniqOut">0.88</span>
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Паспорт → каркас → заполнение</div>
                 </div>
-                <span class="field-hint">0.88 — рабочее значение. Выше 0.95 почти всё уйдёт в брак.</span>
-              </label>
-              <div class="form-grid">
+                <div class="panel-tools">
+                  <button class="btn btn-primary btn-sm" id="savePromptsBtn" type="button"><span data-ico-sm="check"></span> Сохранить промпты</button>
+                </div>
+              </div>
+              <div class="panel-body">
                 <label class="field">
-                  <span class="field-label">Минимум символов текста</span>
-                  <input class="input" id="minLen" type="number" min="300" step="100" value="1800">
-                  <span class="field-hint">Ниже этого — брак без разговоров.</span>
+                  <span class="field-label">1. Сильная модель — паспорт проекта <b id="passportPromptLen" class="raw-badge">0 симв.</b></span>
+                  <textarea class="textarea code" id="passportPrompt" rows="7" spellcheck="false"></textarea>
+                  <span class="field-hint">Читает карту колонок и решает тип страницы, стратегию и макет.</span>
                 </label>
+                <label class="field" style="margin-top:16px">
+                  <span class="field-label">2. Сильная модель — проектировщик каркаса <b id="strongPromptLen" class="raw-badge">0 симв.</b></span>
+                  <textarea class="textarea code" id="strongPrompt" rows="12" spellcheck="false"></textarea>
+                  <span class="field-hint">Блок «ДИЗАЙН-ОСНОВА ПРОЕКТА» система добавляет сама.</span>
+                </label>
+                <label class="field" style="margin-top:16px">
+                  <span class="field-label">3. Дешёвая модель — заполнитель страниц <b id="cheapPromptLen" class="raw-badge">0 симв.</b></span>
+                  <textarea class="textarea code" id="cheapPrompt" rows="11" spellcheck="false"></textarea>
+                  <span class="field-hint">Здесь важны только правила JSON и длины полей.</span>
+                </label>
+                <div id="promptsNote"></div>
               </div>
-              <label class="field">
-                <span class="field-label">Стоп-слова — по одному на строку</span>
-                <textarea class="textarea" id="stopWords" rows="4" placeholder="уникальный&#10;лучший&#10;в современном мире"></textarea>
-                <span class="field-hint">Срабатывает на уровне 5.4 — снижает балл, а не блокирует.</span>
-              </label>
+            </section>
+          </section>
 
-              <div class="hr-label">Факты и эмбеддинги</div>
-              <div class="stub">
-                <div class="stub-head">
-                  <span class="pill soon">Заглушка</span>
-                  <span class="stub-title">Уровень 5.2 и смысловая уникальность</span>
+          <!-- ---------- КАЧЕСТВО ---------- -->
+          <section class="set2-sec" id="s-quality">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Качество и гейт</div>
+              <div class="set2-sec-sub">Страница ниже порога не попадает в выгрузку.</div>
+            </div>
+            <div class="set2-stack">
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body"><div class="panel-title">Пороги</div></div>
                 </div>
-                <div class="stub-text">Появятся два поля: минимальная доля подтверждённых фактов и порог косинусной близости.</div>
-                <ul class="stub-list">
-                  <li>Доля фактов из строки, дошедших до текста — порог 0.60</li>
-                  <li>Доля чисел из текста, подтверждённых строкой — порог 0.55</li>
-                  <li>Косинусная близость на эмбеддингах — позже, по вашему решению</li>
-                </ul>
-              </div>
+                <div class="panel-body">
+                  <label class="field">
+                    <span class="field-label">Порог уникальности</span>
+                    <div class="range-row">
+                      <input class="range" id="uniqRange" type="range" min="0.5" max="1" step="0.01" value="0.88">
+                      <span class="range-out" id="uniqOut">0.88</span>
+                    </div>
+                    <span class="field-hint">0.88 — рабочее значение. Выше 0.95 почти всё уйдёт в брак.</span>
+                  </label>
+                  <div class="form-grid" style="margin-top:14px">
+                    <label class="field">
+                      <span class="field-label">Минимум символов текста</span>
+                      <input class="input" id="minLen" type="number" min="300" step="100" value="1800">
+                      <span class="field-hint">Ниже этого — брак без разговоров.</span>
+                    </label>
+                  </div>
+                  <label class="field" style="margin-top:14px">
+                    <span class="field-label">Стоп-слова — по одному на строку</span>
+                    <textarea class="textarea" id="stopWords" rows="4"></textarea>
+                    <span class="field-hint">Снижает балл, а не блокирует страницу.</span>
+                  </label>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Факты и смысловая уникальность</div>
+                    <div class="panel-sub">Уровень 5.2 — ещё не включён</div>
+                  </div>
+                  <div class="panel-tools"><span class="pill soon">Заглушка</span></div>
+                </div>
+                <div class="panel-body">
+                  <div class="stub"><div class="stub-text">Доля фактов из строки — порог 0.60; доля подтверждённых чисел — порог 0.55; эмбеддинги — позже.</div></div>
+                </div>
+              </section>
             </div>
           </section>
 
-          <!-- СВОИ API -->
-          <section class="panel" id="s-endpoints">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Свои API-точки</div>
-                <div class="panel-sub">Любой сервер, совместимый с OpenAI-форматом. Модели оттуда получают префикс <code>custom/</code>.</div>
-              </div>
+          <!-- ---------- SEARCH API ---------- -->
+          <section class="set2-sec" id="s-serp">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Яндекс Search API</div>
+              <div class="set2-sec-sub">Выдача до генерации: тип страницы, обязательные разделы, склейка ключей.</div>
             </div>
-            <div class="panel-body">
-              <div class="form-grid">
-                <label class="field">
-                  <span class="field-label">Название</span>
-                  <input class="input" id="epName" placeholder="Мой сервер" autocomplete="off">
-                </label>
-                <label class="field">
-                  <span class="field-label">Base URL</span>
-                  <input class="input" id="epUrl" placeholder="https://api.example.com/v1" autocomplete="off" spellcheck="false">
-                </label>
+            <div class="set2-stack">
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Доступ</div>
+                    <div class="panel-sub">Ключ сервисного аккаунта и каталог Yandex Cloud</div>
+                  </div>
+                  <div class="panel-tools" id="serpPill"></div>
+                </div>
+                <div class="panel-body">
+                  <div class="form-grid">
+                    <label class="field">
+                      <span class="field-label">API-ключ</span>
+                      <input class="input mono" id="serpKey" type="password" spellcheck="false" autocomplete="off" placeholder="AQVN...">
+                      <span class="field-hint">Нужен именно API-ключ (<span class="mono">AQVN…</span>), не IAM-токен. Роль аккаунта — <span class="mono">search-api.webSearch.user</span>.</span>
+                    </label>
+                    <label class="field">
+                      <span class="field-label">ID каталога (folder_id)</span>
+                      <input class="input mono" id="serpFolder" type="text" spellcheck="false" autocomplete="off" placeholder="b1g...">
+                      <span class="field-hint">Всегда начинается на <span class="mono">b1g</span>.</span>
+                    </label>
+                  </div>
+                  <div class="up-row" style="margin-top:14px">
+                    <button class="btn btn-primary" id="serpTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить ключ и сохранить</button>
+                    <button class="btn" id="serpSaveBtn" type="button"><span data-ico-sm="check"></span> Сохранить без проверки</button>
+                    <span class="grow"></span>
+                    <button class="btn btn-danger btn-sm" id="serpDropBtn" type="button">Удалить ключ</button>
+                  </div>
+                  <div id="serpResult"></div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Как собираем выдачу</div>
+                    <div class="panel-sub">Регион, глубина топа и темп запросов</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div class="grid-2">
+                    <label class="field">
+                      <span class="field-label">Регион поиска</span>
+                      <input class="input" id="serpRegion" type="number" min="1" step="1" placeholder="225">
+                      <span class="field-hint">225 — Россия, 213 — Москва, 2 — Питер, 54 — Екатеринбург.</span>
+                    </label>
+                    <label class="field">
+                      <span class="field-label">Сколько мест берём из топа</span>
+                      <input class="input" id="serpTopN" type="number" min="3" max="20" step="1" placeholder="10">
+                      <span class="field-hint">По ним считается тип страницы и склейка ключей.</span>
+                    </label>
+                    <label class="field">
+                      <span class="field-label">Скачивать страниц конкурентов</span>
+                      <input class="input" id="serpFetchTop" type="number" min="0" max="10" step="1" placeholder="5">
+                      <span class="field-hint">Оттуда берутся H2/H3 и объём. 0 — не скачивать.</span>
+                    </label>
+                    <label class="field">
+                      <span class="field-label">Одновременных запросов</span>
+                      <input class="input" id="serpConc" type="number" min="1" max="20" step="1" placeholder="8">
+                      <span class="field-hint">Пошли ошибки 429 — уменьшите до 3–4.</span>
+                    </label>
+                  </div>
+                  <div class="field" style="margin-top:16px">
+                    <label class="switch" id="serpAsyncSwitch">
+                      <input type="checkbox" id="serpAsync">
+                      <span class="switch-track"><i></i></span>
+                      <span class="switch-text">
+                        <span class="switch-title">Асинхронный режим</span>
+                        <span class="switch-desc" id="serpAsyncDesc"></span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <!-- ---------- ВЕБМАСТЕР ---------- -->
+          <section class="set2-sec" id="s-yandex">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Яндекс.Вебмастер</div>
+              <div class="set2-sec-sub">Один токен на все сайты. Отсюда берутся вердикты об индексации страниц.</div>
+            </div>
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body"><div class="panel-title">OAuth-токен</div></div>
+                <div class="panel-tools" id="yaPill"></div>
               </div>
-              <div class="field field-inline">
-                <label class="field">
-                  <span class="field-label">API-ключ</span>
-                  <input class="input" id="epKey" type="password" placeholder="sk-…" autocomplete="off">
-                </label>
-                <div class="btn-row">
-                  <button class="btn" id="epTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить</button>
-                  <button class="btn btn-dark" id="epAddBtn" type="button"><span data-ico-sm="plus"></span> Добавить</button>
+              <div class="panel-body">
+                <div class="field">
+                  <label class="field-label" for="yaToken">Токен</label>
+                  <input class="input mono" id="yaToken" type="password" spellcheck="false" autocomplete="off" placeholder="y0_AgAAAA...">
+                  <div class="field-hint">Выпускается на <b>oauth.yandex.ru</b> для приложения с правом <span class="mono">webmaster:hostinfo</span>.</div>
+                </div>
+                <div class="up-row" style="margin-top:14px">
+                  <button class="btn btn-primary" id="yaTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить и сохранить</button>
+                  <button class="btn" id="yaGuideBtn" type="button"><span data-ico-sm="info"></span> Как подключить</button>
+                  <span class="grow"></span>
+                  <button class="btn btn-danger btn-sm" id="yaDropBtn" type="button">Удалить токен</button>
+                </div>
+                <div id="yaResult"></div>
+              </div>
+            </section>
+          </section>
+
+          <!-- ---------- БЭКЕНД ---------- -->
+          <section class="set2-sec" id="s-wire">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Связь с бэкендом</div>
+              <div class="set2-sec-sub">Адрес API хранится только в этом браузере.</div>
+            </div>
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body"><div class="panel-title">Адрес API</div></div>
+                <div class="panel-tools" id="wirePill"></div>
+              </div>
+              <div class="panel-body">
+                <div class="field field-inline">
+                  <label class="field">
+                    <span class="field-label">Адрес</span>
+                    <input class="input mono" id="apiBase" placeholder="https://seo.waifubot.website/api" autocomplete="off" spellcheck="false">
+                    <span class="field-hint">Например: <code>http://localhost:8000/api</code></span>
+                  </label>
+                  <button class="btn" id="pingBtn" type="button"><span data-ico-sm="radar"></span> Проверить</button>
+                </div>
+                <div id="wireResult"></div>
+              </div>
+              <div class="panel-foot">
+                <button class="btn btn-primary" id="saveBaseBtn" type="button">Сохранить адрес и перезагрузить</button>
+                <span class="grow"></span>
+                <span class="faint" style="font-size:12px;">Ключи провайдеров живут на сервере, не в браузере.</span>
+              </div>
+            </section>
+          </section>
+
+          <!-- ---------- СВОИ API ---------- -->
+          <section class="set2-sec" id="s-endpoints">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Свои API-точки</div>
+              <div class="set2-sec-sub">Любой сервер, совместимый с OpenAI-форматом. Модели оттуда получают префикс <code>custom/</code>.</div>
+            </div>
+            <div class="set2-stack">
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body"><div class="panel-title">Добавить точку</div></div>
+                </div>
+                <div class="panel-body">
+                  <div class="form-grid">
+                    <label class="field">
+                      <span class="field-label">Название</span>
+                      <input class="input" id="epName" placeholder="Мой сервер" autocomplete="off">
+                    </label>
+                    <label class="field">
+                      <span class="field-label">Base URL</span>
+                      <input class="input mono" id="epUrl" placeholder="https://api.example.com/v1" autocomplete="off" spellcheck="false">
+                    </label>
+                  </div>
+                  <div class="field field-inline" style="margin-top:12px">
+                    <label class="field">
+                      <span class="field-label">API-ключ</span>
+                      <input class="input" id="epKey" type="password" placeholder="sk-…" autocomplete="off">
+                    </label>
+                    <div class="btn-row">
+                      <button class="btn" id="epTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить</button>
+                      <button class="btn btn-dark" id="epAddBtn" type="button"><span data-ico-sm="plus"></span> Добавить</button>
+                    </div>
+                  </div>
+                  <div id="epTestResult"></div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body"><div class="panel-title">Подключённые точки</div></div>
+                </div>
+                <div class="panel-body"><div id="epList"></div></div>
+              </section>
+            </div>
+          </section>
+
+          <!-- ---------- ВНЕШНИЙ ВИД ---------- -->
+          <section class="set2-sec" id="s-look">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Внешний вид</div>
+              <div class="set2-sec-sub">Тема применяется сразу и запоминается в браузере. Горячая клавиша — <kbd>T</kbd>.</div>
+            </div>
+            <section class="panel">
+              <div class="panel-body">
+                <div class="theme-pick" id="themePick"></div>
+                <div class="field" style="margin-top:18px">
+                  <label class="switch" id="fxSwitch">
+                    <input type="checkbox" id="fxToggle">
+                    <span class="switch-track"><i></i></span>
+                    <span class="switch-text">
+                      <span class="switch-title">Живое оформление</span>
+                      <span class="switch-desc">Подвижный фон, плавное всплытие панелей, блики на кнопках</span>
+                    </span>
+                  </label>
+                  <div class="field-hint">Хранится на сервере (ключ <code>ui_effects</code>) и действует во всём интерфейсе.</div>
                 </div>
               </div>
-              <div id="epTestResult"></div>
-              <div class="hr-label">Подключённые точки</div>
-              <div id="epList"></div>
-            </div>
+            </section>
           </section>
 
-          <!-- ВНЕШНИЙ ВИД -->
-          <!-- ЯНДЕКС.ВЕБМАСТЕР -->
-          <section class="panel" id="s-yandex">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Яндекс.Вебмастер</div>
-                <div class="panel-sub">Один токен на все сайты. Отсюда берутся вердикты о страницах</div>
-              </div>
-              <div class="panel-tools" id="yaPill"></div>
+          <!-- ---------- ДИАГНОСТИКА ---------- -->
+          <section class="set2-sec" id="s-raw">
+            <div class="set2-sec-head">
+              <div class="set2-sec-title">Все значения с сервера</div>
+              <div class="set2-sec-sub">То, что бэкенд вернул по <code>/settings</code>. Полезно для разбора проблем.</div>
             </div>
-            <div class="panel-body">
-              <div class="field">
-                <label class="field-label" for="yaToken">OAuth-токен</label>
-                <input class="input mono" id="yaToken" type="password" spellcheck="false"
-                       autocomplete="off" placeholder="y0_AgAAAA...">
-                <div class="field-hint">
-                  Токен выпускается на <b>oauth.yandex.ru</b> для приложения с правом
-                  <span class="mono">webmaster:hostinfo</span>. Сайт должен быть подтверждён
-                  в Вебмастере — иначе API по нему ничего не отдаст. Нажмите
-                  «Как подключить», там пошагово.
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body"><div class="panel-title">Сырые настройки</div></div>
+                <div class="panel-tools">
+                  <input class="input input-sm raw-filter" id="rawFilter" type="search" placeholder="Фильтр по ключу" autocomplete="off" spellcheck="false">
+                  <button class="btn btn-quiet btn-sm" id="copyRawBtn" type="button"><span data-ico-sm="copy"></span> Копировать JSON</button>
                 </div>
               </div>
-              <div class="up-row">
-                <button class="btn btn-primary" id="yaTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить и сохранить</button>
-                <button class="btn" id="yaGuideBtn" type="button"><span data-ico-sm="info"></span> Как подключить</button>
-                <button class="btn btn-danger btn-sm" id="yaDropBtn" type="button">Удалить токен</button>
-              </div>
-              <div id="yaResult"></div>
-            </div>
-          </section>
-
-          <!-- ЯНДЕКС SEARCH API -->
-          <section class="panel" id="s-serp">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Яндекс Search API</div>
-                <div class="panel-sub">Выдача до генерации: тип страницы, обязательные разделы, склейка ключей</div>
-              </div>
-              <div class="panel-tools" id="serpPill"></div>
-            </div>
-            <div class="panel-body">
-              <div class="field">
-                <label class="field-label" for="serpKey">API-ключ сервисного аккаунта</label>
-                <input class="input mono" id="serpKey" type="password" spellcheck="false"
-                       autocomplete="off" placeholder="AQVN...">
-                <div class="field-hint">
-                  Ключ даёт кнопка «Создать API-ключ» в Yandex AI Studio. Нужен именно API-ключ
-                  (<span class="mono">AQVN...</span>), а не IAM-токен — тот живёт 12 часов.
-                  Сервисному аккаунту нужна роль <span class="mono">search-api.webSearch.user</span>.
-                </div>
-              </div>
-              <div class="field">
-                <label class="field-label" for="serpFolder">ID каталога (folder_id)</label>
-                <input class="input mono" id="serpFolder" type="text" spellcheck="false"
-                       autocomplete="off" placeholder="b1g...">
-                <div class="field-hint">
-                  Всегда начинается на <span class="mono">b1g</span>. Виден в консоли Cloud рядом с именем каталога.
-                  Если там другой префикс — вы взяли ID ключа или сервисного аккаунта, а не каталога.
-                </div>
-              </div>
-              <div class="grid-2">
-                <label class="field">
-                  <span class="field-label">Регион поиска</span>
-                  <input class="input" id="serpRegion" type="number" min="1" step="1" placeholder="225">
-                  <span class="field-hint">225 — Россия, 213 — Москва, 2 — Питер.</span>
-                </label>
-                <label class="field">
-                  <span class="field-label">Сколько мест берём из топа</span>
-                  <input class="input" id="serpTopN" type="number" min="3" max="20" step="1" placeholder="10">
-                  <span class="field-hint">По ним считается тип страницы и склейка ключей.</span>
-                </label>
-                <label class="field">
-                  <span class="field-label">Скачивать страниц конкурентов</span>
-                  <input class="input" id="serpFetchTop" type="number" min="0" max="10" step="1" placeholder="5">
-                  <span class="field-hint">Оттуда берутся разделы H2/H3 и объём. 0 — не скачивать.</span>
-                </label>
-                <label class="field">
-                  <span class="field-label">Одновременных запросов</span>
-                  <input class="input" id="serpConc" type="number" min="1" max="20" step="1" placeholder="8">
-                  <span class="field-hint">Если пойдут ошибки 429 — уменьшите.</span>
-                </label>
-              </div>
-              <div class="field" style="margin-top:14px">
-                <label class="switch" id="serpAsyncSwitch">
-                  <input type="checkbox" id="serpAsync">
-                  <span class="switch-track"><i></i></span>
-                  <span class="switch-text">
-                    <span class="switch-title">Асинхронный режим</span>
-                    <span class="switch-desc" id="serpAsyncDesc"></span>
-                  </span>
-                </label>
-                <div class="field-hint">Отключать стоит только для отладки на одном-двух ключах.</div>
-              </div>
-              <div class="up-row">
-                <button class="btn btn-primary" id="serpTestBtn" type="button"><span data-ico-sm="radar"></span> Проверить ключ и сохранить</button>
-                <button class="btn" id="serpSaveBtn" type="button"><span data-ico-sm="check"></span> Сохранить без проверки</button>
-                <button class="btn btn-danger btn-sm" id="serpDropBtn" type="button">Удалить ключ</button>
-              </div>
-              <div id="serpResult"></div>
-            </div>
-          </section>
-
-          <!-- ПРОМПТЫ -->
-          <section class="panel" id="s-prompts">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Промпты моделей</div>
-                <div class="panel-sub">Системные инструкции. Сохраняются в базу как есть — экранировать ничего не надо.</div>
-              </div>
-              <div class="panel-tools">
-                <button class="btn btn-primary btn-sm" id="savePromptsBtn" type="button"><span data-ico-sm="check"></span> Сохранить промпты</button>
-              </div>
-            </div>
-            <div class="panel-body">
-              <label class="field">
-                <span class="field-label">Сильная модель — анализ данных и паспорт проекта <b id="passportPromptLen" class="raw-badge">0 симв.</b></span>
-                <textarea class="textarea code" id="passportPrompt" rows="8" spellcheck="false"
-                          placeholder="Ты SEO-оркестратор…"></textarea>
-                <span class="field-hint">Первый шаг: читает карту колонок и решает тип страницы, стратегию, макет и вердикт. Ответ только JSON — формат ответа подставляет система.</span>
-              </label>
-              <label class="field">
-                <span class="field-label">Дорогая модель — проектировщик каркаса <b id="strongPromptLen" class="raw-badge">0 симв.</b></span>
-                <textarea class="textarea code" id="strongPrompt" rows="14" spellcheck="false"
-                          placeholder="Ты — старший SEO-архитектор…"></textarea>
-                <span class="field-hint">Работает в чате проекта. Блок «ДИЗАЙН-ОСНОВА ПРОЕКТА» система добавляет сама — цвета и шрифты здесь писать не нужно.</span>
-              </label>
-              <label class="field">
-                <span class="field-label">Дешёвая модель — заполнитель страниц <b id="cheapPromptLen" class="raw-badge">0 симв.</b></span>
-                <textarea class="textarea code" id="cheapPrompt" rows="12" spellcheck="false"
-                          placeholder="Ты — автор programmatic SEO-страниц…"></textarea>
-                <span class="field-hint">Работает на каждой странице генерации. Здесь важны только правил�� JSON и длины полей.</span>
-              </label>
-              <div id="promptsNote"></div>
-            </div>
-          </section>
-
-          <section class="panel" id="s-look">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Внешний вид</div>
-                <div class="panel-sub">Тема применяется сразу и запоминается в браузере. Горячая клавиша — <kbd>T</kbd>.</div>
-              </div>
-            </div>
-            <div class="panel-body">
-              <div class="theme-pick" id="themePick"></div>
-
-              <div class="field" style="margin-top:18px">
-                <label class="switch" id="fxSwitch">
-                  <input type="checkbox" id="fxToggle">
-                  <span class="switch-track"><i></i></span>
-                  <span class="switch-text">
-                    <span class="switch-title">Живое оформление</span>
-                    <span class="switch-desc">Подвижный фон, плавное всплытие панелей, блики на кнопках, свечение акцентов</span>
-                  </span>
-                </label>
-                <div class="field-hint">Настройка хранится на сервере (ключ <code>ui_effects</code>) и действует во всём интерфейсе. Переключение видно сразу.</div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ВСЕ ЗНАЧЕНИЯ -->
-          <section class="panel" id="s-raw">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Все значения с сервера</div>
-                <div class="panel-sub">То, что бэкенд вернул по <code>/settings</code>. Полезно для разбора проблем.</div>
-              </div>
-              <div class="panel-tools">
-                <input class="input input-sm raw-filter" id="rawFilter" type="search"
-                       placeholder="Фильтр по ключу" autocomplete="off" spellcheck="false">
-                <button class="btn btn-quiet btn-sm" id="copyRawBtn" type="button"><span data-ico-sm="copy"></span> Копировать JSON</button>
-              </div>
-            </div>
-            <div class="panel-body">
-              <div class="raw-list" id="rawList"></div>
-            </div>
+              <div class="panel-body"><div class="raw-list" id="rawList"></div></div>
+            </section>
           </section>
 
         </div>
@@ -9020,7 +9197,12 @@ Disallow: /
   </main>
 </div>
 
-<script src="app.js?v=46"></script>
+<div class="set2-bar is-clean" id="saveBar">
+  <span class="set2-bar-text" id="saveBarText">Всё сохранено</span>
+  <button class="btn btn-primary" id="saveAllBtn" type="button"><span data-ico-sm="check"></span> Сохранить всё</button>
+</div>
+
+<script src="app.js?v=47"></script>
 <script>
 (function () {
 'use strict';
@@ -9028,7 +9210,9 @@ Disallow: /
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 let SET = {}, MODELS = [], RAW = null;
-let SERP_OK = null;  // null — не проверяли, true/false — ответ Яндекса
+let SERP_OK = null;   // null — не проверяли, true/false — ответ Яндекса
+let DIRTY = false;
+let YA = { saved: false, connected: false };
 
 function hydrateIcons(root) {
   const r = root || document;
@@ -9049,6 +9233,138 @@ const val = k => {
   return v;
 };
 
+/* ======================= навигация =======================
+   Раньше все разделы висели одной портянкой. Теперь на экране
+   ровно один раздел, а в меню слева видно состояние каждого. */
+const SECS = ['s-models','s-prompts','s-quality','s-serp','s-yandex','s-wire','s-endpoints','s-look','s-raw'];
+
+function showSec(id, push) {
+  if (!SECS.includes(id)) id = SECS[0];
+  $$('.set2-sec').forEach(s => s.classList.toggle('is-active', s.id === id));
+  $$('.set2-item').forEach(a => a.classList.toggle('is-active', a.dataset.sec === id));
+  if (push !== false && location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initNav() {
+  $$('.set2-item').forEach(a => a.onclick = e => { e.preventDefault(); showSec(a.dataset.sec); });
+  window.addEventListener('hashchange', () => showSec((location.hash || '').slice(1), false));
+  showSec((location.hash || '').slice(1), false);
+
+  const s = $('#navSearch');
+  if (s) s.oninput = () => {
+    const q = (s.value || '').trim().toLowerCase();
+    $$('.set2-item').forEach(a => {
+      const hay = (a.textContent + ' ' + (a.dataset.words || '')).toLowerCase();
+      a.classList.toggle('is-hidden', !!q && !hay.includes(q));
+    });
+  };
+}
+
+function paintDots() {
+  const put = (name, cls) => {
+    const el = document.querySelector('[data-dot="' + name + '"]');
+    if (el) el.className = 'set2-dot ' + (cls || '');
+  };
+  put('models', (val('strong_model') && val('cheap_model')) ? 'ok' : 'warn');
+  const serpKey = String(val('yandex_search_api_key') || '');
+  put('serp', SERP_OK === true ? 'ok' : (SERP_OK === false ? 'bad' : (serpKey ? 'warn' : '')));
+  put('ya', YA.connected ? 'ok' : (YA.saved ? 'warn' : ''));
+}
+
+/* ======================= выбор модели =======================
+   Поле — обычный input, так что модель можно ввести руками целиком,
+   вместе с суффиксами вроде :nitro. Кнопка «Из списка» — список с поиском. */
+function mpickAll() { return $$('.mpick'); }
+
+function mpickState(box) {
+  if (!box) return;
+  const input = box.querySelector('.mpick-input');
+  let tag = box.parentElement.querySelector('.mpick-state');
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'mpick-state';
+    box.insertAdjacentElement('afterend', tag);
+  }
+  const v = (input.value || '').trim();
+  if (!v) { tag.className = 'mpick-state'; tag.textContent = 'Модель не выбрана'; return; }
+  if (MODELS.includes(v)) { tag.className = 'mpick-state'; tag.textContent = 'Есть в списке провайдера'; }
+  else { tag.className = 'mpick-state is-manual'; tag.textContent = 'Своя строка — отправим провайдеру как есть'; }
+}
+
+function mpickRender(box, q) {
+  const input = box.querySelector('.mpick-input');
+  const list = box.querySelector('.mpick-list');
+  const cur = (input.value || '').trim();
+  const needle = (q || '').trim().toLowerCase();
+  const items = MODELS.filter(m => !needle || m.toLowerCase().includes(needle)).slice(0, 400);
+  list.innerHTML = items.length
+    ? items.map(m => `<button class="mpick-item ${m === cur ? 'is-cur' : ''}" type="button" data-m="${escAttr(m)}">${escHtml(m)}</button>`).join('')
+    : `<div class="mpick-empty">Ничего не нашлось.` +
+      (MODELS.length ? '' : ' Список моделей не загрузился — введите имя руками.') + `</div>`;
+  list.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+    input.value = b.dataset.m;
+    box.classList.remove('is-open');
+    mpickState(box);
+    markDirty();
+  });
+}
+
+function mpickInit() {
+  mpickAll().forEach(box => {
+    if (box.dataset.ready) { mpickState(box); return; }
+    box.dataset.ready = '1';
+    const menu = document.createElement('div');
+    menu.className = 'mpick-menu';
+    menu.innerHTML =
+      `<input class="input input-sm mpick-search" type="search" placeholder="Поиск по имени модели…" autocomplete="off">` +
+      `<div class="mpick-list"></div>` +
+      `<div class="mpick-foot">Можно ничего не выбирать и вписать имя самому</div>`;
+    box.appendChild(menu);
+
+    const search = menu.querySelector('.mpick-search');
+    box.querySelector('.mpick-open').onclick = () => {
+      const open = !box.classList.contains('is-open');
+      mpickAll().forEach(b => b.classList.remove('is-open'));
+      box.classList.toggle('is-open', open);
+      if (open) { mpickRender(box, ''); search.value = ''; search.focus(); }
+    };
+    search.oninput = () => mpickRender(box, search.value);
+    search.onkeydown = e => {
+      if (e.key === 'Escape') box.classList.remove('is-open');
+      if (e.key === 'Enter') { const f = menu.querySelector('.mpick-item'); if (f) f.click(); }
+    };
+    box.querySelector('.mpick-input').oninput = () => { mpickState(box); markDirty(); };
+    mpickState(box);
+  });
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.mpick')) mpickAll().forEach(b => b.classList.remove('is-open'));
+});
+
+/* ======================= строка сохранения ======================= */
+function markDirty() {
+  DIRTY = true;
+  const bar = $('#saveBar');
+  if (bar) { bar.classList.remove('is-clean'); $('#saveBarText').innerHTML = '<b>Есть несохранённые изменения</b>'; }
+}
+function markClean() {
+  DIRTY = false;
+  const bar = $('#saveBar');
+  if (bar) { bar.classList.add('is-clean'); $('#saveBarText').textContent = 'Всё сохранено'; }
+}
+function watchDirty() {
+  ['#strongModel','#cheapModel','#strongTokens','#cheapTokens','#briefConc','#genTimeout',
+   '#uniqRange','#minLen','#stopWords','#passportPrompt','#strongPrompt','#cheapPrompt']
+    .forEach(id => { const el = $(id); if (el) el.addEventListener('input', markDirty); });
+}
+window.addEventListener('beforeunload', e => {
+  if (!DIRTY) return;
+  e.preventDefault();
+  e.returnValue = '';
+});
+
 /* ---------- темы ---------- */
 function renderThemes() {
   const cur = getTheme();
@@ -9067,7 +9383,6 @@ function renderThemes() {
   });
 }
 
-/* ---------- живое оформление ---------- */
 function initFxToggle() {
   const box = $('#fxToggle');
   if (!box) return;
@@ -9075,7 +9390,6 @@ function initFxToggle() {
   const cur = fromServer || getFx();
   applyFx(cur);
   box.checked = cur === 'on';
-
   box.onchange = async () => {
     const v = applyFx(box.checked);
     try {
@@ -9083,9 +9397,7 @@ function initFxToggle() {
       SET = (res && res.settings) ? res.settings : SET;
       renderRaw();
       toast.ok(v === 'on' ? 'Живое оформление включено' : 'Живое оформление выключено');
-    } catch (e) {
-      toast.bad('Не сохранилось', e.message);
-    }
+    } catch (e) { toast.bad('Не сохранилось', e.message); }
   };
 }
 
@@ -9110,6 +9422,11 @@ async function load() {
   const sw = val('stop_words');
   $('#stopWords').value = Array.isArray(sw) ? sw.join('\n') : (sw || '');
 
+  $('#strongTokens').value = Number(val('strong_max_tokens')) || 16000;
+  $('#cheapTokens').value = Number(val('cheap_max_tokens')) || 8000;
+  $('#briefConc').value = Number(val('brief_concurrency')) || 12;
+  $('#genTimeout').value = Number(val('gen_timeout_sec')) || 300;
+
   $('#passportPrompt').value = promptText(val('passport_system_prompt'));
   $('#strongPrompt').value = promptText(val('strong_system_prompt'));
   $('#cheapPrompt').value = promptText(val('cheap_system_prompt'));
@@ -9120,9 +9437,12 @@ async function load() {
 
   renderRaw();
   if ($('#rawFilter')) $('#rawFilter').oninput = () => renderRaw();
-  loadModels();
+  await loadModels();
   loadProviders();
   loadEndpoints();
+  watchDirty();
+  markClean();
+  paintDots();
 }
 
 /* ---------- промпты ---------- */
@@ -9155,6 +9475,7 @@ async function savePrompts(btn) {
       SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
       renderRaw();
       paintPromptLens();
+      markClean();
       $('#promptsNote').innerHTML =
         `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
         `<div class="note-body"><b>Сохранено.</b> Новые генерации пойдут уже по этим инструкциям.</div></div>`;
@@ -9168,12 +9489,7 @@ async function savePrompts(btn) {
   });
 }
 
-/* Список всех значений с сервера.
-
-   Раньше ключ и значение клались в двухколоночный grid, и промпты на 20 тысяч
-   символов наезжали друг на друга. Теперь каждое значение — отдельная карточка:
-   короткое показывается сразу, длинное прячется под раскрывашку с переносами. */
-
+/* ---------- сырые значения ---------- */
 const RAW_SECRET = /(api_key|token|secret|service_account|password)/i;
 const RAW_LONG = 180;
 
@@ -9217,7 +9533,7 @@ function renderRaw() {
       ? '<span class="raw-badge">пусто</span>'
       : (secret
           ? '<span class="raw-badge ok">задано</span>'
-          : `<span class="raw-badge">${fmtNum(chars)} симв.</span>`);
+          : `<span class="raw-badge">${fmtNum(chars)} симв.</span>`);
 
     let body;
     if (empty) {
@@ -9242,146 +9558,108 @@ function renderRaw() {
   }).join('');
 }
 
+/* ---------- модели ---------- */
 async function loadModels() {
-  const fill = (sel, cur) => {
-    const list = MODELS.map(m => typeof m === 'string' ? m : (m.id || m.name)).filter(Boolean);
-    if (cur && !list.includes(cur)) list.unshift(cur);
-    sel.innerHTML = list.length
-      ? list.map(m => `<option value="${escAttr(m)}" ${m === cur ? 'selected' : ''}>${escHtml(m)}</option>`).join('')
-      : `<option value="">Нет связи со списком моделей</option>`;
-  };
   try {
     const res = await api.getModels();
-    MODELS = Array.isArray(res) ? res : (res.models || []);
+    const list = Array.isArray(res) ? res : (res.models || []);
+    MODELS = list.map(m => typeof m === 'string' ? m : (m.id || m.name)).filter(Boolean);
   } catch (e) { MODELS = []; }
-  fill($('#strongModel'), val('strong_model'));
-  fill($('#cheapModel'), val('cheap_model'));
+
+  const cur = { '#strongModel': val('strong_model'), '#cheapModel': val('cheap_model') };
+  Object.entries(cur).forEach(([sel, v]) => {
+    const el = $(sel);
+    if (el && !el.value) el.value = v || '';
+  });
+  mpickInit();
+  mpickAll().forEach(b => mpickState(b));
 }
 
 async function loadProviders() {
   try {
     const res = await api.getProviders();
     const list = Array.isArray(res) ? res : (res.providers || []);
-    $('#providersNote').innerHTML = list.length
+    $('#providersNote').innerHTML = (list.length
       ? 'Доступные провайдеры: ' + list.map(p =>
           `<span class="tag">${escHtml(typeof p === 'string' ? p : (p.name || p.id))}</span>`).join(' ')
-      : 'Сервер не вернул ни одного провайдера — проверьте ключи в <code>.env</code>.';
+      : 'Сервер не вернул ни одного провайдера — проверьте ключи в <code>.env</code>.')
+      + `<div style="margin-top:6px;opacity:.7">В списке моделей сейчас ${fmtNum(MODELS.length)}. ` +
+        `Можно ввести и то, чего в списке нет — имя уйдёт провайдеру без изменений.</div>`;
   } catch (e) {
     $('#providersNote').textContent = 'Список провайдеров недоступен: ' + e.message;
   }
 }
 
+/* ---------- свои API-точки ---------- */
 async function loadEndpoints() {
-  $('#epList').innerHTML = `<div class="sk sk-row"></div>`;
-  let list = [];
+  const box = $('#epList');
+  if (!box) return;
   try {
-    const res = await api.listCustomEndpoints();
-    list = Array.isArray(res) ? res : (res.endpoints || []);
-  } catch (e) {
-    $('#epList').innerHTML =
-      `<div class="stub"><div class="stub-text">Список не загрузился: ${escHtml(e.message)}</div></div>`;
-    return;
-  }
-  if (!list.length) {
-    $('#epList').innerHTML = `<div class="empty" style="padding:16px 0;">` +
-      `<div class="empty-title">Ни одной своей точки</div>` +
-      `<div class="empty-text">Можно работать только на встроенных провайдерах.</div></div>`;
-    return;
-  }
-  $('#epList').innerHTML = list.map(ep =>
-    `<div class="ep-row">` +
-      `<span class="ep-ico">${ico('code', 16)}</span>` +
-      `<div class="ep-body">` +
-        `<div class="ep-name">${escHtml(ep.name || 'Без названия')}</div>` +
-        `<div class="ep-url">${escHtml(ep.base_url || ep.url || '')}</div>` +
-      `</div>` +
-      `<div class="row-tools">` +
-        `<button class="btn btn-sm" data-ep-test="${ep.id}">Проверить</button>` +
-        `<button class="icon-btn sm danger" data-ep-del="${ep.id}" title="Удалить">${ico('trash', 15)}</button>` +
-      `</div>` +
-    `</div>`).join('');
-
-  $$('[data-ep-test]').forEach(b => b.onclick = async () => {
-    await withBusy(b, async () => {
-      try {
-        const r = await api.testCustomEndpoint(b.dataset.epTest);
-        if (r && r.ok === false) toast.bad('Точка не ответила', r.error || '');
-        else toast.ok('Точка работает', r && r.models ? 'Моделей: ' + r.models.length : '');
-      } catch (e) { toast.err('Проверка не вышла', e); }
-    });
-  });
-  $$('[data-ep-del]').forEach(b => b.onclick = async () => {
-    const ok = await confirmDialog({
-      title: 'Удалить точку?',
-      text: 'Модели с префиксом custom/ из неё станут недоступны.',
-      confirm: 'Удалить', danger: true,
-    });
-    if (!ok) return;
-    try { await api.deleteCustomEndpoint(b.dataset.epDel); toast.ok('Удалено'); loadEndpoints(); }
-    catch (e) { toast.err('Не удалось удалить', e); }
-  });
-}
-
-/* ---------- действия ---------- */
-
-async function ping(btn) {
-  await withBusy(btn, async () => {
-    $('#wireResult').innerHTML = '';
-    try {
-      const t0 = performance.now();
-      await api.getSettings();
-      const ms = Math.round(performance.now() - t0);
-      $('#wirePill').innerHTML = `<span class="pill ok"><i class="dot"></i>отвечает</span>`;
-      $('#wireResult').innerHTML =
-        `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
-        `<div class="note-body"><b>Связь есть.</b> Ответ за ${ms} мс.</div></div>`;
-    } catch (e) {
-      $('#wirePill').innerHTML = `<span class="pill bad"><i class="dot"></i>нет св��зи</span>`;
-      $('#wireResult').innerHTML =
-        `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
-        `<div class="note-body"><b>Бэкенд не ответил.</b> ${escHtml(e.message)}</div></div>`;
+    const res = await api.getEndpoints();
+    const list = Array.isArray(res) ? res : (res.endpoints || []);
+    if (!list.length) {
+      box.innerHTML = `<div class="empty" style="padding:14px 0;">` +
+        `<div class="empty-title">Пока ничего не добавлено</div>` +
+        `<div class="empty-text">Можно работать только на OpenRouter — это не ошибка.</div></div>`;
+      return;
     }
-  });
-}
+    box.innerHTML = `<div class="stub-list">` + list.map(ep => {
+      const id = ep.id || ep.name;
+      return `<div class="stub-row">` +
+        `<div class="stub-row-body">` +
+          `<div class="stub-row-title">${escHtml(ep.name || id)}</div>` +
+          `<div class="stub-row-sub mono">${escHtml(ep.base_url || ep.url || '')}</div>` +
+        `</div>` +
+        `<div class="btn-row">` +
+          `<button class="btn btn-sm" data-ep-test="${escAttr(String(id))}" type="button">Проверить</button>` +
+          `<button class="btn btn-sm btn-danger" data-ep-del="${escAttr(String(id))}" type="button">Удалить</button>` +
+        `</div>` +
+      `</div>`;
+    }).join('') + `</div>`;
 
-async function saveAll(btn) {
-  const prov = m => m && m.startsWith('custom/') ? 'custom' : 'openrouter';
-  const sm = $('#strongModel').value, cm = $('#cheapModel').value;
-  const payload = {
-    uniqueness_threshold: { value: Number($('#uniqRange').value) },
-    min_text_length: { value: parseInt($('#minLen').value, 10) || 1800 },
-    stop_words: { value: $('#stopWords').value.split('\n').map(s => s.trim()).filter(Boolean) },
-    passport_system_prompt: { value: $('#passportPrompt').value },
-    strong_system_prompt: { value: $('#strongPrompt').value },
-    cheap_system_prompt: { value: $('#cheapPrompt').value },
-  };
-  if (sm) payload.strong_model = { value: sm, provider: prov(sm) };
-  if (cm) payload.cheap_model  = { value: cm, provider: prov(cm) };
+    box.querySelectorAll('[data-ep-test]').forEach(b => b.onclick = () => withBusy(b, async () => {
+      try {
+        const r = await api.testEndpoint({ id: b.dataset.epTest });
+        toast.ok('Точка ответила', (r && r.models_count) ? ('моделей: ' + r.models_count) : '');
+      } catch (e) { toast.err('Точка не ответила', e); }
+    }));
 
-  await withBusy(btn, async () => {
-    try {
-      const res = await api.updateSettings(payload);
-      SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
-      renderRaw();
-      toast.ok('Настройки сохранены');
-    } catch (e) { toast.err('Не удалось сохранить', e); }
-  });
+    box.querySelectorAll('[data-ep-del]').forEach(b => b.onclick = async () => {
+      const ok = await confirmDialog({
+        title: 'Удалить точку?',
+        text: 'Модели с префиксом custom/ перестанут быть доступны.',
+        okText: 'Удалить', danger: true,
+      });
+      if (!ok) return;
+      await withBusy(b, async () => {
+        try {
+          await api.deleteEndpoint(b.dataset.epDel);
+          toast.ok('Удалено');
+          loadEndpoints();
+          loadModels();
+        } catch (e) { toast.err('Не удалось удалить', e); }
+      });
+    });
+  } catch (e) {
+    box.innerHTML = `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
+      `<div class="note-body">${escHtml(e.message)}</div></div>`;
+  }
 }
 
 async function testEp(btn) {
-  const url = $('#epUrl').value.trim(), key = $('#epKey').value.trim();
-  if (!url) { toast.warn('Нужен Base URL'); return; }
+  const payload = {
+    name: $('#epName').value.trim(),
+    base_url: $('#epUrl').value.trim(),
+    api_key: $('#epKey').value.trim(),
+  };
+  if (!payload.base_url) { toast.bad('Нужен Base URL'); return; }
   await withBusy(btn, async () => {
     try {
-      const r = await api.testCustomApi(url, key);
-      const models = (r && r.models) || [];
-      $('#epTestResult').innerHTML = (r && r.ok === false)
-        ? `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
-          `<div class="note-body">${escHtml(r.error || 'Сервер ответил ошибкой.')}</div></div>`
-        : `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
-          `<div class="note-body"><b>Сервер ответил.</b> ` +
-          (models.length ? 'Моделей видно: ' + models.length : 'Список моделей пуст.') +
-          `</div></div>`;
+      const r = await api.testEndpoint(payload);
+      $('#epTestResult').innerHTML =
+        `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
+        `<div class="note-body"><b>Сервер ответил.</b> ` +
+        `Моделей видно: ${fmtNum((r && r.models_count) || 0)}.</div></div>`;
     } catch (e) {
       $('#epTestResult').innerHTML =
         `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
@@ -9391,299 +9669,367 @@ async function testEp(btn) {
 }
 
 async function addEp(btn) {
-  const name = $('#epName').value.trim(), url = $('#epUrl').value.trim(), key = $('#epKey').value.trim();
-  if (!name || !url) { toast.warn('Нужны название и Base URL'); return; }
+  const payload = {
+    name: $('#epName').value.trim(),
+    base_url: $('#epUrl').value.trim(),
+    api_key: $('#epKey').value.trim(),
+  };
+  if (!payload.name || !payload.base_url) { toast.bad('Нужны название и Base URL'); return; }
   await withBusy(btn, async () => {
     try {
-      await api.addCustomEndpoint({ name: name, base_url: url, api_key: key });
-      toast.ok('Точка добавлена');
+      await api.addEndpoint(payload);
       $('#epName').value = ''; $('#epUrl').value = ''; $('#epKey').value = '';
       $('#epTestResult').innerHTML = '';
-      loadEndpoints(); loadModels();
-    } catch (e) { toast.err('Не удалось добавить', e); }
+      toast.ok('Точка добавлена');
+      loadEndpoints();
+      loadModels();
+    } catch (e) { toast.err('Не добавилось', e); }
   });
 }
 
-/* ---------- Яндекс.Вебмастер ----------
-   Токен хранится только на сервере. Здесь мы его не показываем: в поле
-   видно лишь, что он есть. Проверка и сохранение — одно действие, потому
-   что проверенный, но не сохранённый токен раньше был главным источником
-   недоумения «почему сайт всё ещё не подключён». */
-
-let YA = { saved: false, connected: false };
-
-function paintYaPill() {
-  const box = $('#yaPill');
-  if (!box) return;
-  box.innerHTML = YA.connected
-    ? '<span class="pill ok"><i class="dot"></i>подключено</span>'
-    : (YA.saved
-        ? '<span class="pill warn"><i class="dot"></i>токен есть, но не работает</span>'
-        : '<span class="pill neutral"><i class="dot"></i>токена нет</span>');
-}
-
-function paintYaHosts(hosts, hint) {
-  const list = hosts || [];
-  if (!list.length) {
-    $('#yaResult').innerHTML =
-      `<div class="alert warn"><span class="alert-ico">${ico('info', 15)}</span>` +
-      `<span class="alert-text">${escHtml(hint || 'В Вебмастере нет ни одного сайта.')}</span></div>`;
-    return;
-  }
-  $('#yaResult').innerHTML =
-    `<div class="alert info"><span class="alert-ico">${ico('ok', 15)}</span><span class="alert-text">` +
-    `<b>Токен работает.</b> Доступные сайты: ` +
-    list.map(h => escHtml(h.url) + (h.verified ? '' : ' (не подтверждён)')).join(', ') +
-    `. Дальше выберите сайт на экране самого сайта.</span></div>`;
-}
-
-async function loadYandex() {
-  try {
-    const r = await api.yandexStatus();
-    YA = { saved: !!r.saved, connected: !!r.connected };
-    $('#yaToken').placeholder = r.saved ? 'токен сохранён — введите новый, чтобы заменить' : 'y0_AgAAAA...';
-    paintYaPill();
-    if (r.connected) paintYaHosts(r.hosts, r.hint);
-    else if (r.saved) {
-      $('#yaResult').innerHTML =
-        `<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
-        `<span class="alert-text">${escHtml(r.hint || 'Токен не принят.')}</span></div>`;
-    }
-  } catch (e) { /* настройки не должны падать из-за одной панели */ }
-}
-
-async function checkYandex(btn) {
-  const token = ($('#yaToken').value || '').trim();
-  if (!token && !YA.saved) { toast.info('Вставьте токен'); return; }
+/* ---------- бэкенд ---------- */
+async function ping(btn) {
+  const pill = $('#wirePill');
   await withBusy(btn, async () => {
     try {
-      const r = token ? await api.yandexToken(token) : await api.yandexStatus();
-      YA = { saved: true, connected: !!r.connected };
-      paintYaPill();
-      paintYaHosts(r.hosts, r.hint);
-      $('#yaToken').value = '';
-      $('#yaToken').placeholder = 'токен сохранён — введите новый, чтобы заменить';
-      toast.ok('Токен сохранён', r.hint || '');
+      const me = await api.me();
+      pill.innerHTML = `<span class="pill ok">Связь есть</span>`;
+      $('#wireResult').innerHTML =
+        `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
+        `<div class="note-body"><b>Бэкенд на месте.</b> ` +
+        `Пользователь: ${escHtml((me && (me.email || me.login || me.name)) || 'неизвестен')}.</div></div>`;
+      const d = document.querySelector('[data-dot="wire"]');
+      if (d) d.className = 'set2-dot ok';
     } catch (e) {
-      $('#yaResult').innerHTML =
-        `<div class="alert bad"><span class="alert-ico">${ico('alert', 15)}</span>` +
-        `<span class="alert-text"><b>Не вышло.</b> ${escHtml(e.message)}</span></div>`;
-      toast.err('Токен не сработал', e);
+      pill.innerHTML = `<span class="pill bad">Нет связи</span>`;
+      $('#wireResult').innerHTML =
+        `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
+        `<div class="note-body"><b>Бэкенд не ответил.</b> ${escHtml(e.message)}</div></div>`;
+      const d = document.querySelector('[data-dot="wire"]');
+      if (d) d.className = 'set2-dot bad';
     }
   });
 }
 
-async function dropYandex() {
-  const ok = await confirmDialog({
-    title: 'Удалить токен Яндекса?',
-    text: 'Сайты перестанут получать данные из Вебмастера. История метрик останется.',
-    confirm: 'Удалить', danger: true,
-  });
-  if (!ok) return;
-  try {
-    await api.yandexToken('');
-    YA = { saved: false, connected: false };
-    $('#yaToken').value = '';
-    $('#yaToken').placeholder = 'y0_AgAAAA...';
-    $('#yaResult').innerHTML = '';
-    paintYaPill();
-    toast.ok('Токен удалён');
-  } catch (e) { toast.err('Не удалось', e); }
-}
+/* ---------- сохранить всё ---------- */
+const provOf = m => (m && m.indexOf('custom/') === 0) ? 'custom' : 'openrouter';
 
-/* ---------- Яндекс Search API ---------- */
-
-function serpAsyncDesc(on) {
-  const el = $('#serpAsyncDesc');
-  if (!el) return;
-  el.textContent = on
-    ? 'Включён: дешевле в 15–20 раз. Яндекс считает от 5 минут до нескольких часов, результат забираем позже кнопкой «Обновить»'
-    : 'Выключен: ответ сразу, но запросы стоят заметно дороже';
-}
-
-function fillSerp() {
-  const savedKey = String(val('yandex_search_api_key') || '');
-  if ($('#serpKey')) $('#serpKey').placeholder = savedKey
-    ? 'ключ сохранён — введите новый, чтобы заменить' : 'AQVN...';
-  if ($('#serpFolder')) $('#serpFolder').value = String(val('yandex_search_folder_id') || '');
-  if ($('#serpRegion')) $('#serpRegion').value = Number(val('serp_region')) || 225;
-  if ($('#serpTopN')) $('#serpTopN').value = Number(val('serp_top_n')) || 10;
-  const ft = val('serp_fetch_top');
-  if ($('#serpFetchTop')) $('#serpFetchTop').value = (ft === 0 || ft) ? Number(ft) : 5;
-  if ($('#serpConc')) $('#serpConc').value = Number(val('serp_concurrency')) || 8;
-  const am = val('serp_async');
-  const on = (am === undefined || am === null) ? true : !!am;
-  if ($('#serpAsync')) $('#serpAsync').checked = on;
-  serpAsyncDesc(on);
-  paintSerpPill(SERP_OK);
-}
-
-function paintSerpPill(state) {
-  if (!$('#serpPill')) return;
-  const savedKey = String(val('yandex_search_api_key') || '');
-  let html = '<span class="pill"><i class="dot"></i>ключа нет</span>';
-  if (state === true) html = '<span class="pill ok"><i class="dot"></i>ключ работает</span>';
-  else if (state === false) html = '<span class="pill bad"><i class="dot"></i>ключ не принят</span>';
-  else if (savedKey) html = '<span class="pill warn"><i class="dot"></i>сохранён, не проверен</span>';
-  $('#serpPill').innerHTML = html;
-}
-
-function serpPayload(withKey) {
-  const payload = {
-    yandex_search_folder_id: { value: ($('#serpFolder').value || '').trim() },
-    serp_region: { value: parseInt($('#serpRegion').value, 10) || 225 },
-    serp_top_n: { value: parseInt($('#serpTopN').value, 10) || 10 },
-    serp_fetch_top: { value: parseInt($('#serpFetchTop').value, 10) || 0 },
-    serp_concurrency: { value: parseInt($('#serpConc').value, 10) || 8 },
-    serp_async: { value: !!$('#serpAsync').checked },
+async function saveAll(btn) {
+  const sm = ($('#strongModel').value || '').trim();
+  const cm = ($('#cheapModel').value || '').trim();
+  const num = (sel, min, max, def) => {
+    let v = Number($(sel).value);
+    if (!isFinite(v) || v <= 0) v = def;
+    v = Math.max(min, Math.min(max, Math.round(v)));
+    $(sel).value = v;
+    return v;
   };
-  // Пустое поле не должно стирать уже сохранённый ключ.
-  if (withKey) payload.yandex_search_api_key = { value: withKey };
-  return payload;
-}
 
-async function storeSerp(payload) {
-  const res = await api.updateSettings(payload);
-  SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
-  renderRaw();
-  $('#serpKey').value = '';
-  fillSerp();
-}
-
-function serpNote(kind, html) {
-  const icons = { ok: 'ok', bad: 'alert', warn: 'info' };
-  $('#serpResult').innerHTML =
-    `<div class="alert ${kind === 'ok' ? 'info' : kind}"><span class="alert-ico">` +
-    `${ico(icons[kind] || 'info', 15)}</span><span class="alert-text">${html}</span></div>`;
-}
-
-/* Проверка сначала, запись потом: нерабочий ключ в базу не попадает. */
-async function testSerp(btn) {
-  const key = ($('#serpKey').value || '').trim();
-  const folder = ($('#serpFolder').value || '').trim();
-  const savedKey = String(val('yandex_search_api_key') || '');
-  if (!key && !savedKey) { toast.info('Вставьте API-ключ'); return; }
-  if (!folder) { toast.warn('Нужен ID каталога'); return; }
+  const payload = {
+    uniqueness_threshold: { value: Number($('#uniqRange').value) },
+    min_text_length: { value: num('#minLen', 300, 20000, 1800) },
+    stop_words: { value: $('#stopWords').value.split('\n').map(s => s.trim()).filter(Boolean) },
+    strong_max_tokens: { value: num('#strongTokens', 1000, 200000, 16000) },
+    cheap_max_tokens: { value: num('#cheapTokens', 1000, 200000, 8000) },
+    brief_concurrency: { value: num('#briefConc', 1, 32, 12) },
+    gen_timeout_sec: { value: num('#genTimeout', 30, 900, 300) },
+  };
+  if (sm) payload.strong_model = { value: sm, provider: provOf(sm) };
+  if (cm) payload.cheap_model = { value: cm, provider: provOf(cm) };
 
   await withBusy(btn, async () => {
-    serpNote('warn', 'Делаем один живой синхронный запрос… обычно пара секунд.');
-    let r;
     try {
-      r = await api.testSerp(key, folder);
-    } catch (e) {
-      SERP_OK = null;
-      paintSerpPill(null);
-      serpNote('bad', `<b>Бэкенд не ответил.</b> ${escHtml(e.message)}`);
-      toast.err('Проверка не вышла', e);
-      return;
-    }
-
-    if (!r || r.ok !== true) {
-      SERP_OK = false;
-      paintSerpPill(false);
-      serpNote('bad', `<b>Ключ не принят, ничего не сохранено.</b> ` +
-        `${escHtml((r && r.error) || 'Яндекс ответил ошибкой.')}`);
-      toast.bad('Ключ не работает', (r && r.error) || '');
-      return;
-    }
-
-    try {
-      await storeSerp(serpPayload(key));
-      SERP_OK = true;
-      paintSerpPill(true);
-      const doms = (r.domains || []).filter(Boolean).map(escHtml).join(', ');
-      serpNote('ok', `<b>Ключ работает.</b> Запрос «${escHtml(r.query || '')}», ` +
-        `проверка синхронным запросом, ` +
-        `ответ за ${escHtml(String(r.elapsed_sec || 0))} с.` +
-        (doms ? ` В топе видно: ${doms}.` : '') +
-        ` Настройки сохранены.`);
-      toast.ok('Ключ принят и сохранён');
-    } catch (e) {
-      serpNote('bad', `<b>Ключ рабочий, но не сохранился.</b> ${escHtml(e.message)}`);
-      toast.err('Не удалось сохранить', e);
-    }
-  });
-}
-
-async function saveSerp(btn) {
-  const key = ($('#serpKey').value || '').trim();
-  if (!($('#serpFolder').value || '').trim()) { toast.warn('Нужен ID каталога'); return; }
-  await withBusy(btn, async () => {
-    try {
-      await storeSerp(serpPayload(key));
-      SERP_OK = null;
-      paintSerpPill(null);
-      serpNote('warn', 'Сохранено без проверки. Работает ли ключ — неизвестно.');
+      const res = await api.updateSettings(payload);
+      SET = (res && res.settings) ? res.settings : Object.assign({}, SET, payload);
+      renderRaw();
+      markClean();
+      paintDots();
+      mpickAll().forEach(b => mpickState(b));
       toast.ok('Настройки сохранены');
     } catch (e) { toast.err('Не удалось сохранить', e); }
   });
 }
 
-async function dropSerp() {
-  const ok = await confirmDialog({
-    title: 'Удалить ключ Search API?',
-    text: 'Подготовка ключей перестанет работать. Уже собранные техзадания останутся.',
-    confirm: 'Удалить', danger: true,
-  });
-  if (!ok) return;
-  try {
-    const res = await api.updateSettings({ yandex_search_api_key: { value: '' } });
-    SET = (res && res.settings) ? res.settings : SET;
-    SERP_OK = null;
-    $('#serpKey').value = '';
-    $('#serpResult').innerHTML = '';
-    renderRaw();
-    fillSerp();
-    toast.ok('Ключ удалён');
-  } catch (e) { toast.err('Не удалось', e); }
+/* ======================= Яндекс.Вебмастер ======================= */
+function paintYaPill() {
+  const pill = $('#yaPill');
+  if (!pill) return;
+  if (YA.connected) pill.innerHTML = `<span class="pill ok">Токен работает</span>`;
+  else if (YA.saved) pill.innerHTML = `<span class="pill warn">Токен сохранён, не проверен</span>`;
+  else pill.innerHTML = `<span class="pill">Токен не задан</span>`;
+  paintDots();
 }
 
-/* ---------- привязка ---------- */
+function loadYandex() {
+  const t = String(val('yandex_oauth_token') || val('yandex_webmaster_token') || '');
+  YA.saved = !!t;
+  $('#yaToken').value = '';
+  $('#yaToken').placeholder = t ? 'токен сохранён — введите новый, чтобы заменить' : 'y0_AgAAAA...';
+  paintYaPill();
+}
+
+async function checkYandex(btn) {
+  const token = $('#yaToken').value.trim();
+  await withBusy(btn, async () => {
+    try {
+      const r = await api.yandexTest(token ? { token } : {});
+      YA.connected = !(r && r.ok === false);
+      YA.saved = YA.saved || !!token;
+      const hosts = (r && (r.hosts || r.host_count)) || null;
+      $('#yaResult').innerHTML =
+        `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
+        `<div class="note-body"><b>Токен работает.</b>` +
+        (hosts ? ` Сайтов в Вебмастере: ${escHtml(String(Array.isArray(hosts) ? hosts.length : hosts))}.` : '') +
+        `</div></div>`;
+      $('#yaToken').value = '';
+      loadYandex();
+      toast.ok('Яндекс.Вебмастер подключён');
+    } catch (e) {
+      YA.connected = false;
+      $('#yaResult').innerHTML =
+        `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
+        `<div class="note-body"><b>Не получилось.</b> ${escHtml(e.message)}</div></div>`;
+      paintYaPill();
+      toast.err('Токен не принят', e);
+    }
+  });
+}
+
+async function dropYandex(btn) {
+  const ok = await confirmDialog({
+    title: 'Удалить токен?',
+    text: 'Вердикты об индексации перестанут обновляться.',
+    okText: 'Удалить', danger: true,
+  });
+  if (!ok) return;
+  await withBusy(btn, async () => {
+    try {
+      const res = await api.updateSettings({ yandex_oauth_token: { value: '' } });
+      SET = (res && res.settings) ? res.settings : SET;
+      YA = { saved: false, connected: false };
+      $('#yaResult').innerHTML = '';
+      loadYandex();
+      renderRaw();
+      toast.ok('Токен удалён');
+    } catch (e) { toast.err('Не удалось удалить', e); }
+  });
+}
+
+function openYandexGuide() {
+  const html =
+    '<ol style="margin:0;padding-left:18px;line-height:1.7">' +
+    '<li>Откройте <b>oauth.yandex.ru</b> и создайте приложение.</li>' +
+    '<li>Дайте ему право <span class="mono">webmaster:hostinfo</span>.</li>' +
+    '<li>Получите токен вида <span class="mono">y0_…</span> и вставьте в поле выше.</li>' +
+    '<li>Нажмите «Проверить и сохранить».</li></ol>';
+  if (window.confirmDialog) confirmDialog({ title: 'Как подключить Вебмастер', html: html, okText: 'Понятно' });
+  else $('#yaResult').innerHTML = `<div class="note info"><div class="note-body">${html}</div></div>`;
+}
+
+/* ======================= Search API ======================= */
+function serpAsyncDesc() {
+  const on = $('#serpAsync') && $('#serpAsync').checked;
+  const el = $('#serpAsyncDesc');
+  if (!el) return;
+  el.textContent = on
+    ? 'Запросы ставятся в очередь Яндекса и забираются позже. Дешевле и почти не ловит ограничение скорости, но результат не мгновенный.'
+    : 'Ответ сразу в том же запросе. Быстрее на малых объёмах, но на больших часто ловит ошибки 429.';
+}
+
+function fillSerp() {
+  const key = String(val('yandex_search_api_key') || '');
+  $('#serpKey').value = '';
+  $('#serpKey').placeholder = key ? 'ключ сохранён — введите новый, чтобы заменить' : 'AQVN...';
+  $('#serpFolder').value = String(val('yandex_search_folder_id') || '');
+  $('#serpRegion').value = Number(val('serp_region')) || 225;
+  $('#serpTopN').value = Number(val('serp_top_n')) || 10;
+  $('#serpFetchTop').value = (val('serp_fetch_top') === 0) ? 0 : (Number(val('serp_fetch_top')) || 5);
+  $('#serpConc').value = Number(val('serp_concurrency')) || 8;
+  const a = val('serp_async');
+  $('#serpAsync').checked = (a === undefined || a === null) ? true : !!a;
+  serpAsyncDesc();
+  paintSerpPill(key);
+}
+
+function paintSerpPill(keyOverride) {
+  const pill = $('#serpPill');
+  if (!pill) return;
+  const key = keyOverride !== undefined ? keyOverride : String(val('yandex_search_api_key') || '');
+  const folder = ($('#serpFolder').value || '').trim();
+  if (SERP_OK === true) pill.innerHTML = `<span class="pill ok">Ключ работает</span>`;
+  else if (SERP_OK === false) pill.innerHTML = `<span class="pill bad">Яндекс отказал</span>`;
+  else if (key && folder) pill.innerHTML = `<span class="pill warn">Сохранено, не проверено</span>`;
+  else pill.innerHTML = `<span class="pill">Ключ не задан</span>`;
+  paintDots();
+}
+
+function serpPayload(withKey) {
+  const n = (sel, min, max, def) => {
+    let v = Number($(sel).value);
+    if (!isFinite(v)) v = def;
+    v = Math.max(min, Math.min(max, Math.round(v)));
+    $(sel).value = v;
+    return v;
+  };
+  const p = {
+    yandex_search_folder_id: { value: ($('#serpFolder').value || '').trim() },
+    serp_region: { value: n('#serpRegion', 1, 100000, 225) },
+    serp_top_n: { value: n('#serpTopN', 3, 20, 10) },
+    serp_fetch_top: { value: n('#serpFetchTop', 0, 10, 5) },
+    serp_concurrency: { value: n('#serpConc', 1, 20, 8) },
+    serp_async: { value: !!$('#serpAsync').checked },
+  };
+  const key = ($('#serpKey').value || '').trim();
+  if (withKey && key) p.yandex_search_api_key = { value: key };
+  return p;
+}
+
+async function storeSerp() {
+  const res = await api.updateSettings(serpPayload(true));
+  SET = (res && res.settings) ? res.settings : SET;
+  $('#serpKey').value = '';
+  renderRaw();
+  fillSerp();
+}
+
+function serpNote(kind, html) {
+  const icoName = kind === 'ok' ? 'ok' : (kind === 'bad' ? 'alert' : 'info');
+  $('#serpResult').innerHTML =
+    `<div class="note ${kind}"><span class="note-ico">${ico(icoName, 17)}</span>` +
+    `<div class="note-body">${html}</div></div>`;
+}
+
+async function testSerp(btn) {
+  const key = ($('#serpKey').value || '').trim();
+  const folder = ($('#serpFolder').value || '').trim();
+  if (!folder) { toast.bad('Нужен folder_id'); return; }
+  await withBusy(btn, async () => {
+    try {
+      await storeSerp();
+      const r = await api.serpTest(key ? { api_key: key, folder_id: folder } : { folder_id: folder });
+      SERP_OK = !(r && r.ok === false);
+      if (SERP_OK) {
+        serpNote('ok', `<b>Ключ работает.</b> ` +
+          ((r && r.found !== undefined) ? `В пробном запросе вернулось результатов: ${escHtml(String(r.found))}.` : 'Пробный запрос прошёл.'));
+        toast.ok('Search API подключён');
+      } else {
+        serpNote('bad', `<b>Яндекс отказал.</b> ${escHtml((r && (r.error || r.message)) || 'причина не указана')}`);
+        toast.bad('Ключ не принят');
+      }
+      paintSerpPill();
+    } catch (e) {
+      SERP_OK = false;
+      serpNote('bad', `<b>Не получилось проверить.</b> ${escHtml(e.message)}` +
+        `<div style="margin-top:6px;opacity:.75">Частые причины: взят IAM-токен вместо API-ключа; ` +
+        `у сервисного аккаунта нет роли <span class="mono">search-api.webSearch.user</span>; не тот folder_id.</div>`);
+      paintSerpPill();
+      toast.err('Проверка не прошла', e);
+    }
+  });
+}
+
+async function saveSerp(btn) {
+  await withBusy(btn, async () => {
+    try {
+      await storeSerp();
+      serpNote('info', '<b>Сохранено.</b> Ключ не проверяли — нажмите «Проверить ключ», если нужна уверенность.');
+      toast.ok('Настройки Search API сохранены');
+    } catch (e) { toast.err('Не сохранилось', e); }
+  });
+}
+
+async function dropSerp(btn) {
+  const ok = await confirmDialog({
+    title: 'Удалить ключ Search API?',
+    text: 'Без него проверка ключевых слов по выдаче работать не будет.',
+    okText: 'Удалить', danger: true,
+  });
+  if (!ok) return;
+  await withBusy(btn, async () => {
+    try {
+      const res = await api.updateSettings({ yandex_search_api_key: { value: '' } });
+      SET = (res && res.settings) ? res.settings : SET;
+      SERP_OK = null;
+      $('#serpResult').innerHTML = '';
+      renderRaw();
+      fillSerp();
+      toast.ok('Ключ удалён');
+    } catch (e) { toast.err('Не удалось удалить', e); }
+  });
+}
+
+/* ======================= связка событий ======================= */
+function bind(sel, fn) { const el = $(sel); if (el) el.onclick = () => fn(el); }
+
+function wire() {
+  bind('#saveAllBtn', saveAll);
+  bind('#savePromptsBtn', savePrompts);
+  bind('#pingBtn', ping);
+  bind('#saveBaseBtn', () => saveApiBase($('#apiBase').value.trim()));
+  bind('#epTestBtn', testEp);
+  bind('#epAddBtn', addEp);
+  bind('#yaTestBtn', checkYandex);
+  bind('#yaDropBtn', dropYandex);
+  bind('#yaGuideBtn', openYandexGuide);
+  bind('#serpTestBtn', testSerp);
+  bind('#serpSaveBtn', saveSerp);
+  bind('#serpDropBtn', dropSerp);
+
+  $('#serpAsync').onchange = () => serpAsyncDesc();
+  ['#serpFolder', '#serpKey'].forEach(id => { const el = $(id); if (el) el.oninput = () => paintSerpPill(); });
+
+  $('#uniqRange').oninput = () => { $('#uniqOut').textContent = Number($('#uniqRange').value).toFixed(2); };
+  ['#passportPrompt', '#strongPrompt', '#cheapPrompt'].forEach(id => {
+    const el = $(id); if (el) el.addEventListener('input', paintPromptLens);
+  });
+
+  $('#modelsReload').onclick = async () => {
+    const b = $('#modelsReload');
+    b.classList.add('is-spin');
+    await loadModels();
+    await loadProviders();
+    b.classList.remove('is-spin');
+    toast.ok('Список моделей обновлён', 'в списке ' + fmtNum(MODELS.length));
+  };
+
+  $('#copyRawBtn').onclick = () => {
+    const text = JSON.stringify(RAW || SET, null, 2);
+    if (window.copyText) copyText(text);
+    else if (navigator.clipboard) navigator.clipboard.writeText(text);
+    toast.ok('JSON скопирован');
+  };
+
+  $('#themeBtn').onclick = () => { toggleTheme(); renderThemes(); hydrateIcons(); };
+  $('#helpBtn').onclick = () => { if (window.showShortcuts) showShortcuts(); };
+
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input, textarea, select')) return;
+    if (e.key === 't' || e.key === 'T') { toggleTheme(); renderThemes(); hydrateIcons(); }
+    if (e.key === '?' && window.showShortcuts) showShortcuts();
+  });
+
+  if (window.cmdk && cmdk.register) {
+    cmdk.register([
+      { id: 'set-models', title: 'Настройки: модели', run: () => showSec('s-models') },
+      { id: 'set-prompts', title: 'Настройки: промпты', run: () => showSec('s-prompts') },
+      { id: 'set-serp', title: 'Настройки: Search API', run: () => showSec('s-serp') },
+      { id: 'set-ya', title: 'Настройки: Вебмастер', run: () => showSec('s-yandex') },
+      { id: 'set-wire', title: 'Настройки: бэкенд', run: () => showSec('s-wire') },
+      { id: 'set-raw', title: 'Настройки: диагностика', run: () => showSec('s-raw') },
+      { id: 'set-save', title: 'Сохранить настройки', run: () => saveAll($('#saveAllBtn')) },
+    ]);
+  }
+}
+
+/* ---------- старт ---------- */
 hydrateIcons();
 renderThemes();
-initFxToggle();
-
-$('#themeBtn').onclick = () => { toggleTheme(); renderThemes(); hydrateIcons(); };
-$('#helpBtn').onclick = () => showShortcuts();
-$('#pingBtn').onclick = e => ping(e.currentTarget);
-$('#saveAllBtn').onclick = e => saveAll(e.currentTarget);
-$('#savePromptsBtn').onclick = e => savePrompts(e.currentTarget);
-$('#strongPrompt').oninput = paintPromptLens;
-$('#cheapPrompt').oninput = paintPromptLens;
-$('#saveBaseBtn').onclick = () => {
-  saveApiBase($('#apiBase').value.trim());
-  toast.ok('Адрес сохранён', 'Перезагружаем…');
-  setTimeout(() => location.reload(), 700);
-};
-$('#modelsReload').onclick = () => loadModels();
-$('#epTestBtn').onclick = e => testEp(e.currentTarget);
-$('#epAddBtn').onclick = e => addEp(e.currentTarget);
-$('#yaTestBtn').onclick = e => checkYandex(e.currentTarget);
-$('#yaGuideBtn').onclick = () => openYandexGuide();
-$('#yaDropBtn').onclick = () => dropYandex();
-$('#serpTestBtn').onclick = e => testSerp(e.currentTarget);
-$('#serpSaveBtn').onclick = e => saveSerp(e.currentTarget);
-$('#serpDropBtn').onclick = () => dropSerp();
-if ($('#serpAsync')) $('#serpAsync').onchange = e => serpAsyncDesc(e.currentTarget.checked);
-$('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
-$('#copyRawBtn').onclick = () => copyText(JSON.stringify(SET, null, 2), 'JSON настроек');
-
-$$('.set-nav-item').forEach(a => a.onclick = () => {
-  $$('.set-nav-item').forEach(x => x.classList.toggle('is-active', x === a));
-});
-
-cmdk.register([
-  { group: 'Действия', label: 'Сохранить настройки', icon: 'check', run: () => saveAll($('#saveAllBtn')) },
-  { group: 'Действия', label: '��роверить связь', icon: 'radar', run: () => ping($('#pingBtn')) },
-  { group: 'Прочее', label: 'К списку проектов', icon: 'home', run: () => location.href = 'index.html' },
-  { group: 'Прочее', label: 'Переключить тему', icon: 'moon', hint: 'T', run: () => { toggleTheme(); renderThemes(); } },
-]);
-
-load();
+initNav();
+wire();
+load().then(() => { initFxToggle(); hydrateIcons(); });
 
 })();
 </script>
-
 </body>
 </html>
 
