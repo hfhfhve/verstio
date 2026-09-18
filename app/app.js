@@ -865,7 +865,7 @@ function getTheme() {
     const t = localStorage.getItem('seo_theme');
     if (t === 'light' || t === 'dark') return t;
   } catch (e) {}
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'dark';
 }
 
 function applyTheme(name) {
