@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: d3714e0d049ec96a598ff8f1d0e6423ee6b923c2
+# commit: 5886f31eecb36675343034e565f96f89b52f7954
 # built:  2026-09-18 07:44 UTC
 
 ## Состав
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2077 строк)
 app/index.html  (428 строк)
 app/login.html  (382 строк)
-app/project.html  (4276 строк)
+app/project.html  (3800 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1405 строк)
 app/site.html  (809 строк)
@@ -4357,6 +4357,28 @@ form.addEventListener('submit', async (e) => {
   } catch (e) {}
 </script>
 <link rel="stylesheet" href="style.css?v=46">
+<style>
+/* Выбор модели: список + ручной ввод */
+.mpick{position:relative;display:flex;gap:8px;align-items:stretch}
+.mpick .mpick-input{flex:1 1 auto;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.mpick-open{flex:0 0 auto;white-space:nowrap}
+.mpick-menu{position:absolute;z-index:60;top:calc(100% + 6px);left:0;right:0;
+  background:var(--panel,#fff);border:1px solid var(--line,#e3e6ea);border-radius:12px;
+  box-shadow:0 18px 44px rgba(16,24,40,.16);padding:8px;display:none}
+.mpick.is-open .mpick-menu{display:block}
+.mpick-search{width:100%;margin-bottom:6px}
+.mpick-list{max-height:280px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.mpick-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;
+  background:transparent;border-radius:8px;padding:7px 9px;cursor:pointer;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:inherit}
+.mpick-item:hover{background:var(--hover,#f2f4f7)}
+.mpick-item.is-cur{background:var(--accent-soft,#e8f1fc);color:var(--accent,#2783de)}
+.mpick-empty{padding:12px 10px;font-size:12.5px;opacity:.6;line-height:1.5}
+.mpick-foot{display:flex;gap:8px;padding:8px 9px 2px;margin-top:6px;font-size:11.5px;opacity:.6;
+  border-top:1px solid var(--line,#e3e6ea)}
+.mpick-state{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;margin-top:7px;opacity:.7}
+.mpick-state.is-manual{color:var(--accent,#2783de);opacity:1;font-weight:600}
+</style>
 </head>
 <body class="is-app">
 
@@ -4772,67 +4794,6 @@ form.addEventListener('submit', async (e) => {
             <div class="panel-body" id="columnsMap"></div>
           </div>
 
-          <style>
-            /* крутилка на кнопке обновления: видно, что запрос идёт */
-            #serpReload.busy { pointer-events: none; opacity: .75; }
-            #serpReload.busy svg { animation: spin .7s linear infinite; }
-            #serpPanel .serp-upd { font-size: 11.5px; color: var(--text-dim, #8b8b8b); }
-          </style>
-
-          <div class="panel" id="serpPanel">
-            <div class="panel-head">
-              <div class="panel-head-body">
-                <div class="panel-title">Проверка ключей по выдаче Яндекса <span class="pill neutral" id="serpReadyPill">—</span></div>
-                <div class="panel-sub">
-                  Спрашиваем выдачу по каждому ключу, склеиваем дублирующие запросы и ставим вердикт —
-                  стоит ли тратить модель на эту страницу. Без этого шага тексты пишутся вслепую.
-                  <span class="serp-upd" id="serpUpdated"></span>
-                </div>
-              </div>
-              <div class="panel-tools">
-                <button class="icon-btn" id="serpReload" title="Обновить статус и прогресс" data-ico="refresh"></button>
-              </div>
-            </div>
-            <div class="panel-body">
-              <div id="serpState"></div>
-
-              <div class="bar bar-split mt-2" id="serpBar" hidden>
-                <div class="s-ok" style="width:0%"></div>
-                <div class="s-bad" style="width:0%"></div>
-                <div class="s-live" style="width:0%"></div>
-              </div>
-              <div class="progress-legend mt-1" id="serpLegend" hidden>
-                <span><i class="lg ok"></i>Выдача готова <b id="serpReady">0</b></span>
-                <span><i class="lg live"></i>Считает Яндекс <b id="serpPending">0</b></span>
-                <span><i class="lg bad"></i>Ошибки <b id="serpFailed">0</b></span>
-                <span><i class="lg wait"></i>Не отправлено <b id="serpMissing">0</b></span>
-              </div>
-
-              <div class="tags-row mt-2" id="serpStats"></div>
-
-              <div class="up-row mt-3">
-                <button class="btn btn-primary" id="serpPrepareBtn">
-                  <span data-ico-sm="radar"></span> Подготовить ключи
-                </button>
-                <button class="btn" id="serpForceBtn" title="Игнорировать кэш и спросить выдачу заново (платно)">
-                  <span data-ico-sm="redo"></span> Переспросить заново
-                </button>
-                <button class="btn btn-danger" id="serpApplyStopBtn" hidden>
-                  <span data-ico-sm="stop"></span> Снять с очереди stop <b id="serpStopCount"></b>
-                </button>
-                <span class="grow"></span>
-                <label class="switch" id="serpLlmSwitch">
-                  <input type="checkbox" id="serpUseLlm" checked>
-                  <span class="switch-track"><i></i></span>
-                  <span class="switch-text">
-                    <span class="switch-title">Техзадание с ИИ</span>
-                    <span class="switch-desc">Один дешёвый вызов на кластер: порядок разделов и дырки в топе</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-
           <div class="panel">
             <div class="panel-head">
               <div class="panel-head-body">
@@ -4849,11 +4810,10 @@ form.addEventListener('submit', async (e) => {
                   <thead><tr>
                     <th style="width:52px;">#</th>
                     <th>Ключ</th>
-                    <th style="width:210px;">Выдача</th>
                     <th>Факты строки</th>
                     <th style="width:84px;">Полей</th>
                     <th style="width:140px;">Статус</th>
-                    <th class="td-act" style="width:104px;"></th>
+                    <th class="td-act" style="width:64px;"></th>
                   </tr></thead>
                   <tbody id="keysBody"></tbody>
                 </table>
@@ -5606,11 +5566,19 @@ form.addEventListener('submit', async (e) => {
               <div class="panel-body">
                 <label class="field">
                   <span class="field-label">Сильная модель — каркас и диалог</span>
-                  <select class="select" id="projStrongModel"></select>
+                  <div class="mpick" data-mpick="projStrongModel">
+                    <input class="input mpick-input" id="projStrongModel" autocomplete="off" spellcheck="false"
+                           placeholder="например anthropic/claude-sonnet-4">
+                    <button class="btn btn-sm mpick-open" type="button">Из списка</button>
+                  </div>
                 </label>
                 <label class="field mt-2">
                   <span class="field-label">Дешёвая модель — заполнение полей</span>
-                  <select class="select" id="projCheapModel"></select>
+                  <div class="mpick" data-mpick="projCheapModel">
+                    <input class="input mpick-input" id="projCheapModel" autocomplete="off" spellcheck="false"
+                           placeholder="например deepseek/deepseek-v4-flash-0731:nitro">
+                    <button class="btn btn-sm mpick-open" type="button">Из списка</button>
+                  </div>
                   <span class="field-hint">На неё приходится почти вся стоимость проекта.</span>
                 </label>
               </div>
@@ -5808,15 +5776,6 @@ const S = {
   selected: new Set(),
   genTimer: null,
   chatWait: null,
-  serp: null,          /* /serp/status — подключён ли Search API */
-  serpErr: null,       /* текст ошибки, если запрос статуса не удался */
-  serpAt: null,        /* когда последний раз спрашивали статус */
-  serpProgress: null,  /* /serp/progress — сколько выдач готово */
-  serpRun: null,       /* /serp/prepare — итог последнего прогона */
-  briefs: [],          /* техзадания по ключам */
-  briefMap: {},        /* key_item_id -> техзадание */
-  serpBusy: false,
-  serpTimer: null,
   loaded: {},
 };
 
@@ -5866,7 +5825,7 @@ async function boot() {
   const start = (location.hash || '').replace('#', '');
   go(VIEWS[start] ? start : 'data');
 
-  loadKeys().then(() => loadSerp(true));
+  loadKeys();
   loadMedia();
   loadTasks(true);
   loadPages(true);
@@ -6250,18 +6209,7 @@ function bindStatic() {
   $('#mediaUrlBtn').onclick = e => importMediaUrl(e.currentTarget);
 
   $('#addKeysBtn').onclick = e => addKeys(e.currentTarget);
-  $('#keysReload').onclick = () => loadKeys().then(() => loadSerp(false));
-
-  /* --- подготовка ключей по выдаче --- */
-  $('#serpPrepareBtn').onclick = e => prepareKeys(e.currentTarget, false);
-  $('#serpForceBtn').onclick = e => prepareKeys(e.currentTarget, true);
-  $('#serpApplyStopBtn').onclick = e => applySerpStop(e.currentTarget);
-  $('#serpReload').onclick = async () => {
-    if (S.serpBusy) return;
-    await loadSerp(true);
-    if (S.serpErr) toast.warn('Статус не пришёл', S.serpErr);
-    else toast.ok('Обновлено');
-  };
+  $('#keysReload').onclick = () => loadKeys();
   $('#keysFilter').oninput = () => renderKeys();
   $('#keysInput').oninput = () => {
     const n = $('#keysInput').value.split('\n').map(s => s.trim()).filter(Boolean).length;
@@ -6399,7 +6347,7 @@ function bindStatic() {
 }
 
 function reloadAll() {
-  loadKeys().then(() => loadSerp(true)); loadMedia(); loadTasks(); loadPages();
+  loadKeys(); loadMedia(); loadTasks(); loadPages();
   S.passport = null;
   if (S.view === 'passport') initPassport(true);
   toast.info('Обновлено');
@@ -6602,11 +6550,11 @@ async function importMediaUrl(btn) {
 }
 
 async function loadKeys() {
-  $('#keysBody').innerHTML = skeletonRows(7, 4);
+  $('#keysBody').innerHTML = skeletonRows(6, 4);
   try {
     S.keys = await api.listKeys(PID) || [];
   } catch (e) {
-    $('#keysBody').innerHTML = emptyRow(7, 'Не удалось загрузить строки', e.message);
+    $('#keysBody').innerHTML = emptyRow(6, 'Не удалось загрузить строки', e.message);
     return;
   }
   renderKeys();
@@ -6674,11 +6622,11 @@ function renderKeys() {
   const body = $('#keysBody');
 
   if (!S.keys.length) {
-    body.innerHTML = emptyRow(7, 'Строк пока нет',
+    body.innerHTML = emptyRow(6, 'Строк пока нет',
       'Добавьте их выше — без строк генерация не запустится.');
     return;
   }
-  if (!rows.length) { body.innerHTML = emptyRow(7, 'Ничего не найдено', 'Попробуйте другой фильтр.'); return; }
+  if (!rows.length) { body.innerHTML = emptyRow(6, 'Ничего не найдено', 'Попробуйте другой фильтр.'); return; }
 
   body.innerHTML = rows.map((k, i) => {
     const ex = k.extra_data || {};
@@ -6687,24 +6635,17 @@ function renderKeys() {
       ? keys.slice(0, 4).map(c => `<span class="tag">${escHtml(c)}: ${escHtml(String(ex[c]).slice(0, 22))}</span>`).join('') +
         (keys.length > 4 ? `<span class="tag ph">+${keys.length - 4}</span>` : '')
       : `<span class="tag ph">нет данных</span>`;
-    const br = S.briefMap[k.id];
     return `<tr>` +
       `<td class="td-id">${i + 1}</td>` +
       `<td class="td-key">${escHtml(k.key)}</td>` +
-      `<td>${serpCell(k, br)}</td>` +
       `<td><div class="tags-row">${facts}</div></td>` +
       `<td class="td-num">${keys.length}</td>` +
       `<td>${pill(k.status)}</td>` +
       `<td class="td-act"><div class="row-tools">` +
-        (br ? `<button class="icon-btn sm" data-brief="${k.id}" title="Техзадание по выдаче">${ico('file', 15)}</button>` : '') +
         `<button class="icon-btn sm" data-delkey="${k.id}" title="Удалить строку">${ico('trash', 15)}</button>` +
       `</div></td>` +
     `</tr>`;
   }).join('');
-
-  body.querySelectorAll('[data-brief]').forEach(b => {
-    b.onclick = () => openBrief(b.dataset.brief);
-  });
 
   body.querySelectorAll('[data-delkey]').forEach(b => {
     b.onclick = async () => {
@@ -6718,470 +6659,6 @@ function renderKeys() {
       catch (e) { toast.err('Не удалось удалить', e); }
     };
   });
-}
-
-/* ======================================================================
-   ПОДГОТОВКА КЛЮЧЕЙ ПО ВЫДАЧЕ ЯНДЕКСА (serp.py + brief.py)
-
-   Две фазы, потому что отложенный запрос Яндекс считает от 5 минут
-   до нескольких часов:
-     1. Отправка запросов — платная, делается один раз.
-     2. Сбор готового и сборка техзаданий — бесплатная, повторяемая.
-   Повторное нажатие «Подготовить ключи» денег не тратит.
-   ====================================================================== */
-
-/* Обращения к бэкенду идут через эту обёртку, а не напрямую через api.*:
-   если браузер держит в кеше старый app.js без serp-методов, панель
-   всё равно работает — адреса те же, вызов идёт через req(). */
-const serpApi = {
-  status: () => (api.serpStatus ? api.serpStatus() : req('/serp/status')),
-  prepare: (id, body) => (api.serpPrepare
-    ? api.serpPrepare(id, body)
-    : req(`/projects/${id}/serp/prepare`, { method: 'POST', body: JSON.stringify(body || {}) })),
-  prepareStatus: id => (api.serpPrepareStatus
-    ? api.serpPrepareStatus(id)
-    : req(`/projects/${id}/serp/prepare`)),
-  progress: (id, collect) => (api.serpProgress
-    ? api.serpProgress(id, collect)
-    : req(`/projects/${id}/serp/progress?collect=${collect === false ? 0 : 1}`)),
-  briefs: id => (api.briefs ? api.briefs(id) : req(`/projects/${id}/briefs`)),
-  brief: (id, kid) => (api.brief ? api.brief(id, kid) : req(`/projects/${id}/briefs/${kid}`)),
-  briefSave: (id, kid, body) => (api.briefSave
-    ? api.briefSave(id, kid, body)
-    : req(`/projects/${id}/briefs/${kid}`, { method: 'PUT', body: JSON.stringify(body || {}) })),
-  applyStop: id => (api.briefsApplyStop
-    ? api.briefsApplyStop(id)
-    : req(`/projects/${id}/briefs/apply-stop`, { method: 'POST' })),
-  gate: id => (api.serpGate ? api.serpGate(id) : req(`/projects/${id}/serp/gate`)),
-};
-
-const VERDICT = {
-  go:      { label: 'Можно делать', tone: 'ok' },
-  caution: { label: 'С осторожностью', tone: 'warn' },
-  stop:    { label: 'Не делать',    tone: 'bad' },
-};
-
-const SERP_TYPE = {
-  article: 'статьи', catalog: 'каталоги', marketplace: 'маркетплейсы',
-  mixed: 'смешанная', forum: 'форумы', video: 'видео',
-};
-
-/** Клетка «Выдача» в таблице строк. */
-function serpCell(k, br) {
-  const ex = k.extra_data || {};
-  const mergedInto = ex._merged_into;
-
-  if (mergedInto === 'stop') {
-    return `<span class="pill bad"><i class="dot"></i>Снята с очереди</span>`;
-  }
-  if (mergedInto) {
-    return `<span class="pill neutral" title="Тот же запрос, страница не нужна">` +
-      `<i class="dot"></i>Склеен с «${escHtml(String(mergedInto).slice(0, 28))}»</span>`;
-  }
-  if (!br) {
-    return `<span class="tag" title="Выдача не спрашивалась">не проверен</span>`;
-  }
-
-  const v = VERDICT[br.verdict] || VERDICT.go;
-  const bits = [];
-  if (br.serp_type) bits.push(SERP_TYPE[br.serp_type] || br.serp_type);
-  if (br.chars_target) bits.push(fmtNum(br.chars_target) + ' симв.');
-  if (br.subtopics) bits.push(br.subtopics + ' подтем');
-
-  return `<span class="pill ${v.tone}" title="${escAttr(br.verdict_reason || '')}">` +
-           `<i class="dot"></i>${v.label}</span>` +
-         (bits.length ? `<div class="muted" style="font-size:11.5px;margin-top:3px;">` +
-            escHtml(bits.join(' · ')) + `</div>` : '');
-}
-
-/** Крутилка на кнопке обновления: видно, что запрос идёт. */
-function serpSpin(on) {
-  S.serpBusy = !!on;
-  const b = $('#serpReload');
-  if (b) b.classList.toggle('busy', !!on);
-  const upd = $('#serpUpdated');
-  if (upd && on) upd.textContent = '· обновляем…';
-}
-
-/** Статус Search API + прогресс + техзадания. Всё бесплатное.
-    Ошибку запроса не выдаём за «ключ не задан»: это разные беды. */
-async function loadSerp(collect) {
-  serpSpin(true);
-  try {
-    try {
-      S.serp = await serpApi.status();
-      S.serpErr = null;
-    } catch (e) {
-      S.serp = null;
-      S.serpErr = e && e.message ? e.message : 'бэкенд не ответил';
-    }
-
-    if (S.keys.length && S.serp && S.serp.ready) {
-      try { S.serpProgress = await serpApi.progress(PID, collect !== false); }
-      catch (e) { S.serpProgress = null; }
-      try { S.serpRun = await serpApi.prepareStatus(PID); }
-      catch (e) { S.serpRun = null; }
-    }
-    if (S.keys.length) {
-      try {
-        S.briefs = await serpApi.briefs(PID) || [];
-        S.briefMap = {};
-        S.briefs.forEach(b => { S.briefMap[b.key_item_id] = b; });
-      } catch (e) { S.briefs = []; S.briefMap = {}; }
-    }
-    S.serpAt = new Date();
-  } finally {
-    serpSpin(false);
-  }
-
-  renderSerp();
-  renderKeys();
-  paintGenNotice();
-}
-
-/* Режим запросов к Яндексу: берём из прогресса, иначе из настроек. */
-function serpMode() {
-  const st = S.serp || {}, prog = S.serpProgress || {}, run = S.serpRun || {};
-  let mode = prog.mode || (run.stats && run.stats.mode) || null;
-  if (!mode && typeof st.async_mode === 'boolean') mode = st.async_mode ? 'async' : 'sync';
-  if (!mode) return null;
-  const conc = prog.concurrency || st.concurrency ||
-    (run.stats && run.stats.concurrency) || null;
-  return {
-    async: mode === 'async',
-    label: mode === 'async' ? 'асинхронный' : 'синхронный',
-    conc: conc,
-    text: (mode === 'async' ? 'асинхронный режим' : 'синхронный режим') +
-      (conc ? ' · по ' + conc + ' запросов сразу' : ''),
-  };
-}
-
-function renderSerp() {
-  const st = S.serp || {};
-  const prog = S.serpProgress || {};
-  const run = S.serpRun || {};
-  const err = S.serpErr;
-  const ready = !err && !!st.ready;
-
-  const upd = $('#serpUpdated');
-  if (upd) {
-    const md = serpMode();
-    const bits = [];
-    if (md) bits.push(md.text);
-    if (S.serpAt) bits.push('статус обновлён в ' +
-      S.serpAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    upd.textContent = bits.length ? '· ' + bits.join(' · ') : '';
-  }
-
-  /* пилюля в заголовке: три разных состояния, а не два */
-  const pillEl = $('#serpReadyPill');
-  if (pillEl) {
-    if (err) {
-      pillEl.className = 'pill warn';
-      pillEl.innerHTML = `<i class="dot"></i>Статус не пришёл`;
-    } else if (ready) {
-      pillEl.className = 'pill ok';
-      const md = serpMode();
-      pillEl.innerHTML = `<i class="dot"></i>Ключ задан · регион ${st.region || 225}` +
-        (md ? ` · ${md.label}` : '');
-    } else {
-      pillEl.className = 'pill bad';
-      pillEl.innerHTML = `<i class="dot"></i>` +
-        (st.has_key && !st.has_folder ? 'Нет folder_id'
-          : !st.has_key && st.has_folder ? 'Нет ключа' : 'Ключ не задан');
-    }
-  }
-
-  /* главное сообщение */
-  const box = $('#serpState');
-  if (err) {
-    const stale = /is not a function|undefined is not/i.test(err);
-    box.innerHTML = `<div class="note warn" style="margin:0;">` +
-      `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-      (stale
-        ? `<b>Браузер держит старый app.js.</b> ${escHtml(err)}<br>` +
-          `Залейте новый app.js и откройте страницу через Ctrl+F5.`
-        : `<b>Бэкенд не ответил на <code>GET /api/serp/status</code>.</b> ` +
-          `${escHtml(err)}<br>Ключ здесь ни при чём. Проверьте: бэкенд жив и обновлён ` +
-          `(этот адрес даёт brief.py), сессия не истекла, нет 503 от прокси.`) +
-      `</div></div>`;
-  } else if (!ready) {
-    const what = st.has_key && !st.has_folder
-      ? 'Ключ есть, но не задан ID каталога (folder_id).'
-      : !st.has_key && st.has_folder
-        ? 'Каталог есть, но нет API-ключа сервисного аккаунта.'
-        : 'Не заданы ни API-ключ, ни ID каталога.';
-    box.innerHTML = `<div class="note bad" style="margin:0;">` +
-      `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-      `<b>Яндекс Search API не подключён.</b> ${escHtml(what)} ` +
-      `Заполните в <a href="settings.html#s-serp">Настройках</a> и нажмите здесь обновление.` +
-      `</div></div>`;
-  } else if (!S.keys.length) {
-    box.innerHTML = `<div class="note info" style="margin:0;">` +
-      `<span class="note-ico">${ico('info', 17)}</span><div class="note-body">` +
-      `Ключ работает. Сначала добавьте строки — проверять пока нечего.</div></div>`;
-  } else if (prog.pending) {
-    box.innerHTML = `<div class="note warn" style="margin:0;">` +
-      `<span class="note-ico">${ico('clock', 17)}</span><div class="note-body">` +
-      `<b>Яндекс считает выдачу: ${fmtNum(prog.pending)} из ${fmtNum(prog.total || 0)}.</b> ` +
-      `Отложенный запрос готовится от 5 минут до нескольких часов. ` +
-      `Можно закрыть страницу: номера операций лежат в базе, ` +
-      `повторное нажатие денег не тратит.</div></div>`;
-  } else if (!S.briefs.length) {
-    box.innerHTML = `<div class="note warn" style="margin:0;">` +
-      `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-      `<b>Ключ работает, но ключевые строки ещё не проверялись.</b> ` +
-      `Нажмите «Подготовить ключи»: после этого у каждой строки появится ` +
-      `вердикт и техзадание для модели.</div></div>`;
-  } else {
-    const stats = run.last_run && run.last_run.stats || {};
-    const at = run.last_run && run.last_run.at ? fmtDate(run.last_run.at) : '';
-    box.innerHTML = `<div class="note ok" style="margin:0;">` +
-      `<span class="note-ico">${ico('check', 17)}</span><div class="note-body">` +
-      `<b>Техзадания готовы: ${fmtNum(run.heads || 0)} страниц из ${fmtNum(run.briefs || 0)} строк.</b>` +
-      (at ? ` Прогон: ${escHtml(at)}.` : '') +
-      (stats.llm_errors ? ` Модель не ответила на ${stats.llm_errors} кластерах — там осталась только арифметика.` : '') +
-      `</div></div>`;
-  }
-
-  /* прогресс-бар выдачи */
-  const total = prog.total || 0;
-  const bar = $('#serpBar'), legend = $('#serpLegend');
-  if (bar && legend) {
-    const show = total > 0;
-    bar.hidden = !show;
-    legend.hidden = !show;
-    if (show) {
-      const pc = n => Math.round((n || 0) / total * 100);
-      bar.querySelector('.s-ok').style.width = pc(prog.ready) + '%';
-      bar.querySelector('.s-bad').style.width = pc(prog.failed) + '%';
-      bar.querySelector('.s-live').style.width = pc(prog.pending) + '%';
-      $('#serpReady').textContent = fmtNum(prog.ready || 0);
-      $('#serpPending').textContent = fmtNum(prog.pending || 0);
-      $('#serpFailed').textContent = fmtNum(prog.failed || 0);
-      $('#serpMissing').textContent = fmtNum(prog.missing || 0);
-    }
-  }
-
-  /* плитки с итогом по вердиктам */
-  const counts = { go: 0, caution: 0, stop: 0, merged: 0 };
-  S.briefs.forEach(b => {
-    if (b.role === 'merged') counts.merged++;
-    else counts[b.verdict] = (counts[b.verdict] || 0) + 1;
-  });
-  const tags = $('#serpStats');
-  if (tags) {
-    const md = serpMode();
-    const modeTag = md
-      ? `<span class="tag">Запросы: ${md.label}${md.conc ? ' · ' + md.conc + ' сразу' : ''}</span>`
-      : '';
-    tags.innerHTML = !S.briefs.length ? modeTag :
-      `<span class="tag ok">Можно делать: ${counts.go}</span>` +
-      `<span class="tag warn">С осторожностью: ${counts.caution}</span>` +
-      `<span class="tag bad">Не делать: ${counts.stop}</span>` +
-      `<span class="tag">Склеено дублей: ${counts.merged}</span>` + modeTag;
-  }
-
-  /* кнопки */
-  const stopBtn = $('#serpApplyStopBtn');
-  if (stopBtn) {
-    stopBtn.hidden = !counts.stop;
-    $('#serpStopCount').textContent = counts.stop ? '· ' + counts.stop : '';
-  }
-  const prep = $('#serpPrepareBtn'), forceBtn = $('#serpForceBtn');
-  if (prep) {
-    prep.disabled = !ready || !S.keys.length;
-    const label = prog.pending ? ' Забрать готовое и собрать ТЗ'
-      : S.briefs.length ? ' Пересобрать техзадания' : ' Подготовить ключи';
-    const iconSpan = prep.querySelector('[data-ico-sm], svg');
-    prep.innerHTML = (iconSpan ? iconSpan.outerHTML : '') + label;
-  }
-  if (forceBtn) forceBtn.disabled = !ready || !S.keys.length;
-}
-
-/** Запуск подготовки. force — игнорировать кэш выдачи (платно). */
-async function prepareKeys(btn, force) {
-  if (force) {
-    const ok = await confirmDialog({
-      title: 'Спросить выдачу заново?',
-      text: 'Кэш будет проигнорирован: за все запросы к Яндекс Search API платим снова.',
-      confirm: 'Спросить заново',
-    });
-    if (!ok) return;
-  }
-  await withBusy(btn, async () => {
-    try {
-      await serpApi.prepare(PID, { force: !!force, use_llm: !!$('#serpUseLlm').checked });
-      toast.ok('Подготовка запущена',
-        'Спрашиваем выдачу и собираем техзадания. Прогресс обновляется сам.');
-      await loadSerp(true);
-      startSerpPolling();
-    } catch (e) {
-      toast.err('Не удалось запустить подготовку', e);
-    }
-  });
-}
-
-/** Поллинг прогресса: каждые 15 с, пока есть неготовые выдачи. */
-function startSerpPolling() {
-  stopSerpPolling();
-  let ticks = 0;
-  S.serpTimer = setInterval(async () => {
-    ticks++;
-    await loadSerp(true);
-    const prog = S.serpProgress || {};
-    if ((!prog.pending && S.briefs.length) || ticks > 40) {
-      stopSerpPolling();
-      if (!prog.pending && S.briefs.length) {
-        toast.ok('Ключи проверены', 'Вердикты и техзадания в таблице строк.');
-      }
-    }
-  }, 15000);
-}
-
-function stopSerpPolling() {
-  if (S.serpTimer) { clearInterval(S.serpTimer); S.serpTimer = null; }
-}
-
-/** Снять с очереди все ключи с вердиктом stop. Данные не удаляются. */
-async function applySerpStop(btn) {
-  const ok = await confirmDialog({
-    title: 'Снять с очереди ключи с вердиктом «Не делать»?',
-    text: 'Строки останутся в проекте, но генерация их не возьмёт. Передумаете — вернёте в техзадании.',
-    confirm: 'Снять с очереди',
-    danger: true,
-  });
-  if (!ok) return;
-  await withBusy(btn, async () => {
-    try {
-      const res = await serpApi.applyStop(PID);
-      toast.ok('Снято с очереди', 'Ключей: ' + fmtNum(res.skipped_keys || 0));
-      await loadKeys();
-      await loadSerp(false);
-    } catch (e) { toast.err('Не удалось снять', e); }
-  });
-}
-
-/** Полное техзадание по одному ключу: ровно то, что уйдёт в промпт. */
-async function openBrief(keyItemId) {
-  drawer.open({
-    eyebrow: 'Техзадание по выдаче',
-    title: 'Загружаем…',
-    body: `<div class="center"><div class="spinner"></div></div>`,
-    wide: true,
-  });
-
-  let b;
-  try { b = await serpApi.brief(PID, keyItemId); }
-  catch (e) {
-    drawer.setBody(`<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
-      `<div class="note-body">${escHtml(e.message || 'Техзадание не найдено')}</div></div>`);
-    return;
-  }
-
-  const v = VERDICT[b.verdict] || VERDICT.go;
-  const fmt = b.format_target || {};
-  const subs = (b.subtopics || []).slice(0, 25);
-  const secs = b.sections || [];
-  const gaps = b.gaps || [];
-  const comp = b.competitors || [];
-
-  drawer.open({
-    eyebrow: b.role === 'merged'
-      ? `Склеен с «${b.head_key}» · кластер ${b.cluster_id}`
-      : `Кластер ${b.cluster_id} · главный ключ`,
-    title: b.key || 'Техзадание',
-    wide: true,
-    body:
-      `<div class="up-row" style="align-items:center;gap:10px;">` +
-        `<span class="pill ${v.tone}"><i class="dot"></i>${v.label}</span>` +
-        (b.serp_type ? `<span class="tag">тип выдачи: ${escHtml(SERP_TYPE[b.serp_type] || b.serp_type)}</span>` : '') +
-        (fmt.chars_target ? `<span class="tag">планка: ${fmtNum(fmt.chars_target)} симв.</span>` : '') +
-        (fmt.h2_target ? `<span class="tag">разделов в топе: ${fmt.h2_target}</span>` : '') +
-      `</div>` +
-      (b.verdict_reason ? `<div class="muted mt-2">${escHtml(b.verdict_reason)}</div>` : '') +
-      (b.llm_error ? `<div class="note warn mt-2"><span class="note-ico">${ico('alert', 17)}</span>` +
-        `<div class="note-body"><b>Модель не ответила.</b> ${escHtml(b.llm_error)}</div></div>` : '') +
-
-      (b.angle ? `<h3 class="mt-3">Чем будем полезнее топа</h3>` +
-        `<div>${escHtml(b.angle)}</div>` : '') +
-
-      (gaps.length ? `<h3 class="mt-3">Дырки в выдаче</h3><ul>` +
-        gaps.map(g => `<li><b>${escHtml(String(g.what || g))}</b>` +
-          (g.why ? ` — ${escHtml(String(g.why))}` : '') + `</li>`).join('') + `</ul>` : '') +
-
-      (secs.length ? `<h3 class="mt-3">Порядок разделов</h3><ol>` +
-        secs.map(x => `<li><b>${escHtml(String(x.title || x.name || x))}</b>` +
-          (x.what ? `<div class="muted">${escHtml(String(x.what))}</div>` : '') + `</li>`).join('') +
-        `</ol>` : '') +
-
-      (subs.length ? `<h3 class="mt-3">Карта подтем из топа</h3><div class="tags-row">` +
-        subs.map(x => `<span class="tag">${escHtml(String(x.title || x.name || x))}` +
-          (x.seen ? ` · есть у ${x.seen}` : '') + `</span>`).join('') + `</div>` : '') +
-
-      (comp.length ? `<h3 class="mt-3">Топ выдачи</h3><div class="tbl-scroll">` +
-        `<table class="tbl"><thead><tr><th style="width:44px;">#</th><th>Страница</th>` +
-        `<th style="width:120px;">Тип</th></tr></thead><tbody>` +
-        comp.map(c => `<tr><td class="td-id">${c.pos || ''}</td>` +
-          `<td><a href="${escAttr(c.url || '#')}" target="_blank" rel="noopener">` +
-          `${escHtml(c.title || c.domain || c.url || '')}</a>` +
-          `<div class="muted" style="font-size:11.5px;">${escHtml(c.domain || '')}</div></td>` +
-          `<td>${escHtml(c.kind || '')}</td></tr>`).join('') +
-        `</tbody></table></div>` : '') +
-
-      `<h3 class="mt-3">Текст, который уйдёт в промпт</h3>` +
-      `<textarea class="textarea mono" id="briefText" rows="12">${escHtml(b.brief_text || '')}</textarea>` +
-      `<div class="up-row mt-2">` +
-        `<div class="field"><div class="field-label">Вердикт</div>` +
-          `<select class="input input-sm" id="briefVerdict">` +
-            ['go', 'caution', 'stop'].map(x =>
-              `<option value="${x}"${x === b.verdict ? ' selected' : ''}>${VERDICT[x].label}</option>`).join('') +
-          `</select></div>` +
-        (b.role === 'merged'
-          ? `<label class="switch" style="margin-top:18px;"><input type="checkbox" id="briefUnmerge">` +
-            `<span class="switch-track"><i></i></span><span class="switch-text">` +
-            `<span class="switch-title">Расклеить</span>` +
-            `<span class="switch-desc">Сделать отдельную страницу по этому ключу</span>` +
-            `</span></label>`
-          : '') +
-      `</div>`,
-    foot: `<button class="btn btn-primary" id="briefSaveBtn">Сохранить техзадание</button>`,
-  });
-
-  const saveBtn = document.getElementById('briefSaveBtn');
-  if (saveBtn) saveBtn.onclick = () => withBusy(saveBtn, async () => {
-    try {
-      await serpApi.briefSave(PID, keyItemId, {
-        brief_text: document.getElementById('briefText').value,
-        verdict: document.getElementById('briefVerdict').value,
-        unmerge: !!(document.getElementById('briefUnmerge') || {}).checked,
-      });
-      toast.ok('Техзадание сохранено');
-      drawer.close();
-      await loadKeys();
-      await loadSerp(false);
-    } catch (e) { toast.err('Не удалось сохранить', e); }
-  });
-}
-
-/** Предупреждение на экране генерации: ключи не проверены. */
-function paintGenNotice() {
-  const box = $('#genNotice');
-  if (!box) return;
-  const unchecked = S.keys.filter(k => {
-    const ex = k.extra_data || {};
-    return !ex._brief && !ex._merged_into;
-  }).length;
-
-  if (!S.keys.length || !unchecked) { box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="note warn" style="margin:0;">` +
-    `<span class="note-ico">${ico('alert', 17)}</span><div class="note-body">` +
-    `<b>Не проверено по выдаче: ${fmtNum(unchecked)} ` +
-    `${plural(unchecked, 'строка', 'строки', 'строк')}.</b> ` +
-    `Такие страницы пишутся без типа выдачи, без снятой каннибализации и без техзадания. ` +
-    `<a href="#data" data-goto="data">Подготовить ключи</a></div></div>`;
-  const link = box.querySelector('[data-goto]');
-  if (link) link.onclick = e => { e.preventDefault(); go('data'); };
 }
 
 async function addKeys(btn) {
@@ -7897,35 +7374,10 @@ async function startGeneration() {
     go('frame');
     return;
   }
-  /* ГЕЙТ. Без подготовки ключей генерация идёт вслепую: не спрошена выдача,
-     не снята каннибализация, не учтены вердикты stop. Спрашиваем подтверждение. */
-  let force = false;
-  try {
-    const gate = await serpApi.gate(PID);
-    if (gate && gate.blocked) {
-      const ok = await confirmDialog({
-        title: 'Ключи не проверены по выдаче',
-        text: `Без техзадания ${fmtNum(gate.unprepared)} из ${fmtNum(gate.queue)} строк в очереди. ` +
-          (gate.configured
-            ? 'Лучше сначала нажать «Подготовить ключи» на экране «Данные».'
-            : 'Яндекс Search API не подключён — подготовку запустить нельзя.') +
-          ' Запустить всё равно?',
-        confirm: 'Запустить без проверки',
-        cancel: 'Отмена',
-        danger: true,
-      });
-      if (!ok) { go('data'); return; }
-      force = true;
-    }
-  } catch (e) { /* гейт не должен ломать запуск: бэкенд проверит сам */ }
-
   const btn = $('#startGenBtn');
   await withBusy(btn, async () => {
     try {
-      const res = await (api.startGeneration.length >= 3
-        ? api.startGeneration(PID, S.parallel, force)
-        : req(`/projects/${PID}/generate?parallel=${S.parallel || 1}${force ? '&force=1' : ''}`,
-            { method: 'POST' }));
+      const res = await api.startGeneration(PID, S.parallel);
       if (!res.created) {
         toast.warn('Нечего запускать', res.reason || 'Все строки уже обработаны.');
       } else {
@@ -8508,18 +7960,90 @@ async function repaintDesign(btn) {
   else await run();
 }
 
+/* ---------- выбор модели ----------
+   Поле — обычный input: можно выбрать из списка провайдера, а можно
+   вписать имя руками вместе с суффиксами вроде :nitro. */
+function modelNames() {
+  return (S.models || []).map(m => typeof m === 'string' ? m : (m.id || m.name)).filter(Boolean);
+}
+
+function mpickAll() { return $$('.mpick'); }
+
+function mpickState(box) {
+  const input = box.querySelector('.mpick-input');
+  let tag = box.parentElement.querySelector('.mpick-state');
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'mpick-state';
+    box.insertAdjacentElement('afterend', tag);
+  }
+  const v = (input.value || '').trim();
+  if (!v) { tag.className = 'mpick-state'; tag.textContent = 'Модель не выбрана'; return; }
+  if (modelNames().includes(v)) { tag.className = 'mpick-state'; tag.textContent = 'Есть в списке провайдера'; }
+  else { tag.className = 'mpick-state is-manual'; tag.textContent = 'Своя строка — отправим провайдеру как есть'; }
+}
+
+function mpickRender(box, q) {
+  const input = box.querySelector('.mpick-input');
+  const list = box.querySelector('.mpick-list');
+  const cur = (input.value || '').trim();
+  const needle = (q || '').trim().toLowerCase();
+  const all = modelNames();
+  const items = all.filter(m => !needle || m.toLowerCase().includes(needle)).slice(0, 400);
+  list.innerHTML = items.length
+    ? items.map(m => `<button class="mpick-item ${m === cur ? 'is-cur' : ''}" type="button" data-m="${escAttr(m)}">${escHtml(m)}</button>`).join('')
+    : `<div class="mpick-empty">Ничего не нашлось.` +
+      (all.length ? '' : ' Список моделей не загрузился — введите имя руками.') + `</div>`;
+  list.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+    input.value = b.dataset.m;
+    input.dataset.touched = '1';
+    box.classList.remove('is-open');
+    mpickState(box);
+  });
+}
+
+function mpickInit() {
+  mpickAll().forEach(box => {
+    if (box.dataset.ready) { mpickState(box); return; }
+    box.dataset.ready = '1';
+    const menu = document.createElement('div');
+    menu.className = 'mpick-menu';
+    menu.innerHTML =
+      `<input class="input input-sm mpick-search" type="search" placeholder="Поиск по имени модели…" autocomplete="off">` +
+      `<div class="mpick-list"></div>` +
+      `<div class="mpick-foot">Можно ничего не выбирать и вписать имя самому</div>`;
+    box.appendChild(menu);
+    const search = menu.querySelector('.mpick-search');
+    box.querySelector('.mpick-open').onclick = () => {
+      const open = !box.classList.contains('is-open');
+      mpickAll().forEach(b => b.classList.remove('is-open'));
+      box.classList.toggle('is-open', open);
+      if (open) { mpickRender(box, ''); search.value = ''; search.focus(); }
+    };
+    search.oninput = () => mpickRender(box, search.value);
+    search.onkeydown = e => {
+      if (e.key === 'Escape') box.classList.remove('is-open');
+      if (e.key === 'Enter') { const f = menu.querySelector('.mpick-item'); if (f) f.click(); }
+    };
+    mpickState(box);
+  });
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.mpick')) mpickAll().forEach(b => b.classList.remove('is-open'));
+});
+
 function fillRules() {
   const fill = (sel, cur) => {
     const el = $(sel);
     if (!el) return;
-    const list = S.models.map(m => typeof m === 'string' ? m : (m.id || m.name)).filter(Boolean);
-    if (cur && !list.includes(cur)) list.unshift(cur);
-    el.innerHTML = list.length
-      ? list.map(m => `<option value="${escAttr(m)}" ${m === cur ? 'selected' : ''}>${escHtml(m)}</option>`).join('')
-      : `<option value="">Список моделей недоступен</option>`;
+    if (!el.dataset.touched) el.value = cur || '';
+    el.oninput = () => { el.dataset.touched = '1'; mpickState(el.closest('.mpick')); };
   };
   fill('#projStrongModel', getSetting('strong_model'));
   fill('#projCheapModel', getSetting('cheap_model'));
+  mpickInit();
+  mpickAll().forEach(b => mpickState(b));
 
   const u = Number(getSetting('uniqueness_threshold')) || 0.88;
   if ($('#uniqRange')) $('#uniqRange').value = u;
@@ -8549,8 +8073,8 @@ function fillRules() {
 
 async function saveRules(btn) {
   const prov = m => m && m.startsWith('custom/') ? 'custom' : 'openrouter';
-  const sm = ($('#projStrongModel') || {}).value;
-  const cm = ($('#projCheapModel') || {}).value;
+  const sm = (($('#projStrongModel') || {}).value || '').trim();
+  const cm = (($('#projCheapModel') || {}).value || '').trim();
   const payload = {
     uniqueness_threshold: { value: Number(($('#uniqRange') || {}).value) || 0.88 },
     min_text_length: { value: parseInt(($('#minLen') || {}).value, 10) || 1800 },
