@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: 04f11b9da0af84960a05eb49f72e6675920a5130
+# commit: 0eb2dde8ef715dffddabd8cccb63514f61b84487
 # built:  2026-09-18 18:06 UTC
 
 ## Состав
@@ -3954,14 +3954,14 @@ load();
 ════════════════════════════════════════════════════════
 
 <!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Вход — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <meta name="robots" content="noindex, nofollow">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=50">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -4240,7 +4240,7 @@ body.auth-body {
   </div>
 </aside>
 
-<script src="app.js?v=43"></script>
+<script src="app.js?v=50"></script>
 <script>
 /* --------------------------------------------------------------------------
    Логика входа. Опирается на auth.* из app.js.
