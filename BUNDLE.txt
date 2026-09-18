@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 0eb2dde8ef715dffddabd8cccb63514f61b84487
-# built:  2026-09-18 18:06 UTC
+# commit: 29e3d07152c927531ca395fdf21451e6bc652865
+# built:  2026-09-18 18:07 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -1410,12 +1410,12 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 ════════════════════════════════════════════════════════
 
 <!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1280">
 <title>Страница не найдена — SEO-Фабрика</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=50">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
