@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru" data-theme="light">
 <head>
@@ -870,7 +871,7 @@
                 <div class="seg seg-sm" id="pagesSort">
                   <button data-ps="new" class="is-on">Новые</button>
                   <button data-ps="score">По баллу</button>
-                  <button data-ps="uniq">По уникальности
+                  <button data-ps="uniq">По уникальности</button>
                 </div>
                 <button class="btn btn-sm" id="pagesReload"><span data-ico-sm="refresh"></span></button>
               </div>
@@ -885,7 +886,7 @@
                   <th style="width:126px;">Статус</th>
                   <th style="width:118px;">Балл</th>
                   <th style="width:132px;">Уникальность</th>
-                  <th Модель
+                  <th style="width:170px;">Модель</th>
                   <th class="td-act" style="width:130px;"></th>
                 </tr></thead>
                 <tbody id="pagesBody"></tbody>
@@ -2505,7 +2506,7 @@ function renderPassport() {
 
   const varied = st.varied_columns;
   $('#q1Box').innerHTML = (varied == null)
-    ? passportSlot('Различающиеся колонки', null, 'Загрузите таблицу на вкладке «Данные».
+    ? passportSlot('Различающиеся колонки', null, 'Загрузите таблицу на вкладке «Данные».')
     : `<div class="metric accent"><div class="metric-k">Различающиеся колонки</div>` +
       `<div class="metric-v">${varied} из ${st.columns_total || 0}</div>` +
       `<div class="metric-note">${escHtml((st.varied_names || []).join(', ') || 'нет ни одной')}` +
@@ -2612,7 +2613,7 @@ function paintFrameState() {
   nav.className = 'nav-state ' + (t.status === 'approved' ? 'ok' : 'warn');
   box.innerHTML = t.status === 'approved'
     ? `<span class="pill ok"><i class="dot"></i>Каркас утверждён</span>`
-    : `<span class="pill warn"><i class="dot"></i>Черновик каркаса
+    : `<span class="pill warn"><i class="dot"></i>Черновик каркаса</span>`;
   $('#approveFrameBtn').hidden = t.status === 'approved';
   $('#frameModelInfo').innerHTML = modelTag(t);
 }
@@ -2697,7 +2698,7 @@ async function approveFrame(btn) {
       await api.approveTemplate(PID, S.template.id);
       S.template.status = 'approved';
       paintFrameState();
-      toast.ok('Каркас утверждён', Теперь можно запускать генерацию.');
+      toast.ok('Каркас утверждён', 'Теперь можно запускать генерацию.');
     } catch (e) { toast.err('Не удалось утвердить', e); }
   });
 }
@@ -2981,8 +2982,7 @@ function renderTasks() {
   });
 }
 
-/* Длинный текст (промпт, сырой ответ модели) без обрезки.
-   Раньше сырой ответ резался на 6000 символах без всякого предупреждения. */
+/* Длинный текст (промпт, сырой ответ модели) без обрезки. */
 let _longTextSeq = 0;
 function longTextBlock(text, emptyLabel) {
   const full = String(text == null ? '' : text);
@@ -2997,7 +2997,6 @@ function longTextBlock(text, emptyLabel) {
          `</div>`;
 }
 
-/* Кнопки «Развернуть» / «Копировать» вешаем после отрисовки тела. */
 function bindLongTextButtons(root) {
   const scope = root || document;
   scope.querySelectorAll('[data-lt-expand]').forEach(btn => {
@@ -3017,7 +3016,9 @@ function bindLongTextButtons(root) {
         await navigator.clipboard.writeText(el.textContent || '');
         btn.textContent = 'Скопировано';
         setTimeout(() => { btn.textContent = 'Копировать'; }, 1500);
-      } catch (e) { toast.warn('Не скопировалось', 'Выделите текст вручную.'); }
+      } catch (e) {
+        toast.warn('Не скопировалось', 'Выделите текст вручную.');
+      }
     };
   });
 }
@@ -3073,7 +3074,7 @@ async function startGeneration() {
     return;
   }
   if (!S.template || S.template.status !== 'approved') {
-    toast.warn('Каркас не утверждён', 'Соберите каркас и нажмите «Утвердить».
+    toast.warn('Каркас не утверждён', 'Соберите каркас и нажмите «Утвердить».');
     go('frame');
     return;
   }
@@ -3300,7 +3301,7 @@ function renderPages() {
       `<td class="td-w-check"><input type="checkbox" class="check" data-sel="${p.id}" ` +
         `${S.selected.has(p.id) ? 'checked' : ''}></td>` +
       `<td class="td-num">${i + 1}</td>` +
-      `<td class="td-key"><button class="link-btn" data-open="${p.id}">${escHtml(p.key || '—')}</button> +
+      `<td class="td-key"><button class="link-btn" data-open="${p.id}">${escHtml(p.key || '—')}</button>` +
         (failed ? ` <span class="pill bad">${failed} ${plural(failed, 'провал', 'провала', 'провалов')}</span>` : '') + `</td>` +
       `<td class="td-mono">${escHtml(p.slug || '—')}</td>` +
       `<td>${pill(p.status)}</td>` +
@@ -3641,7 +3642,7 @@ async function pickTheme(id) {
   } catch (e) { toast.err('Тема не сохранилась', e); }
 }
 
-/* Дизайн-основа проекта из кэша или с сервера */
+/* Дизайн-основа проекта из кэша или с сервера. */
 async function ensureDesign(force) {
   if (S.design && !force) return S.design;
   try { S.design = await api.getDesign(PID); }
