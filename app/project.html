@@ -611,7 +611,7 @@
                 <div class="panel-head">
                   <div class="panel-head-body">
                     <div class="panel-title">Схема полей (JSON)</div>
-                    <div class="panel-sub">По ней дешёвая модель отдаёт тексты — и ничего кром�� текстов.</div>
+                    <div class="panel-sub">По ней дешёвая модель отдаёт тексты — и ничего кроме текстов.</div>
                   </div>
                 </div>
                 <div class="panel-body">
@@ -729,7 +729,7 @@
                   <span class="switch-track"><i></i></span>
                   <span class="switch-text">
                     <span class="switch-title">Параллельно</span>
-                    <span class="switch-desc">Быстрее, но больше ш����сов на лимит провайдера</span>
+                    <span class="switch-desc">Быстрее, но больше шансов на лимит провайдера</span>
                   </span>
                 </label>
 
@@ -846,7 +846,7 @@
           </div>
         </section>
 
-        <!-- ═════════════════���════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════════
              ЭКРАН 6 — СТРАНИЦЫ
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-pages">
@@ -870,7 +870,7 @@
                 <div class="seg seg-sm" id="pagesSort">
                   <button data-ps="new" class="is-on">Новые</button>
                   <button data-ps="score">По баллу</button>
-                  <button data-ps="uniq">По у��икальности</button>
+                  <button data-ps="uniq">По уникальности
                 </div>
                 <button class="btn btn-sm" id="pagesReload"><span data-ico-sm="refresh"></span></button>
               </div>
@@ -885,7 +885,7 @@
                   <th style="width:126px;">Статус</th>
                   <th style="width:118px;">Балл</th>
                   <th style="width:132px;">Уникальность</th>
-                  <th style="width:170px;">Мод��ль</th>
+                  <th Модель
                   <th class="td-act" style="width:130px;"></th>
                 </tr></thead>
                 <tbody id="pagesBody"></tbody>
@@ -1014,7 +1014,7 @@
 
         <!-- ══════════════════════════════════════════════════════════
              ЭКРАН 8 — ПУБЛИКАЦИЯ ВОЛНАМИ (БЛОК 7) — ЗАГЛУШКА
-             ══════════════════════���═══════════════════════════════════ -->
+             ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-waves">
           <div class="view-head">
             <div class="view-head-body">
@@ -1219,7 +1219,7 @@
               <div class="panel-head">
                 <div class="panel-head-body">
                   <div class="panel-title">Модели</div>
-                  <div class="panel-sub">Сильная рисует каркас один раз, дешё��ая заполняет каждую строку</div>
+                  <div class="panel-sub">Сильная рисует каркас один раз, дешёвая заполняет каждую строку</div>
                 </div>
               </div>
               <div class="panel-body">
@@ -1877,7 +1877,7 @@ function bindStatic() {
   $('#keysExampleBtn').onclick = () => {
     $('#keysInput').value =
       'Шут;номер=0;стихия=воздух;планета=Уран\n' +
-      'Ма��;номер=1;стихия=огонь;планета=Меркурий\n' +
+      'Маг;номер=1;стихия=огонь;планета=Меркурий\n' +
       'Жрица;номер=2;стихия=вода;планета=Луна';
     $('#keysInput').dispatchEvent(new Event('input'));
   };
@@ -1966,7 +1966,7 @@ function bindStatic() {
   $('#buildWiringBtn').onclick = () => stubDrawer('SEO-обвязка — блок 6', [
     ['Canonical', 'Шаблон адреса по домену проекта и slug страницы.'],
     ['Sitemap', 'Только страницы в статусе «Готова», lastmod из даты генерации.'],
-    ['Schema', 'Тип раз��етки из типа страницы в паспорте.'],
+    ['Schema', 'Тип разметки из типа страницы в паспорте.'],
     ['Внутренние ссылки', '3–5 соседей по близости, без пар со схожестью выше 0.90.'],
     ['Где взять данные', 'У каждой страницы уже записан ближайший сосед и его схожесть.'],
   ]);
@@ -2014,7 +2014,7 @@ function reloadAll() {
 
 function stubDrawer(title, rows) {
   drawer.open({
-    eyebrow: 'Заглушка �� бэкенд ещё не подключён',
+    eyebrow: 'Заглушка — бэкенд ещё не подключён',
     title: title,
     body:
       `<div class="note info" style="margin:0 0 16px;">` +
@@ -2390,7 +2390,7 @@ function passportSlot(label, value, hint) {
    БЛОК 1 · ПАСПОРТ ПРОЕКТА
    Арифметику (вопросы 1, 4, 5) считает бэкенд по таблице,
    тип и стратегию (вопросы 2, 3) предлагает сильная модель,
-   ��оследнее слово — за человеком (радиокнопки сохраняются сразу).
+   Последнее слово — за человеком (радиокнопки сохраняются сразу).
    ---------------------------------------------------------------------- */
 
 const PASSPORT_VERDICT = {
@@ -2505,7 +2505,7 @@ function renderPassport() {
 
   const varied = st.varied_columns;
   $('#q1Box').innerHTML = (varied == null)
-    ? passportSlot('Различающиеся колонки', null, 'Загрузите таблицу на вкладке «Д��нные».')
+    ? passportSlot('Различающиеся колонки', null, 'Загрузите таблицу на вкладке «Данные».
     : `<div class="metric accent"><div class="metric-k">Различающиеся колонки</div>` +
       `<div class="metric-v">${varied} из ${st.columns_total || 0}</div>` +
       `<div class="metric-note">${escHtml((st.varied_names || []).join(', ') || 'нет ни одной')}` +
@@ -2612,7 +2612,7 @@ function paintFrameState() {
   nav.className = 'nav-state ' + (t.status === 'approved' ? 'ok' : 'warn');
   box.innerHTML = t.status === 'approved'
     ? `<span class="pill ok"><i class="dot"></i>Каркас утверждён</span>`
-    : `<span class="pill warn"><i class="dot"></i>Черновик к��ркаса</span>`;
+    : `<span class="pill warn"><i class="dot"></i>Черновик каркаса
   $('#approveFrameBtn').hidden = t.status === 'approved';
   $('#frameModelInfo').innerHTML = modelTag(t);
 }
@@ -2697,7 +2697,7 @@ async function approveFrame(btn) {
       await api.approveTemplate(PID, S.template.id);
       S.template.status = 'approved';
       paintFrameState();
-      toast.ok('Каркас утверждён', 'Теп��рь можно запускать генерацию.');
+      toast.ok('Каркас утверждён', Теперь можно запускать генерацию.');
     } catch (e) { toast.err('Не удалось утвердить', e); }
   });
 }
@@ -2971,13 +2971,54 @@ function renderTasks() {
       `<td class="td-key">${escHtml(t.key || '—')}</td>` +
       `<td>${pill(t.status)}</td>` +
       `<td class="td-num">${t.attempts || 0}</td>` +
-      `<td>${modelTag(t.model, t.provider)}</td>` +
+      `<td>${modelTag(t)}</td>` +
       `<td class="td-num">${t.cost ? fmtMoney(t.cost) : '—'}</td>` +
-      `<td class="td-err">${t.error ? escHtml(String(t.error).slice(0, 90)) : ''}</td>` +
+      `<td class="td-err" title="${t.error ? escHtml(String(t.error)) : ''}">${t.error ? escHtml(String(t.error).slice(0, 90)) : ''}${t.error && String(t.error).length > 90 ? '…' : ''}</td>` +
     `</tr>`).join('');
 
   body.querySelectorAll('[data-task]').forEach(tr => {
     tr.onclick = () => openTaskDrawer(tr.dataset.task);
+  });
+}
+
+/* Длинный текст (промпт, сырой ответ модели) без обрезки.
+   Раньше сырой ответ резался на 6000 символах без всякого предупреждения. */
+let _longTextSeq = 0;
+function longTextBlock(text, emptyLabel) {
+  const full = String(text == null ? '' : text);
+  const id = 'lt' + (++_longTextSeq);
+  const size = full.length ? fmtNum(full.length) + ' симв.' : 'пусто';
+  return `<pre class="pre" id="${id}" style="max-height:320px;overflow:auto;white-space:pre-wrap;word-break:break-word;">` +
+           `${escHtml(full || emptyLabel || '')}</pre>` +
+         `<div style="display:flex;gap:8px;align-items:center;margin:6px 0 2px;flex-wrap:wrap;">` +
+           `<button type="button" class="btn ghost sm" data-lt-expand="${id}">Развернуть полностью</button>` +
+           `<button type="button" class="btn ghost sm" data-lt-copy="${id}">Копировать</button>` +
+           `<span class="muted">${size}</span>` +
+         `</div>`;
+}
+
+/* Кнопки «Развернуть» / «Копировать» вешаем после отрисовки тела. */
+function bindLongTextButtons(root) {
+  const scope = root || document;
+  scope.querySelectorAll('[data-lt-expand]').forEach(btn => {
+    btn.onclick = () => {
+      const el = document.getElementById(btn.dataset.ltExpand);
+      if (!el) return;
+      const opened = el.style.maxHeight === 'none';
+      el.style.maxHeight = opened ? '320px' : 'none';
+      btn.textContent = opened ? 'Развернуть полностью' : 'Свернуть';
+    };
+  });
+  scope.querySelectorAll('[data-lt-copy]').forEach(btn => {
+    btn.onclick = async () => {
+      const el = document.getElementById(btn.dataset.ltCopy);
+      if (!el) return;
+      try {
+        await navigator.clipboard.writeText(el.textContent || '');
+        btn.textContent = 'Скопировано';
+        setTimeout(() => { btn.textContent = 'Копировать'; }, 1500);
+      } catch (e) { toast.warn('Не скопировалось', 'Выделите текст вручную.'); }
+    };
   });
 }
 
@@ -3011,25 +3052,28 @@ async function openTaskDrawer(taskId) {
       ? `<div class="note bad"><span class="note-ico">${ico('alert', 17)}</span>` +
         `<div class="note-body">${escHtml(String(t.error))}</div></div>` : '') +
     `<details class="fold"><summary>Промпт, который ушёл в модель</summary>` +
-      `<pre class="pre">${escHtml((data && data.prompt) || 'Промпт ��е сохранён')}</pre></details>` +
-    attempts.map(a =>
-      `<details class="fold"><summary>Попытка ${a.n} — ${a.ok ? 'успех' : 'ошибка'}` +
+      longTextBlock((data && data.prompt) || '', 'Промпт не сохранён') + `</details>` +
+    (attempts.length ? '' :
+      `<div class="note"><div class="note-body">Попыток не записано: задача упала до ответа модели.</div></div>`) +
+    attempts.map((a, i) =>
+      `<details class="fold"${i === attempts.length - 1 ? ' open' : ''}><summary>Попытка ${a.n} — ${a.ok ? 'успех' : 'ошибка'}` +
         (a.chars ? ` · ${fmtNum(a.chars)} симв.` : '') + `</summary>` +
         (a.error ? `<div class="note bad" style="margin:10px 0;"><span class="note-ico">${ico('alert', 17)}</span>` +
                    `<div class="note-body">${escHtml(String(a.error))}</div></div>` : '') +
-        `<pre class="pre">${escHtml(String(a.raw || '').slice(0, 6000) || 'Пустой ответ')}</pre>` +
+        longTextBlock(a.raw || '', 'Пустой ответ') +
       `</details>`).join('')
   );
+  bindLongTextButtons(document);
 }
 
 async function startGeneration() {
   if (!S.keys.length) {
-    toast.warn('Нет строк с данными', 'Сначала добавьте табли��у или ключи на экране «Данные».');
+    toast.warn('Нет строк с данными', 'Сначала добавьте таблицу или ключи на экране «Данные».');
     go('data');
     return;
   }
   if (!S.template || S.template.status !== 'approved') {
-    toast.warn('Каркас не утверждён', 'Соберите каркас и нажмите «Утверд��ть».');
+    toast.warn('Каркас не утверждён', 'Соберите каркас и нажмите «Утвердить».
     go('frame');
     return;
   }
@@ -3066,7 +3110,7 @@ async function retryFailed(btn) {
       if (!res.retried) toast.warn('Нечего перезапускать', res.reason || '');
       else toast.ok('Перезапущено', res.retried + ' ' + plural(res.retried, 'задача', 'задачи', 'задач'));
       loadTasks(true);
-    } catch (e) { toast.err('Не уд��лось перезапустить', e); }
+    } catch (e) { toast.err('Не удалось перезапустить', e); }
   });
 }
 
@@ -3256,14 +3300,14 @@ function renderPages() {
       `<td class="td-w-check"><input type="checkbox" class="check" data-sel="${p.id}" ` +
         `${S.selected.has(p.id) ? 'checked' : ''}></td>` +
       `<td class="td-num">${i + 1}</td>` +
-      `<td class="td-key"><button class="link-btn" data-open="${p.id}">${escHtml(p.key || '���')}</button>` +
+      `<td class="td-key"><button class="link-btn" data-open="${p.id}">${escHtml(p.key || '—')}</button> +
         (failed ? ` <span class="pill bad">${failed} ${plural(failed, 'провал', 'провала', 'провалов')}</span>` : '') + `</td>` +
       `<td class="td-mono">${escHtml(p.slug || '—')}</td>` +
       `<td>${pill(p.status)}</td>` +
       `<td><span class="score ${g.tone}">${p.quality_score == null ? '—' : Math.round(p.quality_score)}` +
         `<i>${g.letter}</i></span></td>` +
       `<td><span class="uniq ${uTone}">${u === null ? '—' : u.toFixed(3)}</span></td>` +
-      `<td>${modelTag(p.model, p.provider, p.model_returned)}</td>` +
+      `<td>${modelTag(p)}</td>` +
       `<td class="td-act"><div class="row-tools">` +
         `<button class="icon-btn sm" data-preview="${p.id}" title="Посмотреть">${ico('eye', 15)}</button>` +
         `<button class="icon-btn sm" data-dl="${p.id}" title="Скачать HTML">${ico('download', 15)}</button>` +
@@ -3388,7 +3432,7 @@ async function regenPage(pid, btn) {
 async function delPage(pid) {
   const ok = await confirmDialog({
     title: 'Удалить страницу?',
-    text: 'Она ��счезнет из корпуса — уникальность остальных страниц пересчитается п��и следующем прогоне.',
+    text: 'Она исчезнет из корпуса — уникальность остальных страниц пересчитается при следующем прогоне.',
     confirm: 'Удалить', danger: true,
   });
   if (!ok) return;
@@ -3405,7 +3449,7 @@ async function deleteSelected(btn) {
   if (!ids.length) return;
   const ok = await confirmDialog({
     title: 'Удалить ' + ids.length + ' ' + plural(ids.length, 'страницу', 'страницы', 'страниц') + '?',
-    text: '��ействие неотменимо.',
+    text: 'Действие неотменимо.',
     confirm: 'Удалить', danger: true,
   });
   if (!ok) return;
@@ -3597,7 +3641,7 @@ async function pickTheme(id) {
   } catch (e) { toast.err('Тема не сохранилась', e); }
 }
 
-/* Дизайн-основа проекта из кэша или с с��рвера. */
+/* Дизайн-основа проекта из кэша или с сервера */
 async function ensureDesign(force) {
   if (S.design && !force) return S.design;
   try { S.design = await api.getDesign(PID); }
@@ -3763,7 +3807,7 @@ async function deleteProject() {
     await api.deleteProject(PID);
     toast.ok('Проект удалён', 'Возвращаемся к списку…');
     setTimeout(() => location.href = 'index.html', 600);
-  } catch (e) { toast.err('Не удало��ь удалить', e); }
+  } catch (e) { toast.err('Не удалось удалить', e); }
 }
 
 /* ======================================================================
