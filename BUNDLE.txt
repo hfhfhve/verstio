@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 68f6a75c850e2c0151327bfe6d6bd452c9d07a68
-# built:  2026-09-18 18:04 UTC
+# commit: bf0e9965cd6d9c2b22a428d8eb6c05c22c95021a
+# built:  2026-09-18 18:05 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2077 строк)
 app/index.html  (428 строк)
 app/login.html  (382 строк)
-app/project.html  (3845 строк)
+app/project.html  (3850 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1405 строк)
 app/site.html  (809 строк)
@@ -4339,9 +4339,8 @@ form.addEventListener('submit', async (e) => {
   app/project.html
 ════════════════════════════════════════════════════════
 
-
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4357,7 +4356,7 @@ form.addEventListener('submit', async (e) => {
     document.documentElement.setAttribute('data-fx', f === 'off' ? 'off' : 'on');
   } catch (e) {}
 </script>
-<link rel="stylesheet" href="style.css?v=46">
+<link rel="stylesheet" href="style.css?v=50">
 <style>
 /* Выбор модели: список + ручной ввод */
 .mpick{position:relative;display:flex;gap:8px;align-items:stretch}
@@ -4403,81 +4402,87 @@ form.addEventListener('submit', async (e) => {
     <nav class="rail-nav">
 
       <div class="nav-group">
-        <div class="nav-group-title">Подготовка проекта</div>
+        <div class="nav-group-title">Шаг 1 · исходные</div>
 
         <button class="nav-item" data-view="data" data-hotkey="1">
-          <span class="nav-ico" data-ico="table"></span>
+          <span class="nav-step">1</span>
           <span class="nav-label">Данные</span>
           <span class="nav-count" id="navKeys">0</span>
         </button>
 
-        <button class="nav-item" data-view="passport" data-hotkey="2">
-          <span class="nav-ico" data-ico="compass"></span>
-          <span class="nav-label">ИИ-анализ</span>
-          <span class="nav-step">2</span>
-        </button>
+        <div class="nav-sub">
+          <button class="nav-item" data-view="passport" data-hotkey="2">
+            <span class="nav-ico" data-ico="compass"></span>
+            <span class="nav-label">ИИ-анализ</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Шаг 2 · шаблон</div>
 
         <button class="nav-item" data-view="frame" data-hotkey="3">
-          <span class="nav-ico" data-ico="layout"></span>
+          <span class="nav-step">2</span>
           <span class="nav-label">Каркас</span>
           <span class="nav-state" id="navFrameState" hidden></span>
         </button>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title">Создание страниц</div>
+        <div class="nav-group-title">Шаг 3 · страницы</div>
 
         <button class="nav-item" data-view="generate" data-hotkey="4">
-          <span class="nav-ico" data-ico="play"></span>
+          <span class="nav-step">3</span>
           <span class="nav-label">Генерация</span>
           <span class="nav-state" id="navGenLive"></span>
         </button>
 
-        <button class="nav-item" data-view="gate" data-hotkey="5">
-          <span class="nav-ico" data-ico="shield"></span>
-          <span class="nav-label">Контроль качества</span>
-          <span class="nav-state" id="navGateState"></span>
-        </button>
+        <div class="nav-sub">
+          <button class="nav-item" data-view="gate" data-hotkey="5">
+            <span class="nav-ico" data-ico="shield"></span>
+            <span class="nav-label">Качество</span>
+            <span class="nav-state" id="navGateState"></span>
+          </button>
 
-        <button class="nav-item" data-view="pages" data-hotkey="6">
-          <span class="nav-ico" data-ico="file"></span>
-          <span class="nav-label">Страницы</span>
-        </button>
+          <button class="nav-item" data-view="pages" data-hotkey="6">
+            <span class="nav-ico" data-ico="file"></span>
+            <span class="nav-label">Готовые страницы</span>
+          </button>
+        </div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title">После генерации</div>
+        <div class="nav-group-title">Шаг 4 · публикация</div>
 
-        <button class="nav-item" data-view="wiring" data-hotkey="7">
-          <span class="nav-ico" data-ico="link"></span>
-          <span class="nav-label">SEO-обвязка</span>
-          <span class="nav-soon">блок 6</span>
+        <button class="nav-item" data-view="export" data-hotkey="e">
+          <span class="nav-step">4</span>
+          <span class="nav-label">Выгрузка</span>
         </button>
 
-        <button class="nav-item" data-view="waves" data-hotkey="8">
-          <span class="nav-ico" data-ico="waves"></span>
-          <span class="nav-label">Волны</span>
-          <span class="nav-soon">блок 7</span>
-        </button>
+        <div class="nav-sub">
+          <button class="nav-item" data-view="wiring" data-hotkey="7">
+            <span class="nav-ico" data-ico="link"></span>
+            <span class="nav-label">SEO-обвязка</span>
+          </button>
 
-        <button class="nav-item" data-view="feedback" data-hotkey="9">
-          <span class="nav-ico" data-ico="radar"></span>
-          <span class="nav-label">Результаты в поиске</span>
-          <span class="nav-soon">блок 8</span>
-        </button>
+          <button class="nav-item" data-view="waves" data-hotkey="8">
+            <span class="nav-ico" data-ico="waves"></span>
+            <span class="nav-label">Волны</span>
+          </button>
+
+          <button class="nav-item" data-view="feedback" data-hotkey="9">
+            <span class="nav-ico" data-ico="radar"></span>
+            <span class="nav-label">Результаты в поиске</span>
+          </button>
+        </div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title">Настройки и выход</div>
+        <div class="nav-group-title">Проект</div>
 
         <button class="nav-item" data-view="rules" data-hotkey="0">
           <span class="nav-ico" data-ico="sliders"></span>
           <span class="nav-label">Настройки проекта</span>
-        </button>
-
-        <button class="nav-item" data-view="export" data-hotkey="e">
-          <span class="nav-ico" data-ico="download"></span>
-          <span class="nav-label">Выгрузка</span>
         </button>
       </div>
 
@@ -5737,7 +5742,7 @@ form.addEventListener('submit', async (e) => {
   </div>
 </div>
 
-<script src="app.js?v=46"></script>
+<script src="app.js?v=50"></script>
 
 <script>
 /* ==========================================================================
