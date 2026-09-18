@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: eddcdb803d4567f944db8e4a54e5ec36a3a03155
+# commit: 1f38fbc4d614a78de8d28a0653d07946c83e8a43
 # built:  2026-09-18 18:05 UTC
 
 ## Состав
@@ -10,7 +10,7 @@ offer.html  (102 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2077 строк)
-app/index.html  (428 строк)
+app/index.html  (427 строк)
 app/login.html  (382 строк)
 app/project.html  (3850 строк)
 app/robots.txt  (5 строк)
@@ -3523,13 +3523,13 @@ function mountLogoutButton() {
 ════════════════════════════════════════════════════════
 
 <!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1280">
 <title>Проекты — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=46">
+<link rel="stylesheet" href="style.css?v=50">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -3696,7 +3696,7 @@ function mountLogoutButton() {
   </main>
 </div>
 
-<script src="app.js?v=46"></script>
+<script src="app.js?v=50"></script>
 <script>
 (function () {
 'use strict';
