@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: bf0e9965cd6d9c2b22a428d8eb6c05c22c95021a
+# commit: eddcdb803d4567f944db8e4a54e5ec36a3a03155
 # built:  2026-09-18 18:05 UTC
 
 ## Состав
@@ -2308,7 +2308,7 @@ function getTheme() {
     const t = localStorage.getItem('seo_theme');
     if (t === 'light' || t === 'dark') return t;
   } catch (e) {}
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'dark';
 }
 
 function applyTheme(name) {
