@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: ee03c865dc95e3a1cc89dd16670398454708025b
-# built:  2026-09-18 21:07 UTC
+# commit: a32f432fe6763678a0ba994b4df5a502bbacb57f
+# built:  2026-09-18 21:39 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2084 строк)
 app/index.html  (427 строк)
 app/login.html  (382 строк)
-app/project.html  (4132 строк)
+app/project.html  (4107 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1405 строк)
 app/site.html  (809 строк)
@@ -4347,7 +4347,7 @@ form.addEventListener('submit', async (e) => {
 ════════════════════════════════════════════════════════
 
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4363,7 +4363,7 @@ form.addEventListener('submit', async (e) => {
     document.documentElement.setAttribute('data-fx', f === 'off' ? 'off' : 'on');
   } catch (e) {}
 </script>
-<link rel="stylesheet" href="style.css?v=51">
+<link rel="stylesheet" href="style.css?v=52">
 <style>
 /* Выбор модели: список + ручной ввод */
 .mpick{position:relative;display:flex;gap:8px;align-items:stretch}
@@ -4409,81 +4409,87 @@ form.addEventListener('submit', async (e) => {
     <nav class="rail-nav">
 
       <div class="nav-group">
-        <div class="nav-group-title">Подготовка проекта</div>
+        <div class="nav-group-title">Шаг 1 · исходные</div>
 
         <button class="nav-item" data-view="data" data-hotkey="1">
-          <span class="nav-ico" data-ico="table"></span>
+          <span class="nav-step">1</span>
           <span class="nav-label">Данные</span>
           <span class="nav-count" id="navKeys">0</span>
         </button>
 
-        <button class="nav-item" data-view="passport" data-hotkey="2">
-          <span class="nav-ico" data-ico="compass"></span>
-          <span class="nav-label">ИИ-анализ</span>
-          <span class="nav-step">2</span>
-        </button>
+        <div class="nav-sub">
+          <button class="nav-item" data-view="passport" data-hotkey="2">
+            <span class="nav-ico" data-ico="compass"></span>
+            <span class="nav-label">ИИ-анализ</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Шаг 2 · шаблон</div>
 
         <button class="nav-item" data-view="frame" data-hotkey="3">
-          <span class="nav-ico" data-ico="layout"></span>
+          <span class="nav-step">2</span>
           <span class="nav-label">Каркас</span>
           <span class="nav-state" id="navFrameState" hidden></span>
         </button>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title">Создание страниц</div>
+        <div class="nav-group-title">Шаг 3 · страницы</div>
 
         <button class="nav-item" data-view="generate" data-hotkey="4">
-          <span class="nav-ico" data-ico="play"></span>
+          <span class="nav-step">3</span>
           <span class="nav-label">Генерация</span>
           <span class="nav-state" id="navGenLive"></span>
         </button>
 
-        <button class="nav-item" data-view="gate" data-hotkey="5">
-          <span class="nav-ico" data-ico="shield"></span>
-          <span class="nav-label">Контроль качества</span>
-          <span class="nav-state" id="navGateState"></span>
-        </button>
+        <div class="nav-sub">
+          <button class="nav-item" data-view="gate" data-hotkey="5">
+            <span class="nav-ico" data-ico="shield"></span>
+            <span class="nav-label">Качество</span>
+            <span class="nav-state" id="navGateState"></span>
+          </button>
 
-        <button class="nav-item" data-view="pages" data-hotkey="6">
-          <span class="nav-ico" data-ico="file"></span>
-          <span class="nav-label">Страницы</span>
-        </button>
+          <button class="nav-item" data-view="pages" data-hotkey="6">
+            <span class="nav-ico" data-ico="file"></span>
+            <span class="nav-label">Готовые страницы</span>
+          </button>
+        </div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title">После генерации</div>
+        <div class="nav-group-title">Шаг 4 · публикация</div>
 
-        <button class="nav-item" data-view="wiring" data-hotkey="7">
-          <span class="nav-ico" data-ico="link"></span>
-          <span class="nav-label">SEO-обвязка</span>
-          <span class="nav-soon">блок 6</span>
+        <button class="nav-item" data-view="export" data-hotkey="e">
+          <span class="nav-step">4</span>
+          <span class="nav-label">Выгрузка</span>
         </button>
 
-        <button class="nav-item" data-view="waves" data-hotkey="8">
-          <span class="nav-ico" data-ico="waves"></span>
-          <span class="nav-label">Волны</span>
-          <span class="nav-soon">блок 7</span>
-        </button>
+        <div class="nav-sub">
+          <button class="nav-item" data-view="wiring" data-hotkey="7">
+            <span class="nav-ico" data-ico="link"></span>
+            <span class="nav-label">SEO-обвязка</span>
+          </button>
 
-        <button class="nav-item" data-view="feedback" data-hotkey="9">
-          <span class="nav-ico" data-ico="radar"></span>
-          <span class="nav-label">Результаты в поиске</span>
-          <span class="nav-soon">блок 8</span>
-        </button>
+          <button class="nav-item" data-view="waves" data-hotkey="8">
+            <span class="nav-ico" data-ico="waves"></span>
+            <span class="nav-label">Волны</span>
+          </button>
+
+          <button class="nav-item" data-view="feedback" data-hotkey="9">
+            <span class="nav-ico" data-ico="radar"></span>
+            <span class="nav-label">Результаты в поиске</span>
+          </button>
+        </div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-title">Настройки и выход</div>
+        <div class="nav-group-title">Проект</div>
 
         <button class="nav-item" data-view="rules" data-hotkey="0">
           <span class="nav-ico" data-ico="sliders"></span>
           <span class="nav-label">Настройки проекта</span>
-        </button>
-
-        <button class="nav-item" data-view="export" data-hotkey="e">
-          <span class="nav-ico" data-ico="download"></span>
-          <span class="nav-label">Выгрузка</span>
         </button>
       </div>
 
@@ -4782,11 +4788,11 @@ form.addEventListener('submit', async (e) => {
               </div>
               <div class="media-source-grid">
                 <div class="media-source-card">
-                  <div><b>Загрузить файлы</b><small>JPEG, PNG, WebP или GIF · до 15 МБ каждый</small></div>
+                  <div><b>Загрузить файлы</b><small>JPEG, PNG или WebP · до 15 МБ каждый</small></div>
                   <div class="dropzone" id="mediaDrop" tabindex="0" role="button" aria-label="Выбрать изображения">
                     <span class="dropzone-ico" data-ico="upload"></span>
-                    <div class="dropzone-title">Перетащите файлы сюда или <u>выберите на диске</u></div>
-                    <div class="dropzone-hint">Можно сразу несколько — каждый станет WebP</div>
+                    <span class="dropzone-title">Перетащите файлы сюда или <u>выберите на диске</u></span>
+                    <span class="dropzone-hint">JPEG, PNG, WebP, GIF · до 15 МБ</span>
                     <input type="file" id="mediaFiles" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
                   </div>
                   <div class="dropfiles" id="mediaPicked"></div>
@@ -4804,11 +4810,11 @@ form.addEventListener('submit', async (e) => {
             </div></div>
           </div>
 
-          <div class="panel doc-panel" id="docPanel">
+          <div class="panel" id="docPanel">
             <div class="panel-head">
               <div class="panel-head-body">
                 <div class="panel-title">Документы <span class="pill neutral" id="docCount">0</span></div>
-                <div class="panel-sub">Прайсы, сертификаты, инструкции и договоры. Файлы привязываются к проекту или к странице и уезжают в ZIP.</div>
+                <div class="panel-sub">Прайсы, сертификаты, инструкции и договоры — лягут в архив рядом с сайтом.</div>
               </div>
               <label class="switch panel-switch" title="Развернуть блок документов">
                 <input type="checkbox" id="docToggle">
@@ -4826,34 +4832,26 @@ form.addEventListener('submit', async (e) => {
                 <label class="field"><span class="field-label">Тип документа</span>
                   <select class="select" id="docKind">
                     <option value="price">Прайс-лист</option>
-                    <option value="certificate">Сертификат или лицензия</option>
+                    <option value="certificate">Сертификат</option>
                     <option value="manual">Инструкция</option>
-                    <option value="contract">Договор или оферта</option>
+                    <option value="contract">Договор</option>
                     <option value="presentation">Презентация</option>
-                    <option value="report">Отчёт или выгрузка</option>
+                    <option value="report">Отчёт</option>
                     <option value="other" selected>Прочее</option>
                   </select>
                 </label>
-                <label class="field"><span class="field-label">Что внутри</span><input class="input" id="docAlt" placeholder="Коротко: цены на август, 2 страницы"></label>
-                <label class="field full"><span class="field-label">Подпись для ссылки</span><input class="input" id="docCaption" placeholder="Необязательно — как назвать файл в списке"></label>
+                <label class="field"><span class="field-label">Что внутри</span><input class="input" id="docAlt" placeholder="Например: цены аренды на сентябрь"></label>
+                <label class="field full"><span class="field-label">Подпись к документу</span><input class="input" id="docCaption" placeholder="Необязательно"></label>
               </div>
-              <div class="media-source-grid">
-                <div class="media-source-card">
-                  <div><b>Загрузить документы</b><small>PDF, DOCX, XLSX, CSV, TXT, PPTX, ZIP · до 30 МБ</small></div>
-                  <div class="dropzone" id="docDrop" tabindex="0" role="button" aria-label="Выбрать документы">
-                    <span class="dropzone-ico" data-ico="file"></span>
-                    <div class="dropzone-title">Перетащите документы сюда или <u>выберите на диске</u></div>
-                    <div class="dropzone-hint">Файл сохраняется как есть, без пережатия</div>
-                    <input type="file" id="docFiles" accept=".pdf,.doc,.docx,.rtf,.odt,.xls,.xlsx,.ods,.csv,.ppt,.pptx,.txt,.md,.json,.xml,.zip" multiple>
-                  </div>
-                  <div class="dropfiles" id="docPicked"></div>
-                  <button class="btn btn-primary" id="docUploadBtn"><span data-ico-sm="upload"></span> Загрузить документы</button>
-                </div>
-                <div class="media-source-card">
-                  <div><b>Как это работает</b><small>Документы никогда не попадают в картинки страницы.</small></div>
-                  <div class="media-note" style="margin:0">В архиве они ложатся в <code>site/assets/docs/</code> под понятными именами. В БД хранится только карточка файла, сам файл — на диске.</div>
-                </div>
+              <div class="dropzone" id="docDrop" tabindex="0" role="button" aria-label="Выбрать документы">
+                <span class="dropzone-ico" data-ico="file"></span>
+                <span class="dropzone-title">Перетащите документы сюда или <u>выберите на диске</u></span>
+                <span class="dropzone-hint">PDF, DOCX, XLSX, CSV, PPTX, TXT, ZIP · до 30 МБ</span>
+                <input type="file" id="docFiles" accept=".pdf,.doc,.docx,.rtf,.odt,.xls,.xlsx,.ods,.csv,.ppt,.pptx,.txt,.md,.json,.xml,.zip" multiple>
               </div>
+              <div class="dropfiles" id="docPicked"></div>
+              <button class="btn btn-primary" id="docUploadBtn"><span data-ico-sm="upload"></span> Загрузить документы</button>
+              <div class="media-note">Документы хранятся на диске, в БД — только метаинформация. В архив они попадают в папку site/assets/docs/ под читаемыми именами и никогда не вставляются в текст как картинки.</div>
               <div class="doc-assets" id="docAssets"></div>
             </div>
             </div></div>
@@ -5811,7 +5809,7 @@ form.addEventListener('submit', async (e) => {
   </div>
 </div>
 
-<script src="app.js?v=51"></script>
+<script src="app.js?v=52"></script>
 
 <script>
 /* ==========================================================================
@@ -6281,18 +6279,18 @@ function bindStatic() {
   $('#mediaUploadBtn').onclick = e => uploadMediaFiles(e.currentTarget);
   $('#mediaUrlBtn').onclick = e => importMediaUrl(e.currentTarget);
 
-  /* Блоки разворачиваются галочкой, состояние помним между визитами. */
-  MEDIA_PICK = initDropzone({
+  MEDIA_DROP = initDropzone({
     zone: '#mediaDrop', input: '#mediaFiles', list: '#mediaPicked', pick: pickImages,
   });
-  DOC_PICK = initDropzone({
+  DOC_DROP = initDropzone({
     zone: '#docDrop', input: '#docFiles', list: '#docPicked', pick: pickDocs,
   });
-  initPanelToggle('#mediaPanel', '#mediaToggle');
-  initPanelToggle('#docPanel', '#docToggle');
 
   $('#docScope').onchange = syncDocTarget;
   $('#docUploadBtn').onclick = e => uploadDocFiles(e.currentTarget);
+
+  initPanelToggle('#mediaPanel', '#mediaToggle', () => loadMedia());
+  initPanelToggle('#docPanel', '#docToggle', () => loadDocs());
 
   $('#addKeysBtn').onclick = e => addKeys(e.currentTarget);
   $('#keysReload').onclick = () => loadKeys();
@@ -6528,106 +6526,6 @@ async function saveSiteRequirements(btn) {
   });
 }
 
-/* --------------------------------------------------------------------------
-   СВОРАЧИВАЕМЫЕ БЛОКИ И ЗОНА ПЕРЕТАСКИВАНИЯ
-
-   Изображения и документы нужны не в каждом проекте, поэтому оба
-   блока свёрнуты и раскрываются галочкой. Если файлы уже есть,
-   блок открывается сам — иначе загруженное легко потерять из виду.
-   -------------------------------------------------------------------------- */
-
-let MEDIA_PICK = null;
-let DOC_PICK = null;
-
-function initPanelToggle(panelSel, inputSel) {
-  const panel = $(panelSel), box = $(inputSel);
-  if (!panel || !box) return;
-  const storeKey = 'neo.panel.' + inputSel.replace('#', '');
-  const open = localStorage.getItem(storeKey) === '1';
-  box.checked = open;
-  panel.classList.toggle('is-collapsed', !open);
-  box.onchange = () => {
-    panel.classList.toggle('is-collapsed', !box.checked);
-    localStorage.setItem(storeKey, box.checked ? '1' : '0');
-  };
-}
-
-/* Открывает блок, когда в нём уже есть файлы. */
-function revealPanel(panelSel, inputSel) {
-  const panel = $(panelSel), box = $(inputSel);
-  if (!panel || !box || box.checked) return;
-  box.checked = true;
-  panel.classList.remove('is-collapsed');
-  localStorage.setItem('neo.panel.' + inputSel.replace('#', ''), '1');
-}
-
-function fmtBytes(bytes) {
-  const b = Number(bytes) || 0;
-  if (b < 1024) return b + ' Б';
-  if (b < 1024 * 1024) return Math.round(b / 1024) + ' КБ';
-  return (b / (1024 * 1024)).toFixed(b < 10 * 1024 * 1024 ? 1 : 0) + ' МБ';
-}
-
-/**
- * Зона в стиле GitHub: клик, Enter или перетаскивание.
- * Файлы копим в своём списке, а не в input.files: тогда их можно
- * добавлять порциями и удалять поодиночке.
- */
-function initDropzone({ zone, input, list, pick }) {
-  const zoneEl = $(zone), inputEl = $(input), listEl = $(list);
-  if (!zoneEl || !inputEl || !listEl) return null;
-  const state = { files: [] };
-
-  const render = () => {
-    listEl.innerHTML = state.files.map((f, i) => `<div class="dropfile">
-      ${ico('file', 15)}
-      <b title="${escHtml(f.name)}">${escHtml(f.name)}</b>
-      <span>${fmtBytes(f.size)}</span>
-      <button class="icon-btn sm" type="button" data-drop-del="${i}" title="Убрать из списка">${ico('x', 14)}</button>
-    </div>`).join('');
-    listEl.querySelectorAll('[data-drop-del]').forEach(btn => {
-      btn.onclick = event => {
-        event.stopPropagation();
-        state.files.splice(Number(btn.dataset.dropDel), 1);
-        render();
-      };
-    });
-  };
-
-  const add = files => {
-    const { ok, bad } = pick(Array.from(files || []));
-    if (bad.length) toast.warn('Пропущены файлы', bad.join('\n'));
-    ok.forEach(f => {
-      const dup = state.files.some(x => x.name === f.name && x.size === f.size);
-      if (!dup) state.files.push(f);
-    });
-    render();
-  };
-
-  zoneEl.onclick = () => inputEl.click();
-  zoneEl.onkeydown = event => {
-    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); inputEl.click(); }
-  };
-  inputEl.onchange = () => { add(inputEl.files); inputEl.value = ''; };
-
-  let depth = 0;
-  zoneEl.addEventListener('dragenter', event => {
-    event.preventDefault(); depth++; zoneEl.classList.add('is-over');
-  });
-  zoneEl.addEventListener('dragover', event => { event.preventDefault(); });
-  zoneEl.addEventListener('dragleave', () => {
-    depth = Math.max(0, depth - 1);
-    if (!depth) zoneEl.classList.remove('is-over');
-  });
-  zoneEl.addEventListener('drop', event => {
-    event.preventDefault(); depth = 0; zoneEl.classList.remove('is-over');
-    add(event.dataTransfer && event.dataTransfer.files);
-  });
-
-  state.clear = () => { state.files = []; render(); };
-  return state;
-}
-
 function mediaPayload() {
   const scope = $('#mediaScope').value;
   const key = scope === 'page' ? Number($('#mediaKey').value || 0) : null;
@@ -6640,14 +6538,18 @@ function mediaPayload() {
 }
 
 function fillMediaKeyOptions() {
-  const select = $('#mediaKey');
-  if (!select) return;
-  const old = select.value;
-  select.innerHTML = S.keys.length
+  const html = S.keys.length
     ? S.keys.map(k => `<option value="${k.id}">${escHtml(k.key)}</option>`).join('')
     : '<option value="">Сначала добавьте строки</option>';
-  if (old && S.keys.some(k => String(k.id) === old)) select.value = old;
+  ['#mediaKey', '#docKey'].forEach(sel => {
+    const select = $(sel);
+    if (!select) return;
+    const old = select.value;
+    select.innerHTML = html;
+    if (old && S.keys.some(k => String(k.id) === old)) select.value = old;
+  });
   syncMediaTarget();
+  syncDocTarget();
 }
 
 function syncMediaTarget() {
@@ -6668,7 +6570,6 @@ async function loadMedia() {
 
 function renderMedia() {
   $('#mediaCount').textContent = fmtNum(S.media.length);
-  if (S.media.length) revealPanel('#mediaPanel', '#mediaToggle');
   const box = $('#mediaAssets');
   if (!S.media.length) {
     box.innerHTML = '<div class="empty media-empty"><div class="empty-title">Изображений пока нет</div><div class="empty-text">Добавьте логотип всему проекту или фотографию отдельной странице.</div></div>';
@@ -6708,34 +6609,115 @@ function pickImages(files) {
 }
 
 async function uploadMediaFiles(btn) {
-  const files = (MEDIA_PICK && MEDIA_PICK.files) || [];
-  if (!files.length) { toast.warn('Сначала добавьте файлы'); return; }
+  const files = MEDIA_DROP ? MEDIA_DROP.files() : [];
+  if (!files.length) { toast.warn('Сначала выберите файлы'); return; }
   await withBusy(btn, async () => {
     try {
       const meta = mediaPayload();
-      for (const file of files.slice()) {
+      for (const file of files) {
         const fd = new FormData(); fd.append('file',file);
         Object.entries(meta).forEach(([k,v]) => { if (v !== null) fd.append(k,String(v)); });
         await api.uploadMedia(PID,fd);
       }
-      MEDIA_PICK.clear(); await loadMedia();
+      MEDIA_DROP.clear();
+      await loadMedia();
       toast.ok('Изображения готовы', files.length + ' шт. преобразовано в WebP');
     } catch(e){ toast.err('Не удалось загрузить',e); }
   });
 }
 
-/* --------------------------------------------------------------------------
-   ДОКУМЕНТЫ ПРОЕКТА
+/* ============================================================
+   Сворачиваемые панели и дропзоны
+   ============================================================ */
 
-   Та же механика, что и у картинок: привязка к проекту или странице,
-   тип, описание «что внутри» и подпись. Файл сохраняется без пережатия.
-   -------------------------------------------------------------------------- */
+let MEDIA_DROP = null;
+let DOC_DROP = null;
+
+function fmtSize(bytes) {
+  const n = Number(bytes) || 0;
+  if (n < 1024) return n + ' Б';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' КБ';
+  return (n / (1024 * 1024)).toFixed(n < 10 * 1024 * 1024 ? 1 : 0) + ' МБ';
+}
+
+/* Панель свёрнута, пока не поставлена галочка. Выбор запоминаем на устройстве. */
+function initPanelToggle(panelSel, inputSel, onOpen) {
+  const panel = $(panelSel), input = $(inputSel);
+  if (!panel || !input) return;
+  const storeKey = 'neo.panel.' + panelSel.replace('#', '') + '.' + PID;
+  let opened = false;
+  const apply = (on, remember) => {
+    panel.classList.toggle('is-collapsed', !on);
+    input.checked = on;
+    if (remember) { try { localStorage.setItem(storeKey, on ? '1' : '0'); } catch (e) {} }
+    if (on && !opened) { opened = true; if (onOpen) onOpen(); }
+  };
+  let saved = null;
+  try { saved = localStorage.getItem(storeKey); } catch (e) {}
+  apply(saved === '1', false);
+  input.onchange = () => apply(input.checked, true);
+  panel._openPanel = () => { if (!input.checked) apply(true, true); };
+}
+
+/* Дропзона: клик, Enter/Space, drag&drop, список с удалением поштучно. */
+function initDropzone({ zone, input, list, pick }) {
+  const el = $(zone), file = $(input), box = $(list);
+  if (!el || !file || !box) return null;
+  let chosen = [];
+
+  const render = () => {
+    box.innerHTML = chosen.map((f, i) => `<div class="dropfile">
+      ${ico('file', 15)}<b>${escHtml(f.name)}</b><span>${fmtSize(f.size)}</span>
+      <button class="icon-btn sm" data-drop-rm="${i}" title="Убрать">${ico('x', 14)}</button>
+    </div>`).join('');
+    box.querySelectorAll('[data-drop-rm]').forEach(b => b.onclick = e => {
+      e.stopPropagation();
+      chosen.splice(Number(b.dataset.dropRm), 1);
+      render();
+    });
+  };
+
+  const add = files => {
+    const { ok, bad } = pick(Array.from(files || []));
+    if (bad.length) toast.warn('Пропущены файлы', bad.join('\n'));
+    ok.forEach(f => {
+      const dup = chosen.some(x => x.name === f.name && x.size === f.size);
+      if (!dup) chosen.push(f);
+    });
+    render();
+  };
+
+  el.onclick = e => { if (!e.target.closest('[data-drop-rm]')) file.click(); };
+  el.onkeydown = e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); file.click(); }
+  };
+  file.onchange = () => { add(file.files); file.value = ''; };
+
+  let depth = 0;
+  const over = on => el.classList.toggle('is-over', on);
+  el.addEventListener('dragenter', e => { e.preventDefault(); depth++; over(true); });
+  el.addEventListener('dragover', e => { e.preventDefault(); over(true); });
+  el.addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) over(false); });
+  el.addEventListener('drop', e => {
+    e.preventDefault(); depth = 0; over(false);
+    add(e.dataTransfer && e.dataTransfer.files);
+  });
+
+  return {
+    files: () => chosen.slice(),
+    clear: () => { chosen = []; render(); },
+  };
+}
+
+/* ============================================================
+   Документы проекта
+   ============================================================ */
 
 const DOC_EXT = /\.(pdf|docx?|rtf|odt|xlsx?|ods|csv|pptx?|txt|md|json|xml|zip)$/i;
 const DOC_MAX_MB = 30;
 const DOC_KIND_LABEL = {
   price: 'Прайс-лист', certificate: 'Сертификат', manual: 'Инструкция',
-  contract: 'Договор', presentation: 'Презентация', report: 'Отчёт', other: 'Прочее',
+  contract: 'Договор', presentation: 'Презентация', report: 'Отчёт', other: 'Документ',
 };
 
 function pickDocs(files) {
@@ -6759,20 +6741,9 @@ function docPayload() {
   };
 }
 
-function fillDocKeyOptions() {
-  const select = $('#docKey');
-  if (!select) return;
-  const old = select.value;
-  select.innerHTML = S.keys.length
-    ? S.keys.map(k => `<option value="${k.id}">${escHtml(k.key)}</option>`).join('')
-    : '<option value="">Сначала добавьте строки</option>';
-  if (old && S.keys.some(k => String(k.id) === old)) select.value = old;
-  syncDocTarget();
-}
-
 function syncDocTarget() {
-  const page = $('#docScope').value === 'page';
-  $('#docKeyField').hidden = !page;
+  const field = $('#docKeyField');
+  if (field) field.hidden = $('#docScope').value !== 'page';
 }
 
 async function loadDocs() {
@@ -6782,55 +6753,60 @@ async function loadDocs() {
   try { S.docs = await api.listDocs(PID) || []; }
   catch (e) { box.innerHTML = `<div class="note bad">${escHtml(e.message)}</div>`; return; }
   renderDocs();
+  // Если документы уже есть — раскрываем панель сами.
+  const panel = $('#docPanel');
+  if (S.docs.length && panel && panel._openPanel) panel._openPanel();
 }
 
 function renderDocs() {
-  $('#docCount').textContent = fmtNum(S.docs.length);
-  if (S.docs.length) revealPanel('#docPanel', '#docToggle');
   const box = $('#docAssets');
+  if (!box) return;
+  $('#docCount').textContent = fmtNum(S.docs.length);
   if (!S.docs.length) {
-    box.innerHTML = '<div class="empty doc-empty"><div class="empty-title">Документов пока нет</div><div class="empty-text">Добавьте прайс, сертификат или инструкцию — они уедут в архив вместе со страницами.</div></div>';
+    box.innerHTML = '<div class="doc-empty">Документов пока нет. Можно приложить прайс или сертификат — ко всему проекту или к одной странице.</div>';
     return;
   }
   box.innerHTML = S.docs.map(d => {
-    const ext = (d.extension || '').slice(0, 4) || 'file';
-    const place = d.scope === 'project' ? 'весь проект' : escHtml(d.key || 'страница');
-    const about = d.alt_text ? escHtml(d.alt_text) : 'без описания';
+    const ext = (d.extension || '').slice(0, 4) || 'DOC';
+    const where = d.scope === 'project' ? 'весь проект' : escHtml(d.key || 'страница');
+    const about = d.alt_text ? ' · ' + escHtml(d.alt_text) : '';
     return `<article class="doc-asset">
       <div class="doc-ext">${escHtml(ext)}</div>
       <div class="doc-asset-body">
-        <b title="${escHtml(d.original_name || '')}">${escHtml(d.caption || d.original_name || 'document')}</b>
-        <span>${escHtml(DOC_KIND_LABEL[d.doc_kind] || 'Прочее')} · ${place} · ${fmtBytes(d.size_bytes)}</span>
-        <small>${about}</small>
+        <b>${escHtml(d.original_name || d.export_name || 'документ')}</b>
+        <span>${escHtml(DOC_KIND_LABEL[d.doc_kind] || 'Документ')} · ${where}${about}</span>
+        <small>${fmtSize(d.size_bytes)} · в архиве: site/assets/docs/${escHtml(d.export_name || '')}</small>
       </div>
-      <a class="btn btn-ghost sm doc-dl" href="${api.docUrl(PID, d.id)}" target="_blank" rel="noopener">${ico('download', 14)} Скачать</a>
+      <a class="icon-btn sm" href="${api.docUrl(PID, d.id)}" target="_blank" rel="noopener" title="Скачать">${ico('download', 15)}</a>
       <button class="icon-btn sm" data-deldoc="${d.id}" title="Удалить">${ico('trash', 15)}</button>
     </article>`;
   }).join('');
   box.querySelectorAll('[data-deldoc]').forEach(b => b.onclick = async () => {
-    if (!await confirmDialog({title:'Удалить документ?',text:'Он исчезнет из следующих экспортов.',confirm:'Удалить',danger:true})) return;
+    if (!await confirmDialog({ title: 'Удалить документ?', text: 'Он исчезнет из следующих экспортов.', confirm: 'Удалить', danger: true })) return;
     try {
       await api.deleteDoc(PID, b.dataset.deldoc);
       S.docs = S.docs.filter(x => String(x.id) !== String(b.dataset.deldoc));
       renderDocs(); toast.ok('Документ удалён');
-    } catch(e){ toast.err('Не удалось удалить', e); }
+    } catch (e) { toast.err('Не удалось удалить', e); }
   });
 }
 
 async function uploadDocFiles(btn) {
-  const files = (DOC_PICK && DOC_PICK.files) || [];
-  if (!files.length) { toast.warn('Сначала добавьте файлы'); return; }
+  const files = DOC_DROP ? DOC_DROP.files() : [];
+  if (!files.length) { toast.warn('Сначала выберите документы'); return; }
   await withBusy(btn, async () => {
     try {
       const meta = docPayload();
-      for (const file of files.slice()) {
+      for (const file of files) {
         const fd = new FormData(); fd.append('file', file);
         Object.entries(meta).forEach(([k, v]) => { if (v !== null) fd.append(k, String(v)); });
         await api.uploadDoc(PID, fd);
       }
-      DOC_PICK.clear(); await loadDocs();
+      DOC_DROP.clear();
+      $('#docAlt').value = ''; $('#docCaption').value = '';
+      await loadDocs();
       toast.ok('Документы загружены', files.length + ' шт.');
-    } catch(e){ toast.err('Не удалось загрузить', e); }
+    } catch (e) { toast.err('Не удалось загрузить', e); }
   });
 }
 
@@ -6856,7 +6832,6 @@ async function loadKeys() {
   $('#navKeys').textContent = fmtNum(S.keys.length);
   $('#keysCountPill').textContent = fmtNum(S.keys.length);
   fillMediaKeyOptions();
-  fillDocKeyOptions();
 }
 
 function renderColumns() {
