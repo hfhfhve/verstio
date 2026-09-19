@@ -54,15 +54,7 @@
 <div class="plain-shell">
 
   <header class="topbar plain-topbar">
-    <div class="brand">
-      <span class="brand-mark">
-        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6l7 6 7-6v12"/></svg>
-      </span>
-      <span>
-        <span class="brand-name">SEO-Фабрика</span>
-        <span class="brand-sub">лиды и разведка доменов</span>
-      </span>
-    </div>
+    <div id="navSlot" data-nav="leads" data-sub="лиды и разведка доменов"></div>
 
     <span class="topbar-spacer"></span>
 
@@ -71,9 +63,7 @@
     </button>
 
     <div class="topbar-tools">
-      <a class="icon-btn" href="index.html" title="Проекты"><span data-ico="home"></span></a>
       <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
-      <a class="icon-btn" href="settings.html" title="Глобальные настройки"><span data-ico="gear"></span></a>
     </div>
   </header>
 
@@ -100,7 +90,7 @@
       <div class="metrics" id="leadMetrics"></div>
 
       <!-- ============ РАЗВЕДКА ДОМЕНА ============ -->
-      <section class="panel accent" id="scan" style="scroll-margin-top:72px">
+      <section class="panel accent">
         <div class="panel-head">
           <div class="panel-head-body">
             <div class="panel-title">Разведка домена</div>
