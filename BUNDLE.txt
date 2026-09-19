@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: e82b7e7f572ca579d235c8be3c7268e00374cae0
-# built:  2026-09-19 12:31 UTC
+# commit: 9d8a513dd35cedeece42edafc7fd13ab0d97cec5
+# built:  2026-09-19 12:33 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -1827,19 +1827,19 @@ const api = {
   saveDesign:   (id, d) => req(`/projects/${id}/design`, { method: 'PUT', body: JSON.stringify(d) }),
   repaintDesign:(id)    => req(`/projects/${id}/design/apply`, { method: 'POST' }),
 
-  /* ---- ПЕРЕЛИНКОВКА — граф страниц сайта (готово) ---- */
-  linking:        (id)      => req(`/projects/${id}/linking`),
-  saveLinking:    (id, d)   => req(`/projects/${id}/linking`, { method: 'PUT', body: JSON.stringify(d) }),
-  linkingPages:   (id, q)   => req(`/projects/${id}/linking/pages${qs(q)}`),
-  linkingPagePatch: (id, pageId, d) => req(`/projects/${id}/linking/pages/${pageId}`, {
-                                 method: 'PATCH', body: JSON.stringify(d) }),
-  linkingRebuild: (id)      => req(`/projects/${id}/linking/rebuild`, { method: 'POST' }),
-  linkingToken:   (id, name)=> req(`/projects/${id}/linking/tokens`, {
-                                 method: 'POST', body: JSON.stringify({ name: name || '' }) }),
-  linkingTokenRevoke: (id, tid) => req(`/projects/${id}/linking/tokens/${tid}`, { method: 'DELETE' }),
-  linkingImport:  (id, d)   => req(`/projects/${id}/linking/import`, {
-                                 method: 'POST', body: JSON.stringify(d) }),
-  linkingGraphUrl:(id)      => auth.signUrl(`${API_BASE.replace(/\/+$/, '')}/projects/${id}/linking/graph.json`),
+  /* ---- ЛИДЫ И РАЗВЕДКА ДОМЕНОВ (экран leads.html) ----
+     listLeads/getLead/updateLead живут в api.py (router_leads),
+     остальное — в leadscan.py (router_leadscan). */
+  listLeads:    (p)      => req('/leads' + qs(p || {})),
+  leadsStats:   ()       => req('/leads/stats'),
+  getLead:      (id)     => req(`/leads/${id}`),
+  updateLead:   (id, d)  => req(`/leads/${id}`, { method: 'PATCH', body: JSON.stringify(d) }),
+  createLead:   (d)      => req('/leads/manual', { method: 'POST', body: JSON.stringify(d) }),
+  editLead:     (id, d)  => req(`/leads/${id}/fields`, { method: 'PATCH', body: JSON.stringify(d) }),
+  deleteLead:   (id)     => req(`/leads/${id}`, { method: 'DELETE' }),
+  scanDomain:   (d)      => req('/scan', { method: 'POST', body: JSON.stringify(d) }),
+  getScan:      (domain) => req('/scan' + qs({ domain })),
+  lastScans:    ()       => req('/scans'),
 };
 
 /** Готов ли этот метод на бэкенде. */
