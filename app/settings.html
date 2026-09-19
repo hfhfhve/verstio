@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -80,16 +81,11 @@
 <div class="plain-shell">
 
   <header class="topbar plain-topbar">
-    <div class="crumbs">
-      <a href="index.html">Проекты</a>
-      <span class="sep">/</span>
-      <span class="cur">Настройки</span>
-    </div>
+    <div id="navSlot" data-nav="settings" data-sub="глобальные настройки"></div>
     <span class="topbar-spacer"></span>
     <div class="topbar-tools">
       <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
       <button class="icon-btn" id="helpBtn" type="button" title="Горячие клавиши (?)"><span data-ico="keyboard"></span></button>
-      <a class="btn btn-quiet btn-sm" href="index.html"><span data-ico-sm="home"></span> К проектам</a>
     </div>
   </header>
 
@@ -573,6 +569,8 @@
 </div>
 
 <script src="app.js?v=50"></script>
+<script src="topbar.js?v=1"></script>
+
 <script>
 (function () {
 'use strict';
