@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 74d1a4588bf343cc0e816f0391a4bc9f88d51d5f
-# built:  2026-09-18 21:40 UTC
+# commit: 8794b7a693587edf3855620f560047ce386611ec
+# built:  2026-09-19 09:49 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ app/404.html  (28 строк)
 app/app.js  (2084 строк)
 app/index.html  (427 строк)
 app/login.html  (382 строк)
-app/project.html  (4107 строк)
+app/project.html  (4486 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1405 строк)
 app/site.html  (809 строк)
@@ -4346,6 +4346,7 @@ form.addEventListener('submit', async (e) => {
   app/project.html
 ════════════════════════════════════════════════════════
 
+
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -4470,6 +4471,12 @@ form.addEventListener('submit', async (e) => {
           <button class="nav-item" data-view="wiring" data-hotkey="7">
             <span class="nav-ico" data-ico="link"></span>
             <span class="nav-label">SEO-обвязка</span>
+          </button>
+
+          <button class="nav-item" data-view="linking" data-hotkey="l">
+            <span class="nav-ico" data-ico="link"></span>
+            <span class="nav-label">Перелинковка</span>
+            <span class="nav-count" id="navLinkOrphans" hidden>0</span>
           </button>
 
           <button class="nav-item" data-view="waves" data-hotkey="8">
@@ -5429,6 +5436,163 @@ form.addEventListener('submit', async (e) => {
         <!-- ══════════════════════════════════════════════════════════
              ЭКРАН 8 — ПУБЛИКАЦИЯ ВОЛНАМИ (БЛОК 7) — ЗАГЛУШКА
              ══════════════════════════════════════════════════════════ -->
+        <!-- ════════════════════════════════════════════
+             ЭКРАН — ПЕРЕЛИНКОВКА (рабочий, не заглушка)
+             ════════════════════════════════════════════ -->
+        <section class="view" id="view-linking">
+          <div class="view-head">
+            <div class="view-head-body">
+              <div class="view-eyebrow"><i class="dot"></i>После публикации</div>
+              <h1>Перелинковка</h1>
+              <p class="view-sub">
+                Граф страниц сайта и блоки «Смотри также». Учитываются и страницы,
+                созданные здесь, и те, что уже лежали на сайте до вас.
+              </p>
+            </div>
+            <div class="view-actions">
+              <button class="btn" id="linkRebuildBtn"><span data-ico-sm="refresh"></span> Пересчитать граф</button>
+              <button class="btn btn-primary btn-lg" id="linkSaveBtn"><span data-ico-sm="ok"></span> Сохранить</button>
+            </div>
+          </div>
+
+          <div class="grid grid-4 grid-sm">
+            <div class="metric"><div class="metric-k">Страниц в графе</div><div class="metric-v" id="lkPages">—</div><div class="metric-note" id="lkPagesNote">свои и чужие</div></div>
+            <div class="metric"><div class="metric-k">Внутренних ссылок</div><div class="metric-v" id="lkLinks">—</div><div class="metric-note">в текущем плане</div></div>
+            <div class="metric"><div class="metric-k">Страниц-сирот</div><div class="metric-v" id="lkOrphans">—</div><div class="metric-note">на них никто не ссылается</div></div>
+            <div class="metric"><div class="metric-k">Глубина от главной</div><div class="metric-v" id="lkDepth">—</div><div class="metric-note">чем меньше, тем быстрее обход роботом</div></div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Правила ссылок</div>
+                  <div class="panel-sub">Меняются в любой момент: граф пересчитается сам</div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <label class="check-row-wrap">
+                  <span class="check-line"><input type="checkbox" class="check" id="lkEnabled"> Перелинковка включена</span>
+                </label>
+                <div class="grid grid-2 grid-sm mt-2">
+                  <label class="field">
+                    <span class="field-label">Ссылок на страницу</span>
+                    <input class="input" id="lkPerPage" type="number" min="2" max="12" step="1">
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Из них в соседние разделы</span>
+                    <input class="input" id="lkCross" type="number" min="0" max="6" step="1">
+                  </label>
+                </div>
+                <label class="field mt-2">
+                  <span class="field-label">Заголовок блока</span>
+                  <input class="input" id="lkHeading" placeholder="Смотри также">
+                </label>
+                <label class="check-row-wrap mt-2">
+                  <span class="check-line"><input type="checkbox" class="check" id="lkCrumbs"> Ставить хлебные крошки с разметкой</span>
+                </label>
+                <label class="check-row-wrap">
+                  <span class="check-line"><input type="checkbox" class="check" id="lkExternal"> Ссылаться на старые страницы сайта</span>
+                </label>
+                <div class="grid grid-2 grid-sm mt-2">
+                  <label class="field">
+                    <span class="field-label">Способ доставки</span>
+                    <select class="input" id="lkDelivery">
+                      <option value="agent">Агент на сервере клиента</option>
+                      <option value="ci">CI — GitHub Actions и похожие</option>
+                      <option value="cms">Плагин CMS</option>
+                      <option value="zip">Архив выгрузки</option>
+                      <option value="manual">Вручную</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Удалять пропавшие через, дней</span>
+                    <input class="input" id="lkStale" type="number" min="1" max="180" step="1">
+                  </label>
+                </div>
+                <div class="hint mt-2">
+                  Страница, которую агент перестал видеть, сначала перестаёт получать
+                  ссылки, а потом удаляется из графа — случайный сбой не ломает сайт.
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Подключение сайта</div>
+                  <div class="panel-sub">Токен проекта для агента и CI</div>
+                </div>
+                <div class="panel-actions">
+                  <button class="btn btn-sm" id="lkTokenBtn"><span data-ico-sm="plus"></span> Выдать токен</button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div id="lkTokenFresh" hidden></div>
+                <div id="lkTokens" class="checks-list"></div>
+                <div class="hint mt-2">
+                  Токен видит только граф ссылок одного проекта. Доступа к ключам,
+                  генерации и другим проектам у него нет. Отозвать можно в один клик.
+                </div>
+                <div class="code-box mt-2"><code id="lkCron">—</code></div>
+                <div class="row gap mt-2">
+                  <a class="btn btn-sm" id="lkGraphBtn" target="_blank" rel="noopener">Скачать graph.json</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Старые страницы сайта</div>
+                <div class="panel-sub">Если агента поставить некуда — вставьте адреса или текст sitemap.xml</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <textarea class="input" id="lkImport" rows="5" placeholder="https://site.ru/karty/shut/&#10;https://site.ru/chisla/7/"></textarea>
+              <div class="row gap mt-2">
+                <button class="btn" id="lkImportBtn"><span data-ico-sm="upload"></span> Добавить в граф</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Разделы</div>
+                  <div class="panel-sub">Группы, по которым собираются кольца ссылок</div>
+                </div>
+              </div>
+              <div class="panel-body"><div id="lkClusters" class="checks-list"></div></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Последние прогоны</div>
+                  <div class="panel-sub">Откуда пришли данные и что изменилось</div>
+                </div>
+              </div>
+              <div class="panel-body"><div id="lkRuns" class="checks-list"></div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Страницы графа</div>
+                <div class="panel-sub">Сначала те, на кого ссылаются меньше всего</div>
+              </div>
+              <div class="panel-actions">
+                <input class="input input-sm" id="lkSearch" placeholder="поиск по адресу" style="max-width:240px">
+              </div>
+            </div>
+            <div class="panel-body"><div id="lkPagesList" class="checks-list"></div></div>
+          </div>
+        </section>
+
         <section class="view" id="view-waves">
           <div class="view-head">
             <div class="view-head-body">
@@ -5828,6 +5992,7 @@ const VIEWS = {
   gate:     'Контроль качества',
   pages:    'Страницы',
   wiring:   'SEO-обвязка',
+  linking:  'Перелинковка',
   waves:    'Публикация партиями',
   feedback: 'Результаты в поиске',
   rules:    'Настройки проекта',
@@ -6200,6 +6365,7 @@ function go(view) {
   if (view === 'rules') { fillRules(); initDesign(); initProjectSite(); }
   if (view === 'export') renderExport();
   if (view === 'wiring') renderWiring();
+  if (view === 'linking') initLinking();
   if (view === 'feedback') initGsc();
 }
 
@@ -8085,6 +8251,219 @@ function renderWiring() {
   if (canon && S.project) {
     canon.value = 'https://' + (S.project.domain || 'example.com') + '/{slug}/';
   }
+}
+
+/* ======================================================================
+   ПЕРЕЛИНКОВКА
+   Граф страниц живёт на сервере и обновляется сам: агент клиента присылает
+   список страниц, сервер отдаёт готовые блоки ссылок. Этот экран — только
+   настройки, цифры и разбор полётов.
+   ====================================================================== */
+
+const LK = { data: null, bound: false, pages: [], q: '' };
+
+function initLinking() {
+  if (!LK.bound) {
+    LK.bound = true;
+    $('#linkSaveBtn').onclick = () => saveLinking();
+    $('#linkRebuildBtn').onclick = () => rebuildLinking();
+    $('#lkTokenBtn').onclick = () => createLinkToken();
+    $('#lkImportBtn').onclick = () => importLinkUrls();
+    let t = null;
+    $('#lkSearch').oninput = e => {
+      clearTimeout(t);
+      LK.q = e.target.value;
+      t = setTimeout(() => loadLinkingPages(), 350);
+    };
+  }
+  loadLinking();
+  loadLinkingPages();
+}
+
+async function loadLinking() {
+  try {
+    LK.data = await api.linking(PID);
+  } catch (e) { toast.err('Не вышло открыть перелинковку', e); return; }
+  renderLinking();
+}
+
+function renderLinking() {
+  const d = LK.data;
+  if (!d) return;
+  const c = d.config || {}, t = d.totals || {};
+
+  setText('#lkPages', fmtNum(t.pages || 0));
+  setText('#lkPagesNote', `своих ${fmtNum(t.generated || 0)} · чужих ${fmtNum(t.external || 0)}`);
+  setText('#lkLinks', fmtNum(t.links || 0));
+  setText('#lkOrphans', fmtNum(t.orphans || 0));
+  setText('#lkDepth', String(t.max_depth || 0));
+
+  const navCount = $('#navLinkOrphans');
+  if (navCount) {
+    navCount.hidden = !t.orphans;
+    navCount.textContent = fmtNum(t.orphans || 0);
+  }
+
+  $('#lkEnabled').checked  = c.enabled !== false;
+  $('#lkPerPage').value    = c.per_page || 6;
+  $('#lkCross').value      = c.cross_links == null ? 2 : c.cross_links;
+  $('#lkHeading').value    = c.heading || 'Смотри также';
+  $('#lkCrumbs').checked   = c.crumbs !== false;
+  $('#lkExternal').checked = c.link_external !== false;
+  $('#lkDelivery').value   = c.delivery || 'agent';
+  $('#lkStale').value      = c.stale_days || 14;
+
+  const graphBtn = $('#lkGraphBtn');
+  if (graphBtn) graphBtn.href = api.linkingGraphUrl(PID);
+
+  setText('#lkCron',
+    '0 */6 * * * VERSTIO_TOKEN=токен python3 /opt/verstio-agent.py --root /var/www/site');
+
+  /* --- токены --- */
+  const tokens = d.tokens || [];
+  $('#lkTokens').innerHTML = tokens.length
+    ? tokens.map(tok =>
+        `<div class="check-row">` +
+          `<span class="check-name">${escHtml(tok.name || 'без имени')} ` +
+            `<code>${escHtml(tok.prefix || '')}…</code></span>` +
+          `<span class="check-val">` +
+            (tok.revoked
+              ? '<span class="pill neutral">отозван</span>'
+              : `<span class="pill ok">активен</span> ` +
+                `<button class="btn btn-xs" data-revoke="${tok.id}">Отозвать</button>`) +
+          `</span>` +
+        `</div>`).join('')
+    : '<div class="hint">Токенов пока нет. Без них работают только режимы «архив» и «вручную».</div>';
+  $$('#lkTokens [data-revoke]').forEach(b => {
+    b.onclick = async () => {
+      try {
+        await api.linkingTokenRevoke(PID, b.dataset.revoke);
+        toast.ok('Токен отозван');
+        loadLinking();
+      } catch (e) { toast.err('Не вышло отозвать', e); }
+    };
+  });
+
+  /* --- разделы --- */
+  const cl = d.clusters || [];
+  $('#lkClusters').innerHTML = cl.length
+    ? cl.map(c2 =>
+        `<div class="check-row"><span class="check-name">${escHtml(c2.name)}</span>` +
+        `<span class="check-val">${fmtNum(c2.pages)} стр.</span></div>`).join('')
+    : '<div class="hint">Разделы появятся после первого прогона.</div>';
+
+  /* --- прогоны --- */
+  const runs = d.runs || [];
+  $('#lkRuns').innerHTML = runs.length
+    ? runs.map(r => {
+        const when = r.finished_at || r.started_at || '';
+        const pill = r.status === 'success' ? 'ok' : r.status === 'failed' ? 'bad' : 'neutral';
+        return `<div class="check-row">` +
+          `<span class="check-name">${escHtml(String(when).replace('T', ' ').slice(0, 16))} · ${escHtml(r.mode || '')}</span>` +
+          `<span class="check-val"><span class="pill ${pill}">${escHtml(r.status || '')}</span> ` +
+          `${fmtNum(r.pages_seen || 0)} стр. · +${fmtNum(r.pages_added || 0)} · −${fmtNum(r.pages_removed || 0)}` +
+          (r.error ? ` · ${escHtml(String(r.error).slice(0, 80))}` : '') +
+          `</span></div>`;
+      }).join('')
+    : '<div class="hint">Прогонов ещё не было.</div>';
+}
+
+async function loadLinkingPages() {
+  try {
+    const res = await api.linkingPages(PID, { limit: 100, q: LK.q || '' });
+    LK.pages = (res && res.items) || [];
+  } catch (e) { LK.pages = []; }
+  renderLinkingPages();
+}
+
+function renderLinkingPages() {
+  const box = $('#lkPagesList');
+  if (!box) return;
+  if (!LK.pages.length) {
+    box.innerHTML = '<div class="hint">Пусто. Запустите агента или добавьте адреса вручную.</div>';
+    return;
+  }
+  box.innerHTML = LK.pages.map(p => {
+    const own = p.origin === 'generated';
+    return `<div class="check-row">` +
+      `<span class="check-name">${escHtml(p.title || p.url)}<br>` +
+        `<code>${escHtml(p.url)}</code></span>` +
+      `<span class="check-val">` +
+        `<span class="pill ${own ? 'ok' : 'neutral'}">${own ? 'наша' : 'чужая'}</span> ` +
+        `${p.inlinks ? fmtNum(p.inlinks) + ' вх. ссылок' : '<b>сирота</b>'} · ` +
+        `глубина ${p.depth} ` +
+        `<button class="btn btn-xs" data-excl="${p.id}" data-val="${p.excluded ? '0' : '1'}">` +
+          `${p.excluded ? 'Вернуть' : 'Исключить'}</button>` +
+      `</span></div>`;
+  }).join('');
+
+  $$('#lkPagesList [data-excl]').forEach(b => {
+    b.onclick = async () => {
+      try {
+        await api.linkingPagePatch(PID, b.dataset.excl, { is_excluded: b.dataset.val === '1' });
+        loadLinkingPages();
+      } catch (e) { toast.err('Не вышло изменить', e); }
+    };
+  });
+}
+
+async function saveLinking() {
+  const body = {
+    enabled: $('#lkEnabled').checked,
+    per_page: parseInt($('#lkPerPage').value, 10) || 6,
+    cross_links: parseInt($('#lkCross').value, 10) || 0,
+    heading: $('#lkHeading').value.trim() || 'Смотри также',
+    crumbs: $('#lkCrumbs').checked,
+    link_external: $('#lkExternal').checked,
+    delivery: $('#lkDelivery').value,
+    stale_days: parseInt($('#lkStale').value, 10) || 14,
+  };
+  try {
+    await api.saveLinking(PID, body);
+    toast.ok('Настройки сохранены', 'Блоки обновятся при ближайшем прогоне агента.');
+    await rebuildLinking(true);
+  } catch (e) { toast.err('Не вышло сохранить', e); }
+}
+
+async function rebuildLinking(quiet) {
+  const btn = $('#linkRebuildBtn');
+  if (btn) btn.disabled = true;
+  try {
+    const res = await api.linkingRebuild(PID);
+    if (!quiet) {
+      toast.ok('Граф пересчитан',
+        `Страниц: ${fmtNum((res && res.pages) || 0)}, ссылок: ${fmtNum((res && res.links) || 0)}`);
+    }
+    await loadLinking();
+    await loadLinkingPages();
+  } catch (e) { toast.err('Не вышло пересчитать', e); }
+  finally { if (btn) btn.disabled = false; }
+}
+
+async function createLinkToken() {
+  try {
+    const res = await api.linkingToken(PID, 'Агент сайта');
+    const box = $('#lkTokenFresh');
+    box.hidden = false;
+    box.innerHTML =
+      '<div class="stub"><div class="stub-text">' +
+      'Токен показывается один раз — скопируйте сейчас:<br>' +
+      `<code>${escHtml(res.token)}</code>` +
+      '</div></div>';
+    loadLinking();
+  } catch (e) { toast.err('Не вышло выдать токен', e); }
+}
+
+async function importLinkUrls() {
+  const raw = ($('#lkImport').value || '').trim();
+  if (!raw) { toast.warn('Пусто', 'Вставьте адреса или текст sitemap.xml.'); return; }
+  try {
+    const res = await api.linkingImport(PID, { urls: raw, source: 'manual' });
+    toast.ok('Адреса добавлены', `Принято: ${fmtNum(res.imported || 0)}`);
+    $('#lkImport').value = '';
+    await loadLinking();
+    await loadLinkingPages();
+  } catch (e) { toast.err('Не вышло добавить', e); }
 }
 
 function renderWaves() {
