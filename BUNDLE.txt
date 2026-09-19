@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 4e3be1e38f1d4aa3bc6b68000fbf5de464020f0f
-# built:  2026-09-19 15:51 UTC
+# commit: 9386f9acf2f7d235d54a7c665c41373253b23d27
+# built:  2026-09-19 15:52 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,7 +10,7 @@ index.html  (1019 строк)
 offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2173 строк)
+app/app.js  (2174 строк)
 app/index.html  (515 строк)
 app/leads.html  (567 строк)
 app/login.html  (382 строк)
@@ -4244,6 +4244,7 @@ if (document.readyState === 'loading') {
 const TOPBAR_NAV = [
   { key: 'projects', href: 'index.html',    icon: 'pages',  label: 'Проекты' },
   { key: 'leads',    href: 'leads.html',    icon: 'target', label: 'Лиды и разведка' },
+  { key: 'playbook', href: 'playbook.html', icon: 'file',   label: 'Плейбук' },
   { key: 'settings', href: 'settings.html', icon: 'gear',   label: 'Настройки' },
 ];
 
