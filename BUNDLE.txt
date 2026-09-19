@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 3c286fe8f46dcbae3e8abb6f54ae3b013f695632
-# built:  2026-09-19 12:34 UTC
+# commit: b88b26c03e8adc7b849f92a90f6c324f9e91e1c8
+# built:  2026-09-19 13:51 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,8 +10,8 @@ offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2099 строк)
-app/index.html  (431 строк)
-app/leads.html  (576 строк)
+app/index.html  (515 строк)
+app/leads.html  (577 строк)
 app/login.html  (382 строк)
 app/project.html  (4486 строк)
 app/robots.txt  (5 строк)
@@ -3558,6 +3558,7 @@ function mountLogoutButton() {
 ════════════════════════════════════════════════════════
 
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -3573,6 +3574,80 @@ function mountLogoutButton() {
     document.documentElement.setAttribute('data-theme', t);
   } catch (e) {}
 </script>
+<style>
+  /* Стили только для главной: общий style.css не трогаем. */
+
+  /* ---------- шапка ---------- */
+  .topbar.plain-topbar { gap: 14px; padding: 0 20px; }
+  a.brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px 6px 6px; border-radius: 10px;
+    color: var(--text); text-decoration: none;
+    transition: background .15s ease;
+  }
+  a.brand:hover { background: var(--surface-2); color: var(--text); }
+  a.brand .brand-name { display: block; font-size: 14px; font-weight: 650; line-height: 1.15; }
+  a.brand .brand-sub {
+    display: block; font-size: 11px; line-height: 1.2; margin-top: 1px;
+    color: var(--text-2); opacity: .75; text-transform: none; letter-spacing: 0;
+  }
+  .top-nav { display: flex; align-items: center; gap: 4px; margin-left: 10px; }
+  .top-nav a {
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 32px; padding: 0 11px; border-radius: 8px;
+    font-size: 13px; font-weight: 550; color: var(--text-2);
+    border: 1px solid transparent; transition: all .15s ease;
+  }
+  .top-nav a:hover { background: var(--surface-2); color: var(--text); }
+  .top-nav a.is-active {
+    color: var(--text); background: var(--surface-2); border-color: var(--line);
+  }
+  .top-nav a svg { opacity: .85; }
+
+  /* ---------- герой ---------- */
+  .hero {
+    position: relative; overflow: hidden;
+    border: 1px solid var(--line); border-radius: 16px;
+    padding: 26px 28px; margin-bottom: 20px;
+    background:
+      radial-gradient(900px 320px at 8% -40%, var(--accent-soft), transparent 70%),
+      var(--surface, transparent);
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-2); margin-bottom: 10px;
+  }
+  .hero-eyebrow i {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .hero h1 { font-size: 30px; line-height: 1.15; letter-spacing: -.02em; }
+  .hero p { margin: 10px 0 0; max-width: 620px; font-size: 14px; color: var(--text-2); }
+  .hero-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+  /* ---------- быстрые карточки ---------- */
+  .qgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+  .qcard {
+    display: flex; flex-direction: column; gap: 6px;
+    border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 18px; color: var(--text);
+    background: var(--surface, transparent);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .qcard:hover {
+    transform: translateY(-2px); border-color: var(--accent-line);
+    box-shadow: 0 8px 24px rgba(0,0,0,.10); color: var(--text);
+  }
+  .qcard-ico {
+    width: 36px; height: 36px; border-radius: 10px; margin-bottom: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .qcard-t { font-size: 15px; font-weight: 600; }
+  .qcard-s { font-size: 12.5px; color: var(--text-2); line-height: 1.45; }
+  .qcard-go { margin-top: auto; padding-top: 10px; font-size: 12.5px; font-weight: 550; color: var(--accent); }
+</style>
 </head>
 <body class="is-plain">
 
@@ -3580,7 +3655,7 @@ function mountLogoutButton() {
 
   <!-- ================= верхняя панель ================= -->
   <header class="topbar plain-topbar">
-    <div class="brand">
+    <a class="brand" href="index.html" title="На главную">
       <span class="brand-mark">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6l7 6 7-6v12"/></svg>
       </span>
@@ -3588,7 +3663,14 @@ function mountLogoutButton() {
         <span class="brand-name">SEO-Фабрика</span>
         <span class="brand-sub">массовая генерация страниц</span>
       </span>
-    </div>
+    </a>
+
+    <nav class="top-nav">
+      <a href="index.html" class="is-active"><span data-ico-sm="pages"></span> Проекты</a>
+      <a href="leads.html"><span data-ico-sm="target"></span> Лиды</a>
+      <a href="leads.html#scan"><span data-ico-sm="radar"></span> Разведка доменов</a>
+      <a href="settings.html"><span data-ico-sm="gear"></span> Настройки</a>
+    </nav>
 
     <span class="topbar-spacer"></span>
 
@@ -3597,10 +3679,8 @@ function mountLogoutButton() {
     </button>
 
     <div class="topbar-tools">
-      <a class="icon-btn" href="leads.html" title="Лиды и разведка доменов (L)"><span data-ico="target"></span></a>
       <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
       <button class="icon-btn" id="helpBtn" type="button" title="Горячие клавиши (?)"><span data-ico="keyboard"></span></button>
-      <a class="icon-btn" href="settings.html" title="Глобальные настройки"><span data-ico="gear"></span></a>
     </div>
   </header>
 
@@ -3608,19 +3688,43 @@ function mountLogoutButton() {
   <main class="canvas">
     <div class="wrap">
 
-      <div class="view-head">
-        <div class="view-head-body">
-          <div class="view-eyebrow"><i class="dot"></i> Рабочее место</div>
-          <h1 class="view-title">Проекты</h1>
-          <p class="view-sub">
-            Один проект — одна таблица данных, один каркас страницы и один набор правил качества.
-          </p>
-        </div>
-        <div class="view-actions">
+      <!-- герой -->
+      <section class="hero">
+        <div class="hero-eyebrow"><i></i> Рабочее место</div>
+        <h1>Привет! С чего начнём сегодня?</h1>
+        <p>
+          Здесь живут ваши сайты и проекты: таблица данных → каркас страницы → генерация →
+          проверка качества → публикация. Рядом — лиды и разведка чужих доменов, чтобы
+          понимать, кому и сколько страниц можно продать.
+        </p>
+        <div class="hero-actions">
           <button class="btn btn-primary btn-lg" id="newProjBtn" type="button">
             <span data-ico="plus"></span> Новый проект
           </button>
+          <a class="btn btn-lg" href="leads.html"><span data-ico="target"></span> Лиды и разведка</a>
         </div>
+      </section>
+
+      <!-- быстрые переходы -->
+      <div class="qgrid">
+        <a class="qcard" href="leads.html">
+          <span class="qcard-ico" data-ico-lg="target"></span>
+          <span class="qcard-t">Лиды</span>
+          <span class="qcard-s">Заявки с сайта, из телеграма и найденные вручную — один список со статусами.</span>
+          <span class="qcard-go">Открыть лиды →</span>
+        </a>
+        <a class="qcard" href="leads.html#scan">
+          <span class="qcard-ico" data-ico-lg="radar"></span>
+          <span class="qcard-t">Разведка доменов</span>
+          <span class="qcard-s">Сколько у сайта страниц, сколько в индексе и какой потолок pSEO — за один клик.</span>
+          <span class="qcard-go">Посчитать домен →</span>
+        </a>
+        <a class="qcard" href="settings.html">
+          <span class="qcard-ico" data-ico-lg="gear"></span>
+          <span class="qcard-t">Настройки</span>
+          <span class="qcard-s">Адрес бэкенда, модели и ключи, промпты и правила качества.</span>
+          <span class="qcard-go">Перейти к настройкам →</span>
+        </a>
       </div>
 
       <div class="metrics" id="homeMetrics"></div>
@@ -3699,29 +3803,6 @@ function mountLogoutButton() {
         </div>
       </section>
 
-      <!-- подсказка по порядку работы -->
-      <section class="panel">
-        <div class="panel-head">
-          <div class="panel-head-body">
-            <div class="panel-title">Как устроен путь от таблицы до публикации</div>
-            <div class="panel-sub">Восемь блоков. Серые — ещё заглушки в интерфейсе.</div>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="flow">
-            <div class="flow-node"><div class="flow-n">1 · Оркестратор</div><div class="flow-t">Решает, стоит ли вообще делать страницы <span class="pill soon">заглушка</span></div></div>
-            <span class="flow-arrow" data-ico-sm="chevron"></span>
-            <div class="flow-node"><div class="flow-n">2 · Каркас</div><div class="flow-t">Сильная модель рисует HTML и схему полей</div></div>
-            <span class="flow-arrow" data-ico-sm="chevron"></span>
-            <div class="flow-node"><div class="flow-n">3–4 · Заполнение</div><div class="flow-t">Дешёвая модель на каждую строку таблицы</div></div>
-            <span class="flow-arrow" data-ico-sm="chevron"></span>
-            <div class="flow-node"><div class="flow-n">5 · Гейт</div><div class="flow-t">Блокировки, факты, уникальность, балл 0–100</div></div>
-            <span class="flow-arrow" data-ico-sm="chevron"></span>
-            <div class="flow-node"><div class="flow-n">6–8 · Выход</div><div class="flow-t">Обвязка, волны, обратная связь <span class="pill soon">заглушка</span></div></div>
-          </div>
-        </div>
-      </section>
-
       <footer class="plain-foot">
         <span class="nav-state" id="wireDot"></span>
         <span id="wireText">Проверка связи…</span>
@@ -3749,6 +3830,9 @@ function hydrateIcons(root) {
   });
   r.querySelectorAll('[data-ico-sm]:not([data-ico-done])').forEach(el => {
     el.innerHTML = ico(el.dataset.icoSm, 14); el.setAttribute('data-ico-done', '1');
+  });
+  r.querySelectorAll('[data-ico-lg]:not([data-ico-done])').forEach(el => {
+    el.innerHTML = ico(el.dataset.icoLg, 20); el.setAttribute('data-ico-done', '1');
   });
   r.querySelectorAll('[data-theme-ico]').forEach(el => {
     el.innerHTML = ico(getTheme() === 'dark' ? 'sun' : 'moon', 16);
@@ -3992,6 +4076,7 @@ load();
   app/leads.html
 ════════════════════════════════════════════════════════
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -4093,7 +4178,7 @@ load();
       <div class="metrics" id="leadMetrics"></div>
 
       <!-- ============ РАЗВЕДКА ДОМЕНА ============ -->
-      <section class="panel accent">
+      <section class="panel accent" id="scan" style="scroll-margin-top:72px">
         <div class="panel-head">
           <div class="panel-head-body">
             <div class="panel-title">Разведка домена</div>
