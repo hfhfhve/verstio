@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: b88b26c03e8adc7b849f92a90f6c324f9e91e1c8
-# built:  2026-09-19 13:51 UTC
+# commit: baa73ebb87548877b99aea0ec66d78d54f0daeb2
+# built:  2026-09-19 14:30 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -13,7 +13,7 @@ app/app.js  (2099 строк)
 app/index.html  (515 строк)
 app/leads.html  (577 строк)
 app/login.html  (382 строк)
-app/project.html  (4486 строк)
+app/project.html  (4491 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1405 строк)
 app/site.html  (809 строк)
@@ -5044,6 +5044,7 @@ form.addEventListener('submit', async (e) => {
 ════════════════════════════════════════════════════════
 
 
+
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -5217,6 +5218,8 @@ form.addEventListener('submit', async (e) => {
          ВЕРХНЯЯ ПОЛОСА
          ================================================================ -->
     <header class="topbar">
+      <div id="navSlot" data-nav="projects" data-compact="1"></div>
+
       <button class="proj-switch" id="projSwitch" title="К списку проектов">
         <i class="proj-switch-dot" id="projDot"></i>
         <span class="proj-switch-body">
@@ -6671,6 +6674,8 @@ form.addEventListener('submit', async (e) => {
 </div>
 
 <script src="app.js?v=52"></script>
+<script src="topbar.js?v=1"></script>
+
 
 <script>
 /* ==========================================================================
