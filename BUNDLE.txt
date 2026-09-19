@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: baa73ebb87548877b99aea0ec66d78d54f0daeb2
+# commit: 02f252869491ea59f36067bfc2b3178a606dbf1c
 # built:  2026-09-19 14:30 UTC
 
 ## Состав
@@ -15,7 +15,7 @@ app/leads.html  (577 строк)
 app/login.html  (382 строк)
 app/project.html  (4491 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (1405 строк)
+app/settings.html  (1403 строк)
 app/site.html  (809 строк)
 app/style.css  (3955 строк)
 
@@ -9547,6 +9547,7 @@ Disallow: /
   app/settings.html
 ════════════════════════════════════════════════════════
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -9629,16 +9630,11 @@ Disallow: /
 <div class="plain-shell">
 
   <header class="topbar plain-topbar">
-    <div class="crumbs">
-      <a href="index.html">Проекты</a>
-      <span class="sep">/</span>
-      <span class="cur">Настройки</span>
-    </div>
+    <div id="navSlot" data-nav="settings" data-sub="глобальные настройки"></div>
     <span class="topbar-spacer"></span>
     <div class="topbar-tools">
       <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
       <button class="icon-btn" id="helpBtn" type="button" title="Горячие клавиши (?)"><span data-ico="keyboard"></span></button>
-      <a class="btn btn-quiet btn-sm" href="index.html"><span data-ico-sm="home"></span> К проектам</a>
     </div>
   </header>
 
@@ -10122,6 +10118,8 @@ Disallow: /
 </div>
 
 <script src="app.js?v=50"></script>
+<script src="topbar.js?v=1"></script>
+
 <script>
 (function () {
 'use strict';
