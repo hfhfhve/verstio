@@ -1,5 +1,7 @@
 
 
+
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -48,6 +50,10 @@
   }
   .row-tools { display: flex; gap: 4px; justify-content: flex-end; }
   .lead-empty { padding: 26px; text-align: center; opacity: .6; font-size: 13px; }
+  .lead-tbl tr.is-editing td { background: rgba(39,131,222,.06); }
+  .lead-inp.bordered { border-color: var(--line, #2a2f36); }
+  .icon-btn.danger { color: #d4574a; }
+  .icon-btn.danger:hover { border-color: #d4574a; }
 </style>
 </head>
 <body class="is-plain">
@@ -314,6 +320,11 @@ function renderScan(d) {
 
   const toLead = $('#scToLead');
   if (toLead) toLead.onclick = async () => {
+    const dup = findDuplicate(d.domain, null);
+    if (dup) {
+      toast.warn('Домен уже заведён', `Лид #${dup.id} · ${dup.name || dup.site}`);
+      return;
+    }
     try {
       await api.createLead({
         name: d.domain,
@@ -378,6 +389,85 @@ function metrics() {
   $('#leadCount').textContent = LEADS.length;
 }
 
+/* ---- ПРАВКА СТРОКИ -------------------------------------------------------
+   Строка по умолчанию только для чтения. Кнопка «Изменить» разворачивает её
+   в поля ввода; удаление доступно только в этом режиме, чтобы не снести лид
+   случайным кликом. ------------------------------------------------------ */
+const EDITING = new Set();   // id лидов, открытых на правку
+
+/* «https://WWW.Example.ru/uslugi?x=1» -> «example.ru». Тот же смысл, что и
+   norm_domain() на бэкенде, нужен для проверки дублей ещё до запроса. */
+function normDomain(raw) {
+  let v = String(raw || '').trim().toLowerCase();
+  if (!v) return '';
+  v = v.replace(/^[a-z]+:\/\//, '').replace(/^www\./, '');
+  v = v.split('/')[0].split('?')[0].split('#')[0].split(':')[0];
+  return /^[a-z0-9.-]+\.[a-z0-9-]{2,}$/.test(v) ? v : '';
+}
+
+/* Ищет лид с таким же доменом. exceptId — сам себя дублем не считаем. */
+function findDuplicate(site, exceptId) {
+  const d = normDomain(site);
+  if (!d) return null;
+  return LEADS.find(l => l.id !== exceptId && normDomain(l.site) === d) || null;
+}
+
+function viewRow(l, scan) {
+  const opts = ORDER.map(k =>
+    `<option value="${k}"${l.status === k ? ' selected' : ''}>${STATUS[k].label}</option>`).join('');
+  const siteCell = l.site
+    ? `<a href="https://${escAttr(l.site)}" target="_blank" rel="noopener" class="link-btn">${escHtml(l.site)} ↗</a>`
+    : '<span class="muted">—</span>';
+  const contact = [l.email, l.phone, l.telegram].filter(Boolean).map(escHtml).join('<br>') || '<span class="muted">—</span>';
+  const pages = scan ? num(scan.pages_total) : '—';
+  const indexed = scan && scan.pages_indexed >= 0 ? num(scan.pages_indexed) : '—';
+  const pseo = scan ? num(scan.pseo_base) : '—';
+
+  return `<tr data-id="${l.id}">
+    <td>
+      <div><b>${escHtml(l.name || 'Без названия')}</b></div>
+      <div class="muted" style="font-size:11px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
+    </td>
+    <td>${contact}</td>
+    <td>${siteCell}</td>
+    <td><select class="input input-sm lead-sel" data-act="status">${opts}</select></td>
+    <td class="num">${pages}</td>
+    <td class="num">${indexed}</td>
+    <td class="num">${pseo}</td>
+    <td><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
+    <td>
+      <div class="row-tools">
+        <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 15)}</button>
+        <button class="btn btn-sm" data-act="edit" type="button">Изменить</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+function editRow(l) {
+  const opts = ORDER.map(k =>
+    `<option value="${k}"${l.status === k ? ' selected' : ''}>${STATUS[k].label}</option>`).join('');
+
+  return `<tr data-id="${l.id}" class="is-editing">
+    <td><input class="lead-inp bordered" data-f="name" value="${escAttr(l.name || '')}" placeholder="компания"></td>
+    <td>
+      <input class="lead-inp bordered" data-f="email" value="${escAttr(l.email || '')}" placeholder="почта">
+      <input class="lead-inp bordered" data-f="phone" value="${escAttr(l.phone || '')}" placeholder="телефон / @ник" style="margin-top:4px">
+    </td>
+    <td><input class="lead-inp bordered" data-f="site" value="${escAttr(l.site || '')}" placeholder="example.ru"></td>
+    <td><select class="input input-sm lead-sel" data-f="status">${opts}</select></td>
+    <td colspan="3"><input class="lead-inp bordered" data-f="comment" value="${escAttr(l.comment || '')}" placeholder="ниша, заметка о компании"></td>
+    <td><input class="lead-inp bordered" data-f="admin_note" value="${escAttr(l.admin_note || '')}" placeholder="внутренняя заметка"></td>
+    <td>
+      <div class="row-tools">
+        <button class="btn btn-sm btn-primary" data-act="save" type="button">Сохранить</button>
+        <button class="btn btn-sm btn-quiet" data-act="cancel" type="button">Отмена</button>
+        <button class="icon-btn bordered danger" data-act="del" type="button" title="Удалить лид">${ico('trash', 15)}</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
 function renderLeads() {
   const box = $('#leadsBox');
   if (!LEADS.length) {
@@ -388,35 +478,7 @@ function renderLeads() {
 
   const rows = LEADS.map(l => {
     const scan = l.site ? SCANS[l.site] : null;
-    const opts = ORDER.map(k =>
-      `<option value="${k}"${l.status === k ? ' selected' : ''}>${STATUS[k].label}</option>`).join('');
-    const siteCell = l.site
-      ? `<a href="https://${escAttr(l.site)}" target="_blank" rel="noopener" class="link-btn">${escHtml(l.site)} ↗</a>`
-      : '<span class="muted">—</span>';
-    const contact = [l.email, l.phone, l.telegram].filter(Boolean).map(escHtml).join('<br>') || '<span class="muted">—</span>';
-    const pages = scan ? num(scan.pages_total) : '—';
-    const indexed = scan && scan.pages_indexed >= 0 ? num(scan.pages_indexed) : '—';
-    const pseo = scan ? num(scan.pseo_base) : '—';
-
-    return `<tr data-id="${l.id}">
-      <td>
-        <div><b>${escHtml(l.name || 'Без названия')}</b></div>
-        <div class="muted" style="font-size:11px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
-      </td>
-      <td>${contact}</td>
-      <td>${siteCell}</td>
-      <td><select class="input input-sm lead-sel" data-act="status">${opts}</select></td>
-      <td class="num">${pages}</td>
-      <td class="num">${indexed}</td>
-      <td class="num">${pseo}</td>
-      <td><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
-      <td>
-        <div class="row-tools">
-          <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 15)}</button>
-          <button class="icon-btn bordered" data-act="del" title="Удалить">${ico('trash', 15)}</button>
-        </div>
-      </td>
-    </tr>`;
+    return EDITING.has(l.id) ? editRow(l) : viewRow(l, scan);
   }).join('');
 
   box.innerHTML =
@@ -437,52 +499,115 @@ function bindRows() {
   document.querySelectorAll('.lead-tbl tr[data-id]').forEach(tr => {
     const id = Number(tr.getAttribute('data-id'));
     const lead = LEADS.find(l => l.id === id);
+    if (!lead) return;
+    const editing = tr.classList.contains('is-editing');
 
-    const sel = tr.querySelector('[data-act="status"]');
-    if (sel) sel.onchange = async () => {
-      try {
-        await api.updateLead(id, { status: sel.value });
-        if (lead) lead.status = sel.value;
-        metrics();
-        toast.ok('Статус сохранён', STATUS[sel.value].label);
-      } catch (e) { toast.err('Не сохранилось', e); }
-    };
-
-    const note = tr.querySelector('[data-act="note"]');
-    if (note) {
-      let timer = null;
-      note.oninput = () => {
-        clearTimeout(timer);
-        timer = setTimeout(async () => {
-          try {
-            await api.updateLead(id, { admin_note: note.value });
-            if (lead) lead.admin_note = note.value;
-          } catch (e) { toast.err('Заметка не сохранилась', e); }
-        }, 700);
+    /* ---------- режим просмотра ---------- */
+    if (!editing) {
+      const sel = tr.querySelector('[data-act="status"]');
+      if (sel) sel.onchange = async () => {
+        try {
+          await api.updateLead(id, { status: sel.value });
+          lead.status = sel.value;
+          metrics();
+          toast.ok('Статус сохранён', STATUS[sel.value].label);
+        } catch (e) { toast.err('Не сохранилось', e); }
       };
+
+      const note = tr.querySelector('[data-act="note"]');
+      if (note) {
+        let timer = null;
+        note.oninput = () => {
+          clearTimeout(timer);
+          timer = setTimeout(async () => {
+            try {
+              await api.updateLead(id, { admin_note: note.value });
+              lead.admin_note = note.value;
+            } catch (e) { toast.err('Заметка не сохранилась', e); }
+          }, 700);
+        };
+      }
+
+      const scanBtn = tr.querySelector('[data-act="scan"]');
+      if (scanBtn) scanBtn.onclick = () => {
+        if (!lead.site) { toast.warn('У лида нет сайта'); return; }
+        $('#scDomain').value = lead.site;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        runScan($('#scRun'));
+      };
+
+      const edit = tr.querySelector('[data-act="edit"]');
+      if (edit) edit.onclick = () => { EDITING.add(id); renderLeads(); };
+      return;
     }
 
-    const scanBtn = tr.querySelector('[data-act="scan"]');
-    if (scanBtn) scanBtn.onclick = () => {
-      if (!lead || !lead.site) { toast.warn('У лида нет сайта'); return; }
-      $('#scDomain').value = lead.site;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      runScan($('#scRun'));
+    /* ---------- режим правки ---------- */
+    const val = f => {
+      const el = tr.querySelector(`[data-f="${f}"]`);
+      return el ? el.value.trim() : '';
     };
+
+    const save = tr.querySelector('[data-act="save"]');
+    if (save) save.onclick = async () => {
+      const body = {
+        name: val('name'),
+        email: val('email'),
+        phone: val('phone'),
+        site: val('site'),
+        comment: val('comment'),
+        admin_note: val('admin_note'),
+      };
+      if (!body.name && !body.site) { toast.warn('Нужно название или сайт'); return; }
+
+      const dup = findDuplicate(body.site, id);
+      if (dup) {
+        toast.warn('Такой домен уже есть', `Лид #${dup.id} · ${dup.name || dup.site}`);
+        return;
+      }
+
+      const run = async () => {
+        try {
+          await api.editLead(id, body);
+          const status = val('status');
+          if (status && status !== lead.status) {
+            await api.updateLead(id, { status });
+            lead.status = status;
+          }
+          EDITING.delete(id);
+          await loadLeads();
+          toast.ok('Сохранено');
+        } catch (e) {
+          /* 409 с бэкенда — домен уже занят другим лидом */
+          toast.err('Не сохранилось', e);
+        }
+      };
+      if (typeof withBusy === 'function') await withBusy(save, run); else await run();
+    };
+
+    const cancel = tr.querySelector('[data-act="cancel"]');
+    if (cancel) cancel.onclick = () => { EDITING.delete(id); renderLeads(); };
 
     const del = tr.querySelector('[data-act="del"]');
     if (del) del.onclick = async () => {
       const ok = (typeof confirmDialog === 'function')
-        ? await confirmDialog({ title: 'Удалить лид?', text: lead ? (lead.name || lead.site) : '' })
-        : true;
+        ? await confirmDialog({ title: 'Удалить лид?', text: lead.name || lead.site || ('#' + id) })
+        : confirm('Удалить лид безвозвратно?');
       if (!ok) return;
       try {
         await api.deleteLead(id);
+        EDITING.delete(id);
         LEADS = LEADS.filter(l => l.id !== id);
         renderLeads();
         toast.ok('Удалён');
       } catch (e) { toast.err('Не удалилось', e); }
     };
+
+    tr.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); save && save.click(); }
+        if (e.key === 'Escape') { e.preventDefault(); cancel && cancel.click(); }
+      });
+    });
   });
 }
 
@@ -523,6 +648,13 @@ async function createLead(btn) {
     comment: $('#nlComment').value.trim(),
   };
   if (!body.name && !body.site) { toast.warn('Нужно название или сайт'); return; }
+
+  /* Не даём случайно завести один и тот же домен дважды. */
+  const dup = findDuplicate(body.site, null);
+  if (dup) {
+    toast.warn('Такой домен уже в списке', `Лид #${dup.id} · ${dup.name || dup.site}`);
+    return;
+  }
 
   const run = async () => {
     try {
@@ -588,3 +720,4 @@ document.addEventListener('keydown', e => {
 
 </body>
 </html>
+
