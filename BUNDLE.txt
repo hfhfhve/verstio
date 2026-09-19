@@ -1,11 +1,11 @@
 # Verstio Frontend — снимок репозитория
-# commit: ec4e9e64fa8c8592172ba9ce2e2f9d906d3803a8
-# built:  2026-09-19 09:50 UTC
+# commit: 111ff72813314813181eed487a33d42753fdc059
+# built:  2026-09-19 10:59 UTC
 
 ## Состав
 CNAME  (1 строк)
 README.md  (3 строк)
-index.html  (1008 строк)
+index.html  (1019 строк)
 offer.html  (102 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
@@ -35,13 +35,14 @@ verstio smm service
   index.html
 ════════════════════════════════════════════════════════
 
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Verstio — программный SEO с измеримым качеством каждой страницы</title>
-<meta name="description" content="Verstio собирает pSEO-страницы на пяти системах добавленной ценности: паспорт данных, каркас и схема полей, анализ добавленной ценности страницы, гейт качества из 16 измерений и контроль в Search Console после публикации.">
+<meta name="description" content="Verstio собирает pSEO-страницы на пяти системах добавленной ценности: паспорт данных, каркас и схема полей, анализ добавленной ценности страницы, гейт качества из 16 измерений и контроль в Яндекс.Вебмастере и Search Console после публикации.">
 <link rel="canonical" href="https://verstio.ru/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Verstio — программный SEO с измеримым качеством">
@@ -247,6 +248,10 @@ h3{font-family:var(--sans);font-weight:600;font-size:19px;line-height:1.35}
 
 footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .foot{display:flex;flex-wrap:wrap;gap:18px 32px;align-items:center;justify-content:space-between;font-size:14.5px;color:var(--dim-d)}
+.foot-legal{width:100%;padding-top:16px;border-top:1px solid var(--line-d);font-size:13px;color:#6E757E;line-height:1.6}
+.signed{margin-top:26px;padding-top:18px;border-top:1px solid var(--line-d);font-size:15px;color:var(--dim-d);line-height:1.6}
+.signed b{display:block;color:#E7E3DB;font-weight:500;margin-bottom:4px}
+.signed a{color:#C2C8D0}
 .foot a{color:var(--dim-d);text-decoration:none}
 .foot a:hover{color:#F4F1EB}
 
@@ -380,7 +385,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="head">
       <p class="kicker">Почему обычные варианты не работают</p>
       <h2>Есть два тупика. Мы стоим между ними.</h2>
-      <p class="lede">Классическое агентство пишет медленно и вручную, поэтому на тысяче страниц экономит на всём. Генератор «ИИ, сделай 2000 страниц» выдаёт один и тот же текст с подменёнными словами — именно это Google научился отбрасывать первым.</p>
+      <p class="lede">Классическое агентство пишет медленно и вручную, поэтому на тысяче страниц экономит на всём. Генератор «ИИ, сделай 2000 страниц» выдаёт один и тот же текст с подменёнными словами — именно это поисковые системы научились отбрасывать первыми.</p>
     </div>
 
     <div class="vs">
@@ -415,7 +420,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div class="vs-row">
         <div class="vs-q">Что происходит после выкладки</div>
         <div><span class="who">Агентство: </span>отчёт о позициях раз в месяц</div>
-        <div class="mine"><span class="who">Verstio: </span>тянем Search Console по каждому URL, делим страницы на живые и мёртвые, мёртвые переписываем</div>
+        <div class="mine"><span class="who">Verstio: </span>тянем Яндекс.Вебмастер и Search Console по каждому URL, делим страницы на живые и мёртвые, мёртвые переписываем</div>
         <div><span class="who">Генератор: </span>ничего, проект закончился на выгрузке</div>
       </div>
 
@@ -526,7 +531,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="stage-body">
       <ul class="facts">
         <li>Отдаём архив, который кладётся на хостинг как есть: страницы, карта сайта, robots.txt, сжатые изображения.</li>
-        <li>Подключаем Search Console и смотрим по каждому адресу: показы, клики, CTR, среднюю позицию.</li>
+        <li>Подключаем Яндекс.Вебмастер и Search Console и смотрим по каждому адресу: показы, клики, CTR, среднюю позицию.</li>
         <li>Страницы делим на живые и мёртвые. Мёртвые — те, по которым нет показов; их перерабатываем.</li>
         <li>Публиковать можно партиями — так сразу видно, как поиск реагирует, до выкладки всего объёма.</li>
       </ul>
@@ -573,7 +578,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div class="cols cols-2" style="gap:24px;align-items:start">
         <div>
           <h3 style="color:#16191D">Чего здесь нет намеренно</h3>
-          <p style="margin:12px 0 0;color:var(--dim-l);font-size:15.5px">Тошноты, водности и индексов читаемости. Это метрики копирайтерских бирж, а не поисковой системы: Google прямо говорит, что не использует ни плотность слов, ни формулы читаемости. Мы проверяем то, что влияет на результат.</p>
+          <p style="margin:12px 0 0;color:var(--dim-l);font-size:15.5px">Тошноты, водности и индексов читаемости. Это метрики копирайтерских бирж, а не поисковых систем: ни Яндекс, ни Google не ранжируют по плотности слов и формулам читаемости. Мы проверяем то, что влияет на результат.</p>
         </div>
         <div>
           <h3 style="color:#16191D">Что видите вы</h3>
@@ -591,7 +596,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div>
         <p class="kicker">После публикации</p>
         <h2>Страница либо приносит показы, либо переписывается</h2>
-        <p class="lede">Массовые проекты обычно умирают после выгрузки: никто не знает, какие из тысячи адресов вообще попали в индекс. Мы подключаем Search Console и смотрим по каждому URL.</p>
+        <p class="lede">Массовые проекты обычно умирают после выгрузки: никто не знает, какие из тысячи адресов вообще попали в индекс. Мы подключаем Яндекс.Вебмастер и Search Console и смотрим по каждому URL.</p>
         <div class="cols cols-2" style="margin-top:30px;gap:20px">
           <div class="stat"><b>Живые</b><span>есть показы: работают, трогать не нужно</span></div>
           <div class="stat"><b>Мёртвые</b><span>нет показов: уходят на переписывание в следующий круг</span></div>
@@ -599,7 +604,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       </div>
       <figure class="figure">
         <img src="assets/control.webp" alt="Стол контроля качества с отчётами и увеличительным стеклом" loading="lazy">
-        <figcaption>Отчёт по каждому адресу: показы, клики, CTR, средняя позиция.</figcaption>
+        <figcaption>Отчёт по каждому адресу: показы, клики, CTR, средняя позиция — из Вебмастера и Search Console.</figcaption>
       </figure>
     </div>
   </div>
@@ -683,12 +688,12 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="cols cols-2" style="gap:24px;align-items:start">
       <div>
         <h3>Что мы обещаем, а что зависит не только от нас</h3>
-        <p style="color:var(--dim-d);font-size:16px;margin:12px 0 0">Позиции в Google не продаются — их не гарантирует никто, кто разбирается в поиске. Мы отвечаем за то, что находится в нашей зоне контроля, и говорим об этом прямо.</p>
+        <p style="color:var(--dim-d);font-size:16px;margin:12px 0 0">Позиции в Яндексе и Google не продаются — их не гарантирует никто, кто разбирается в поиске. Мы отвечаем за то, что находится в нашей зоне контроля, и говорим об этом прямо.</p>
       </div>
       <ul class="facts">
         <li>При качественных исходных данных и здоровой репутации домена проекты такого класса стабильно набирают охват в поиске — страницы попадают в индекс и начинают собирать показы по длинному запросу.</li>
         <li>Мы отвечаем за качество самих страниц: балл, уникальность против корпуса проекта, отсутствие блокеров, корректную разметку и перелинковку. Это проверяемо по отчёту, а не на словах.</li>
-        <li>Что мы не контролируем: историю и репутацию домена, конкуренцию в нише и алгоритмы Google. Слабый домен снижает показы даже у безупречных страниц — поэтому мы смотрим на домен до начала работы.</li>
+        <li>Что мы не контролируем: историю и репутацию домена, конкуренцию в нише и алгоритмы Яндекса и Google. Слабый домен снижает показы даже у безупречных страниц — поэтому мы смотрим на домен до начала работы.</li>
         <li>Ориентиры по охвату именно для вашего проекта разбираем на консультации, после того как увидим данные и домен. Без данных любые цифры были бы выдумкой.</li>
       </ul>
     </div>
@@ -723,7 +728,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div class="panel">
         <p class="kicker" style="margin-bottom:10px">Шаг 4 · по желанию</p>
         <h3>Наблюдение и доработка</h3>
-        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Месячное сопровождение: смотрим Search Console, находим страницы без показов и переделываем их. Можно подключить позже или не подключать вовсе.</p>
+        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Месячное сопровождение: смотрим Яндекс.Вебмастер и Search Console, находим страницы без показов и переделываем их. Можно подключить позже или не подключать вовсе.</p>
       </div>
     </div>
 
@@ -743,6 +748,11 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
         <li><span>Поддержка</span><a href="mailto:support@verstio.ru">support@verstio.ru</a></li>
         <li><span>Телеграм</span><a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a></li>
       </ul>
+      <p class="signed">
+        <b>Тимур Рахимзянов</b>
+        Отвечаю на заявки и веду проекты сам — от разбора данных до отчёта после публикации.
+        Работаю по <a href="/offer.html">договору-оферте</a>, на каждую оплату приходит чек.
+      </p>
       <figure class="figure" style="margin-top:28px">
         <img src="assets/studio.webp" alt="Рабочий стол студии: таблица данных и разложенные макеты страниц" loading="lazy">
       </figure>
@@ -808,7 +818,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div class="done" role="status">
         <h3>Заявка отправлена</h3>
         <p style="color:var(--dim-d);margin:0 0 14px">Ответим в течение рабочего дня с почты hello@verstio.ru. Если срочно — напишите в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener" style="color:#F4F1EB">@VerstioBot</a>.</p>
-        <p style="color:var(--dim-d);margin:0;font-size:15px">К разбору пригодится ваша таблица данных — можно прислать ссылку на Google Sheets или файл в ответном письме.</p>
+        <p style="color:var(--dim-d);margin:0;font-size:15px">К разбору пригодится ваша таблица данных — можно прислать ссылку на Яндекс Документы или Google Sheets либо файл в ответном письме.</p>
       </div>
     </form>
   </div>
@@ -824,7 +834,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     <div class="faq">
       <details open>
         <summary>Это не дорвеи? Нас не забанят?</summary>
-        <p>Дорвей — это страница без собственной ценности: один скелет с подменёнными словами. Именно против этого построена половина нашей системы: паспорт данных отсекает проекты, где страницы отличать нечем, а движок уникальности блокирует всё, что похоже на другую страницу проекта больше чем на 25%. Мы делаем страницы из ваших фактов, а не из синонимов. Сверх этого отдельный модуль оценивает добавленную ценность страницы — то, на что Google сейчас смотрит в первую очередь: есть ли на странице факты, расчёты и сравнения, которых нет у тех, кто уже в топе.</p>
+        <p>Дорвей — это страница без собственной ценности: один скелет с подменёнными словами. Именно против этого построена половина нашей системы: паспорт данных отсекает проекты, где страницы отличать нечем, а движок уникальности блокирует всё, что похоже на другую страницу проекта больше чем на 25%. Мы делаем страницы из ваших фактов, а не из синонимов. Сверх этого отдельный модуль оценивает добавленную ценность страницы — то, на что поиск сейчас смотрит в первую очередь: есть ли на странице факты, расчёты и сравнения, которых нет у тех, кто уже в топе.</p>
       </details>
       <details>
         <summary>А если у меня нет ни таблиц, ни базы данных?</summary>
@@ -836,7 +846,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       </details>
       <details>
         <summary>Сколько идёт работа?</summary>
-        <p>Около двух недель на обычный проект — вместе с разбором данных, согласованием образца страницы, сборкой и проверками. Срок растёт, если данные нужно собирать с нуля. Показы в поиске появляются позже: индексирование зависит от Google, а не от нас.</p>
+        <p>Около двух недель на обычный проект — вместе с разбором данных, согласованием образца страницы, сборкой и проверками. Срок растёт, если данные нужно собирать с нуля. Показы в поиске появляются позже: индексирование зависит от поисковых систем, а не от нас.</p>
       </details>
       <details>
         <summary>Сколько страниц можно сделать?</summary>
@@ -852,7 +862,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       </details>
       <details>
         <summary>Как вы отчитываетесь?</summary>
-        <p>Таблицей по каждой странице: балл, оценка, значения измерений, блокеры. После публикации добавляются показы, клики, CTR и средняя позиция из Search Console с делением на живые и мертвые адреса.</p>
+        <p>Таблицей по каждой странице: балл, оценка, значения измерений, блокеры. После публикации добавляются показы, клики, CTR и средняя позиция из Яндекс.Вебмастера и Search Console с делением на живые и мертвые адреса.</p>
       </details>
     </div>
   </div>
@@ -870,6 +880,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <a href="/privacy.html">Политика конфиденциальности</a>
       <a href="/offer.html">Договор-оферта</a>
     </div>
+    <div class="foot-legal">Рахимзянов Тимур Альбертович · ИНН 165056174418 · чек на каждую оплату</div>
   </div>
 </footer>
 
