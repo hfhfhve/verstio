@@ -1,3 +1,4 @@
+
 /* ==========================================================================
    SEO-Фабрика — ядро фронтенда
 
@@ -369,6 +370,20 @@ const api = {
   getDesign:    (id)    => req(`/projects/${id}/design`),
   saveDesign:   (id, d) => req(`/projects/${id}/design`, { method: 'PUT', body: JSON.stringify(d) }),
   repaintDesign:(id)    => req(`/projects/${id}/design/apply`, { method: 'POST' }),
+
+  /* ---- ПЕРЕЛИНКОВКА — граф страниц сайта (готово) ---- */
+  linking:        (id)      => req(`/projects/${id}/linking`),
+  saveLinking:    (id, d)   => req(`/projects/${id}/linking`, { method: 'PUT', body: JSON.stringify(d) }),
+  linkingPages:   (id, q)   => req(`/projects/${id}/linking/pages${qs(q)}`),
+  linkingPagePatch: (id, pageId, d) => req(`/projects/${id}/linking/pages/${pageId}`, {
+                                 method: 'PATCH', body: JSON.stringify(d) }),
+  linkingRebuild: (id)      => req(`/projects/${id}/linking/rebuild`, { method: 'POST' }),
+  linkingToken:   (id, name)=> req(`/projects/${id}/linking/tokens`, {
+                                 method: 'POST', body: JSON.stringify({ name: name || '' }) }),
+  linkingTokenRevoke: (id, tid) => req(`/projects/${id}/linking/tokens/${tid}`, { method: 'DELETE' }),
+  linkingImport:  (id, d)   => req(`/projects/${id}/linking/import`, {
+                                 method: 'POST', body: JSON.stringify(d) }),
+  linkingGraphUrl:(id)      => auth.signUrl(`${API_BASE.replace(/\/+$/, '')}/projects/${id}/linking/graph.json`),
 };
 
 /** Готов ли этот метод на бэкенде. */
