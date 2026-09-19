@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 9824cd83b9bb6dff8ca4a489296553e49df78f0b
-# built:  2026-09-19 11:00 UTC
+# commit: e82b7e7f572ca579d235c8be3c7268e00374cae0
+# built:  2026-09-19 12:31 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -11,6 +11,7 @@ privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2099 строк)
 app/index.html  (427 строк)
+app/leads.html  (576 строк)
 app/login.html  (382 строк)
 app/project.html  (4486 строк)
 app/robots.txt  (5 строк)
@@ -3976,6 +3977,586 @@ document.addEventListener('keydown', e => {
 });
 
 load();
+
+})();
+</script>
+
+</body>
+</html>
+
+════════════════════════════════════════════════════════
+  app/leads.html
+════════════════════════════════════════════════════════
+
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Лиды и разведка — SEO-Фабрика</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=50">
+<script>
+  try {
+    var t = localStorage.getItem('seo_theme');
+    if (t !== 'light' && t !== 'dark') t = 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+<style>
+  /* Стили только для этой страницы: в общий style.css не лезем, чтобы ничего не сломать. */
+  .lead-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lead-tbl th {
+    text-align: left; font-weight: 600; font-size: 11px; letter-spacing: .04em;
+    text-transform: uppercase; opacity: .55; padding: 8px 10px; border-bottom: 1px solid var(--line, #2a2f36);
+    white-space: nowrap;
+  }
+  .lead-tbl td { padding: 7px 10px; border-bottom: 1px solid var(--line, #23272d); vertical-align: middle; }
+  .lead-tbl tr:hover td { background: rgba(127,127,127,.06); }
+  .lead-tbl .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lead-inp {
+    width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px;
+    padding: 4px 6px; color: inherit; font: inherit;
+  }
+  .lead-inp:hover { border-color: var(--line, #2a2f36); }
+  .lead-inp:focus { border-color: var(--accent, #2783de); outline: none; background: rgba(127,127,127,.08); }
+  .lead-sel { padding: 4px 6px; border-radius: 6px; font: inherit; }
+  .scan-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .scan-card {
+    border: 1px solid var(--line, #2a2f36); border-radius: 10px; padding: 12px 14px;
+  }
+  .scan-card .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; opacity: .55; }
+  .scan-card .v { font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .scan-card .s { font-size: 11px; opacity: .6; margin-top: 2px; }
+  .scan-card.good { border-color: rgba(60,160,110,.5); }
+  .scan-card.warn { border-color: rgba(200,150,50,.5); }
+  .sec-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .sec-chip {
+    border: 1px solid var(--line, #2a2f36); border-radius: 999px; padding: 3px 9px; font-size: 12px;
+  }
+  .row-tools { display: flex; gap: 4px; justify-content: flex-end; }
+  .lead-empty { padding: 26px; text-align: center; opacity: .6; font-size: 13px; }
+</style>
+</head>
+<body class="is-plain">
+
+<div class="plain-shell">
+
+  <header class="topbar plain-topbar">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V6l7 6 7-6v12"/></svg>
+      </span>
+      <span>
+        <span class="brand-name">SEO-Фабрика</span>
+        <span class="brand-sub">лиды и разведка доменов</span>
+      </span>
+    </div>
+
+    <span class="topbar-spacer"></span>
+
+    <button class="kbd-hint" id="cmdkBtn" type="button">
+      <span data-ico-sm="search"></span> Поиск и команды <kbd>⌘</kbd><kbd>K</kbd>
+    </button>
+
+    <div class="topbar-tools">
+      <a class="icon-btn" href="index.html" title="Проекты"><span data-ico="home"></span></a>
+      <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
+      <a class="icon-btn" href="settings.html" title="Глобальные настройки"><span data-ico="gear"></span></a>
+    </div>
+  </header>
+
+  <main class="canvas">
+    <div class="wrap">
+
+      <div class="view-head">
+        <div class="view-head-body">
+          <div class="view-eyebrow"><i class="dot"></i> Продажи</div>
+          <h1 class="view-title">Лиды</h1>
+          <p class="view-sub">
+            Заявки с сайта, из телеграма и те, кого вы нашли сами — в одном списке.
+            Рядом — разведка домена: сколько у сайта страниц, сколько из них в индексе
+            и сколько мы можем сделать ему посадочных.
+          </p>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-primary btn-lg" id="addBtn" type="button">
+            <span data-ico="plus"></span> Добавить лид
+          </button>
+        </div>
+      </div>
+
+      <div class="metrics" id="leadMetrics"></div>
+
+      <!-- ============ РАЗВЕДКА ДОМЕНА ============ -->
+      <section class="panel accent">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Разведка домена</div>
+            <div class="panel-sub">
+              Введите адрес сайта — посчитаем страницы по карте сайта (или обойдём ссылками),
+              спросим у Яндекса число страниц в индексе и прикинем потолок pSEO.
+            </div>
+          </div>
+          <div class="panel-tools">
+            <input class="input input-sm" id="scDomain" placeholder="example.ru" autocomplete="off" style="min-width:220px">
+            <input class="input input-sm" id="scCities" type="number" min="0" max="300" value="20" title="Сколько городов берём в матрицу" style="max-width:90px">
+            <button class="btn btn-sm btn-primary" id="scRun" type="button"><span data-ico-sm="radar"></span> Посчитать</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="scResult">
+            <div class="lead-empty">Адрес можно вводить как угодно: example.ru, www.example.ru или ссылкой целиком.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ФОРМА ДОБАВЛЕНИЯ ============ -->
+      <section class="panel" id="addPanel" hidden>
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Новый лид</div>
+            <div class="panel-sub">Достаточно сайта — остальное дозаполните потом прямо в таблице.</div>
+          </div>
+          <div class="panel-tools">
+            <button class="icon-btn" id="addClose" type="button" title="Закрыть"><span data-ico="x"></span></button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <label class="field">
+              <span class="field-label">Компания</span>
+              <input class="input" id="nlName" placeholder="Автодеталь Казань" autocomplete="off">
+            </label>
+            <label class="field">
+              <span class="field-label">Сайт</span>
+              <input class="input" id="nlSite" placeholder="example.ru" autocomplete="off">
+            </label>
+            <label class="field">
+              <span class="field-label">Почта</span>
+              <input class="input" id="nlEmail" placeholder="info@example.ru" autocomplete="off">
+            </label>
+            <label class="field">
+              <span class="field-label">Телефон или Telegram</span>
+              <input class="input" id="nlPhone" placeholder="+7… или @nick" autocomplete="off">
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">Ниша и заметка</span>
+            <textarea class="textarea" id="nlComment" rows="2" placeholder="Автозапчасти. Каталог 800 позиций, посадочных нет."></textarea>
+          </label>
+        </div>
+        <div class="panel-foot">
+          <button class="btn btn-primary" id="nlCreate" type="button"><span data-ico="check"></span> Добавить</button>
+          <button class="btn btn-quiet" id="nlCancel" type="button">Отмена</button>
+        </div>
+      </section>
+
+      <!-- ============ СПИСОК ЛИДОВ ============ -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Список <span class="pill neutral" id="leadCount">0</span></div>
+            <div class="panel-sub">Статус и заметка сохраняются сразу, кнопку жать не надо.</div>
+          </div>
+          <div class="panel-tools">
+            <select class="input input-sm lead-sel" id="lfStatus" style="max-width:170px">
+              <option value="all">Все статусы</option>
+              <option value="new">Новый</option>
+              <option value="in_progress">Активный</option>
+              <option value="waiting">Согласование</option>
+              <option value="done">Клиент</option>
+              <option value="spam">Отказ</option>
+            </select>
+            <input class="input input-sm" id="lfQ" placeholder="Поиск…" autocomplete="off" style="max-width:200px">
+            <button class="icon-btn bordered" id="lfReload" type="button" title="Обновить (R)"><span data-ico="refresh"></span></button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="leadsBox">
+            <div class="sk sk-card"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="plain-foot">
+        <span class="nav-state" id="wireDot"></span>
+        <span id="wireText">Проверка связи…</span>
+        <span class="selbar-sep"></span>
+        <a class="link-btn" href="index.html">К проектам</a>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script src="app.js?v=50"></script>
+<script>
+(function () {
+'use strict';
+
+const $ = s => document.querySelector(s);
+
+/* Русские подписи статусов. В базе они лежат как new/in_progress/waiting/done/spam. */
+const STATUS = {
+  new:         { label: 'Новый',       pill: 'soon' },
+  in_progress: { label: 'Активный',    pill: 'ok'   },
+  waiting:     { label: 'Согласование', pill: 'warn' },
+  done:        { label: 'Клиент',      pill: 'ok'   },
+  spam:        { label: 'Отказ',       pill: 'neutral' },
+};
+const ORDER = ['new', 'in_progress', 'waiting', 'done', 'spam'];
+
+let LEADS = [];
+let SCANS = {};   // домен -> последняя разведка
+
+function hydrateIcons(root) {
+  const r = root || document;
+  r.querySelectorAll('[data-ico]:not([data-ico-done])').forEach(el => {
+    el.innerHTML = ico(el.dataset.ico, 17); el.setAttribute('data-ico-done', '1');
+  });
+  r.querySelectorAll('[data-ico-sm]:not([data-ico-done])').forEach(el => {
+    el.innerHTML = ico(el.dataset.icoSm, 14); el.setAttribute('data-ico-done', '1');
+  });
+  r.querySelectorAll('[data-theme-ico]').forEach(el => {
+    el.innerHTML = ico(getTheme() === 'dark' ? 'sun' : 'moon', 16);
+  });
+}
+
+const num = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('ru-RU');
+
+/* ---------------------------------------------------------------- РАЗВЕДКА */
+
+function renderScan(d) {
+  const box = $('#scResult');
+  if (!d || d.found === false) {
+    box.innerHTML = '<div class="lead-empty">По этому домену ещё не считали. Нажмите «Посчитать».</div>';
+    return;
+  }
+  if (d.error) {
+    box.innerHTML = '<div class="lead-empty">' + escHtml(d.error) + '</div>';
+    return;
+  }
+
+  const det = d.detail || {};
+  const srcNote = d.source === 'sitemap'
+    ? 'по карте сайта — точно'
+    : 'обходом ссылок — приблизительно' + (det.capped ? ', упёрлись в лимит' : '');
+
+  const idxCard = d.pages_indexed >= 0
+    ? `<div class="scan-card ${d.index_share !== null && d.index_share < 70 ? 'warn' : 'good'}">
+         <div class="k">В индексе Яндекса</div>
+         <div class="v">${num(d.pages_indexed)}</div>
+         <div class="s">${d.index_share !== null ? d.index_share + '% от всех страниц' : 'оценка Яндекса'}</div>
+       </div>`
+    : `<div class="scan-card warn">
+         <div class="k">В индексе Яндекса</div>
+         <div class="v">—</div>
+         <div class="s">${escHtml(det.index_note || 'не считали')}</div>
+       </div>`;
+
+  const chips = (det.top_sections || []).map(s =>
+    `<span class="sec-chip">/${escHtml(s.name)} <b>${num(s.pages)}</b></span>`).join('');
+
+  box.innerHTML =
+    `<div class="scan-grid">
+       <div class="scan-card">
+         <div class="k">Всего страниц</div>
+         <div class="v">${num(d.pages_total)}</div>
+         <div class="s">${srcNote}</div>
+       </div>
+       ${idxCard}
+       <div class="scan-card">
+         <div class="k">Не в индексе</div>
+         <div class="v">${d.pages_missing === null || d.pages_missing === undefined ? '—' : num(d.pages_missing)}</div>
+         <div class="s">главный аргумент в письме</div>
+       </div>
+       <div class="scan-card good">
+         <div class="k">Потолок pSEO</div>
+         <div class="v">${num(d.pseo_base)}</div>
+         <div class="s">осторожно ${num(d.pseo_safe)} · потолок ${num(d.pseo_max)}</div>
+       </div>
+     </div>
+     <div class="hint" style="margin-top:10px">
+       ${escHtml(det.formula || '')} Разделов в работу: <b>${num(d.sections)}</b>,
+       карточек: <b>${num(d.items)}</b>. Городов в расчёте: <b>${num(d.cities)}</b>.
+     </div>
+     ${chips ? '<div class="sec-list">' + chips + '</div>' : ''}
+     <div class="row gap" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+       <button class="btn btn-sm" id="scToLead" type="button"><span data-ico-sm="plus"></span> Завести лидом</button>
+       <button class="btn btn-sm btn-quiet" id="scCopy" type="button"><span data-ico-sm="copy"></span> Скопировать цифры для письма</button>
+       <a class="btn btn-sm btn-quiet" href="https://${d.domain}" target="_blank" rel="noopener">Открыть сайт</a>
+     </div>`;
+
+  hydrateIcons(box);
+
+  const toLead = $('#scToLead');
+  if (toLead) toLead.onclick = async () => {
+    try {
+      await api.createLead({
+        name: d.domain,
+        site: d.domain,
+        comment: `Страниц ${d.pages_total}, в индексе ${d.pages_indexed >= 0 ? d.pages_indexed : '?'}, потолок pSEO ${d.pseo_base}`,
+      });
+      toast.ok('Лид заведён', d.domain);
+      await loadLeads();
+    } catch (e) { toast.err('Не удалось завести', e); }
+  };
+
+  const copy = $('#scCopy');
+  if (copy) copy.onclick = () => {
+    const text =
+      `${d.domain}\n` +
+      `Страниц на сайте: ${d.pages_total}\n` +
+      (d.pages_indexed >= 0 ? `В индексе Яндекса: ${d.pages_indexed}\nНе в индексе: ${d.pages_missing}\n` : '') +
+      `Можем сделать посадочных: ${d.pseo_base} (осторожная оценка ${d.pseo_safe})`;
+    try {
+      navigator.clipboard.writeText(text);
+      toast.ok('Скопировано');
+    } catch (e) { toast.warn('Не смог скопировать', 'Выделите текст вручную'); }
+  };
+}
+
+async function runScan(btn) {
+  const domain = ($('#scDomain').value || '').trim();
+  if (!domain) { toast.warn('Нужен домен', 'Например example.ru'); return; }
+  const cities = parseInt($('#scCities').value, 10);
+
+  $('#scResult').innerHTML = '<div class="lead-empty">Считаем… Обход большого сайта занимает до минуты.</div>';
+
+  const run = async () => {
+    try {
+      const res = await api.scanDomain({ domain, cities: isNaN(cities) ? 20 : cities });
+      SCANS[res.domain] = res;
+      renderScan(res);
+      renderLeads();
+      toast.ok('Готово', res.domain + ': страниц ' + num(res.pages_total));
+    } catch (e) {
+      $('#scResult').innerHTML = '<div class="lead-empty">Не получилось посчитать.</div>';
+      toast.err('Разведка не удалась', e);
+    }
+  };
+
+  if (btn && typeof withBusy === 'function') await withBusy(btn, run); else await run();
+}
+
+/* ------------------------------------------------------------------- ЛИДЫ */
+
+function metrics() {
+  const by = {};
+  LEADS.forEach(l => { by[l.status] = (by[l.status] || 0) + 1; });
+  $('#leadMetrics').innerHTML = ORDER.map(key =>
+    `<div class="metric">
+       <div class="metric-k">${STATUS[key].label}</div>
+       <div class="metric-v">${by[key] || 0}</div>
+     </div>`).join('');
+  $('#leadCount').textContent = LEADS.length;
+}
+
+function renderLeads() {
+  const box = $('#leadsBox');
+  if (!LEADS.length) {
+    box.innerHTML = '<div class="lead-empty">Пока пусто. Заведите первый лид или посчитайте домен выше.</div>';
+    metrics();
+    return;
+  }
+
+  const rows = LEADS.map(l => {
+    const scan = l.site ? SCANS[l.site] : null;
+    const opts = ORDER.map(k =>
+      `<option value="${k}"${l.status === k ? ' selected' : ''}>${STATUS[k].label}</option>`).join('');
+    const siteCell = l.site
+      ? `<a href="https://${escAttr(l.site)}" target="_blank" rel="noopener" class="link-btn">${escHtml(l.site)} ↗</a>`
+      : '<span class="muted">—</span>';
+    const contact = [l.email, l.phone, l.telegram].filter(Boolean).map(escHtml).join('<br>') || '<span class="muted">—</span>';
+    const pages = scan ? num(scan.pages_total) : '—';
+    const indexed = scan && scan.pages_indexed >= 0 ? num(scan.pages_indexed) : '—';
+    const pseo = scan ? num(scan.pseo_base) : '—';
+
+    return `<tr data-id="${l.id}">
+      <td>
+        <div><b>${escHtml(l.name || 'Без названия')}</b></div>
+        <div class="muted" style="font-size:11px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
+      </td>
+      <td>${contact}</td>
+      <td>${siteCell}</td>
+      <td><select class="input input-sm lead-sel" data-act="status">${opts}</select></td>
+      <td class="num">${pages}</td>
+      <td class="num">${indexed}</td>
+      <td class="num">${pseo}</td>
+      <td><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
+      <td>
+        <div class="row-tools">
+          <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 15)}</button>
+          <button class="icon-btn bordered" data-act="del" title="Удалить">${ico('trash', 15)}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  box.innerHTML =
+    `<table class="lead-tbl">
+      <thead><tr>
+        <th>Компания</th><th>Контакт</th><th>Сайт</th><th>Статус</th>
+        <th class="num">Страниц</th><th class="num">В индексе</th><th class="num">pSEO</th>
+        <th>Заметка</th><th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  metrics();
+  bindRows();
+}
+
+function bindRows() {
+  document.querySelectorAll('.lead-tbl tr[data-id]').forEach(tr => {
+    const id = Number(tr.getAttribute('data-id'));
+    const lead = LEADS.find(l => l.id === id);
+
+    const sel = tr.querySelector('[data-act="status"]');
+    if (sel) sel.onchange = async () => {
+      try {
+        await api.updateLead(id, { status: sel.value });
+        if (lead) lead.status = sel.value;
+        metrics();
+        toast.ok('Статус сохранён', STATUS[sel.value].label);
+      } catch (e) { toast.err('Не сохранилось', e); }
+    };
+
+    const note = tr.querySelector('[data-act="note"]');
+    if (note) {
+      let timer = null;
+      note.oninput = () => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+          try {
+            await api.updateLead(id, { admin_note: note.value });
+            if (lead) lead.admin_note = note.value;
+          } catch (e) { toast.err('Заметка не сохранилась', e); }
+        }, 700);
+      };
+    }
+
+    const scanBtn = tr.querySelector('[data-act="scan"]');
+    if (scanBtn) scanBtn.onclick = () => {
+      if (!lead || !lead.site) { toast.warn('У лида нет сайта'); return; }
+      $('#scDomain').value = lead.site;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      runScan($('#scRun'));
+    };
+
+    const del = tr.querySelector('[data-act="del"]');
+    if (del) del.onclick = async () => {
+      const ok = (typeof confirmDialog === 'function')
+        ? await confirmDialog({ title: 'Удалить лид?', text: lead ? (lead.name || lead.site) : '' })
+        : true;
+      if (!ok) return;
+      try {
+        await api.deleteLead(id);
+        LEADS = LEADS.filter(l => l.id !== id);
+        renderLeads();
+        toast.ok('Удалён');
+      } catch (e) { toast.err('Не удалилось', e); }
+    };
+  });
+}
+
+async function loadLeads() {
+  try {
+    const res = await api.listLeads({
+      status: $('#lfStatus').value,
+      q: ($('#lfQ').value || '').trim(),
+      limit: 200,
+    });
+    LEADS = (res && res.items) ? res.items : [];
+  } catch (e) {
+    $('#leadsBox').innerHTML = '<div class="lead-empty">Не смог загрузить список.</div>';
+    toast.err('Не загрузились лиды', e);
+    return;
+  }
+  renderLeads();
+}
+
+async function loadScans() {
+  try {
+    const res = await api.lastScans();
+    (res && res.items ? res.items : []).forEach(s => { SCANS[s.domain] = s; });
+  } catch (e) { /* разведка необязательна — список важнее */ }
+}
+
+/* --------------------------------------------------------------- ДОБАВЛЕНИЕ */
+
+function openAdd()  { $('#addPanel').hidden = false; $('#nlName').focus(); }
+function closeAdd() { $('#addPanel').hidden = true; }
+
+async function createLead(btn) {
+  const body = {
+    name:    $('#nlName').value.trim(),
+    site:    $('#nlSite').value.trim(),
+    email:   $('#nlEmail').value.trim(),
+    phone:   $('#nlPhone').value.trim(),
+    comment: $('#nlComment').value.trim(),
+  };
+  if (!body.name && !body.site) { toast.warn('Нужно название или сайт'); return; }
+
+  const run = async () => {
+    try {
+      await api.createLead(body);
+      ['#nlName', '#nlSite', '#nlEmail', '#nlPhone', '#nlComment'].forEach(s => { $(s).value = ''; });
+      closeAdd();
+      await loadLeads();
+      toast.ok('Лид добавлен');
+    } catch (e) { toast.err('Не добавилось', e); }
+  };
+  if (btn && typeof withBusy === 'function') await withBusy(btn, run); else await run();
+}
+
+/* ------------------------------------------------------------------- СВЯЗЬ */
+
+wire.onChange(w => {
+  const dot = $('#wireDot'), txt = $('#wireText');
+  if (!dot || !txt) return;
+  if (w.ok === null) { dot.className = 'nav-state'; txt.textContent = 'Проверка связи…'; return; }
+  dot.className = 'nav-state ' + (w.ok ? 'ok' : 'bad');
+  txt.textContent = w.ok ? 'Бэкенд отвечает' : 'Нет связи с бэкендом: ' + (w.lastError || '');
+});
+
+hydrateIcons();
+
+$('#addBtn').onclick   = openAdd;
+$('#addClose').onclick = closeAdd;
+$('#nlCancel').onclick = closeAdd;
+$('#nlCreate').onclick = e => createLead(e.currentTarget);
+$('#scRun').onclick    = e => runScan(e.currentTarget);
+$('#scDomain').addEventListener('keydown', e => { if (e.key === 'Enter') runScan($('#scRun')); });
+$('#lfStatus').onchange = loadLeads;
+$('#lfReload').onclick  = loadLeads;
+$('#themeBtn').onclick  = () => toggleTheme();
+
+let qTimer = null;
+$('#lfQ').oninput = () => { clearTimeout(qTimer); qTimer = setTimeout(loadLeads, 350); };
+
+if (typeof cmdk !== 'undefined' && cmdk.register) {
+  cmdk.register([
+    { group: 'Лиды', label: 'Добавить лид', icon: 'plus', run: openAdd },
+    { group: 'Лиды', label: 'Обновить список', icon: 'refresh', hint: 'R', run: loadLeads },
+    { group: 'Прочее', label: 'К проектам', icon: 'home', run: () => location.href = 'index.html' },
+  ]);
+}
+const cmdkBtn = $('#cmdkBtn');
+if (cmdkBtn && typeof cmdk !== 'undefined') cmdkBtn.onclick = () => cmdk.open();
+
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if (e.key.toLowerCase() === 'n') { e.preventDefault(); openAdd(); }
+  if (e.key.toLowerCase() === 'r') { e.preventDefault(); loadLeads(); }
+});
+
+(async function start() {
+  await loadScans();
+  await loadLeads();
+})();
 
 })();
 </script>
