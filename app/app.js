@@ -2080,6 +2080,7 @@ if (document.readyState === 'loading') {
 const TOPBAR_NAV = [
   { key: 'projects', href: 'index.html',    icon: 'pages',  label: 'Проекты' },
   { key: 'leads',    href: 'leads.html',    icon: 'target', label: 'Лиды и разведка' },
+  { key: 'playbook', href: 'playbook.html', icon: 'file',   label: 'Плейбук' },
   { key: 'settings', href: 'settings.html', icon: 'gear',   label: 'Настройки' },
 ];
 
