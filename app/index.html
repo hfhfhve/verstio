@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -37,6 +38,7 @@
     </button>
 
     <div class="topbar-tools">
+      <a class="icon-btn" href="leads.html" title="Лиды и разведка доменов (L)"><span data-ico="target"></span></a>
       <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
       <button class="icon-btn" id="helpBtn" type="button" title="Горячие клавиши (?)"><span data-ico="keyboard"></span></button>
       <a class="icon-btn" href="settings.html" title="Глобальные настройки"><span data-ico="gear"></span></a>
@@ -406,6 +408,7 @@ $('#cmdkBtn').onclick = () => cmdk.open();
 cmdk.register([
   { group: 'Действия', label: 'Создать проект', icon: 'plus', run: openForm },
   { group: 'Действия', label: 'Обновить список', icon: 'refresh', hint: 'R', run: load },
+  { group: 'Прочее', label: 'Лиды и разведка доменов', icon: 'target', hint: 'L', run: () => location.href = 'leads.html' },
   { group: 'Прочее', label: 'Глобальные настройки', icon: 'gear', run: () => location.href = 'settings.html' },
   { group: 'Прочее', label: 'Переключить тему', icon: 'moon', hint: 'T', run: () => toggleTheme() },
 ]);
@@ -415,6 +418,7 @@ document.addEventListener('keydown', e => {
   if (tag === 'input' || tag === 'textarea') return;
   if (e.key.toLowerCase() === 'n') { e.preventDefault(); openForm(); }
   if (e.key.toLowerCase() === 'r') { e.preventDefault(); load(); }
+  if (e.key.toLowerCase() === 'l') { e.preventDefault(); location.href = 'leads.html'; }
 });
 
 load();
