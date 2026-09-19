@@ -1,4 +1,5 @@
 
+
 /* ==========================================================================
    SEO-Фабрика — ядро фронтенда
 
@@ -2067,6 +2068,78 @@ if (document.readyState === 'loading') {
    но лучше сразу показать форму входа, чем пустой интерфейс с ошибками.
    -------------------------------------------------------------------------- */
 
+/* --------------------------------------------------------------------------
+   ОБЩАЯ ШАПКА
+
+   Логотип → главная, рядом меню из трёх разделов.
+   Странице достаточно положить в <header> первым элементом:
+     <div id="navSlot" data-nav="projects|leads|settings" data-sub="подпись"></div>
+   data-compact="1" оставляет только значок (для тесных шапок).
+   -------------------------------------------------------------------------- */
+
+const TOPBAR_NAV = [
+  { key: 'projects', href: 'index.html',    icon: 'pages',  label: 'Проекты' },
+  { key: 'leads',    href: 'leads.html',    icon: 'target', label: 'Лиды и разведка' },
+  { key: 'settings', href: 'settings.html', icon: 'gear',   label: 'Настройки' },
+];
+
+const TOPBAR_CSS = `
+.topbar { gap: 12px; }
+.tb-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tb-brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 6px 6px;
+  border-radius: 10px; color: var(--text); text-decoration: none; white-space: nowrap;
+  transition: background .15s ease; }
+.tb-brand:hover { background: var(--surface-2); color: var(--text); }
+.tb-mark { width: 28px; height: 28px; border-radius: 8px; flex: none; display: inline-flex;
+  align-items: center; justify-content: center; background: var(--text); color: var(--bg); }
+.tb-name { display: block; font-size: 14px; font-weight: 650; line-height: 1.15; }
+.tb-sub { display: block; font-size: 11px; line-height: 1.2; margin-top: 1px;
+  color: var(--text-2); opacity: .75; }
+.tb-nav { display: flex; align-items: center; gap: 4px; }
+.tb-nav a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  height: 32px; padding: 0 11px; border-radius: 8px; font-size: 13px; font-weight: 550;
+  color: var(--text-2); border: 1px solid transparent; text-decoration: none;
+  transition: background .15s ease, color .15s ease, border-color .15s ease; }
+.tb-nav a:hover { background: var(--surface-2); color: var(--text); }
+.tb-nav a.is-on { color: var(--text); background: var(--surface-2); border-color: var(--line); }
+.tb-nav svg { opacity: .85; flex: none; }
+@media (max-width: 1180px) { .tb-sub { display: none; } }
+`;
+
+function mountTopbar() {
+  const slot = document.getElementById('navSlot');
+  if (!slot || slot.dataset.tbDone) return;
+  slot.dataset.tbDone = '1';
+
+  if (!document.getElementById('tbCss')) {
+    const st = document.createElement('style');
+    st.id = 'tbCss';
+    st.textContent = TOPBAR_CSS;
+    document.head.appendChild(st);
+  }
+
+  const active  = slot.dataset.nav || '';
+  const compact = slot.dataset.compact === '1';
+  const sub     = slot.dataset.sub || 'массовая генерация страниц';
+
+  const brand =
+    `<a class="tb-brand" href="index.html" title="На главную">` +
+      `<span class="tb-mark"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" ` +
+      `stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">` +
+      `<path d="M5 18V6l7 6 7-6v12"/></svg></span>` +
+      (compact ? '' :
+        `<span><span class="tb-name">SEO-Фабрика</span>` +
+        `<span class="tb-sub">${escHtml(sub)}</span></span>`) +
+    `</a>`;
+
+  const nav = `<nav class="tb-nav">` + TOPBAR_NAV.map(i =>
+    `<a href="${i.href}"${i.key === active ? ' class="is-on"' : ''}>${ico(i.icon, 15)} ${i.label}</a>`
+  ).join('') + `</nav>`;
+
+  slot.className = 'tb-left';
+  slot.innerHTML = brand + nav;
+}
+
 function mountLogoutButton() {
   document.querySelectorAll('.topbar-tools').forEach(box => {
     if (box.querySelector('[data-logout]')) return;
@@ -2090,6 +2163,7 @@ function mountLogoutButton() {
   if (!auth.token()) { auth.toLogin(); return; }
 
   const run = () => {
+    mountTopbar();
     mountLogoutButton();
     auth.check();   // просроченный токен отдаст 401 → req сам уведёт на вход
   };
