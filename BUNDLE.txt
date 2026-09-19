@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 9d8a513dd35cedeece42edafc7fd13ab0d97cec5
-# built:  2026-09-19 12:33 UTC
+# commit: 3c286fe8f46dcbae3e8abb6f54ae3b013f695632
+# built:  2026-09-19 12:34 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,7 +10,7 @@ offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2099 строк)
-app/index.html  (427 строк)
+app/index.html  (431 строк)
 app/leads.html  (576 строк)
 app/login.html  (382 строк)
 app/project.html  (4486 строк)
@@ -3557,6 +3557,7 @@ function mountLogoutButton() {
   app/index.html
 ════════════════════════════════════════════════════════
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -3596,6 +3597,7 @@ function mountLogoutButton() {
     </button>
 
     <div class="topbar-tools">
+      <a class="icon-btn" href="leads.html" title="Лиды и разведка доменов (L)"><span data-ico="target"></span></a>
       <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
       <button class="icon-btn" id="helpBtn" type="button" title="Горячие клавиши (?)"><span data-ico="keyboard"></span></button>
       <a class="icon-btn" href="settings.html" title="Глобальные настройки"><span data-ico="gear"></span></a>
@@ -3965,6 +3967,7 @@ $('#cmdkBtn').onclick = () => cmdk.open();
 cmdk.register([
   { group: 'Действия', label: 'Создать проект', icon: 'plus', run: openForm },
   { group: 'Действия', label: 'Обновить список', icon: 'refresh', hint: 'R', run: load },
+  { group: 'Прочее', label: 'Лиды и разведка доменов', icon: 'target', hint: 'L', run: () => location.href = 'leads.html' },
   { group: 'Прочее', label: 'Глобальные настройки', icon: 'gear', run: () => location.href = 'settings.html' },
   { group: 'Прочее', label: 'Переключить тему', icon: 'moon', hint: 'T', run: () => toggleTheme() },
 ]);
@@ -3974,6 +3977,7 @@ document.addEventListener('keydown', e => {
   if (tag === 'input' || tag === 'textarea') return;
   if (e.key.toLowerCase() === 'n') { e.preventDefault(); openForm(); }
   if (e.key.toLowerCase() === 'r') { e.preventDefault(); load(); }
+  if (e.key.toLowerCase() === 'l') { e.preventDefault(); location.href = 'leads.html'; }
 });
 
 load();
