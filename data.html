@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Какие данные нужны для pSEO-страниц — Verstio</title>
+<meta name="description" content="Руководство для клиентов Verstio: какой минимум данных нужен для запуска, какие поля делают страницу сильнее, где эти данные взять и в каком формате прислать.">
+<link rel="canonical" href="https://verstio.ru/data.html">
+<meta name="theme-color" content="#0D1013">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230D1013'/%3E%3Cpath d='M7 9l9 15 9-15' stroke='%23EFEAE1' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0D1013; --ink-2:#14181D; --ink-3:#1B2027;
+  --paper:#EFEAE1; --paper-3:#F7F4EE;
+  --line-d:rgba(239,234,225,.14); --line-l:rgba(13,16,19,.14);
+  --text-d:#C2C8D0; --text-l:#3A3F45;
+  --dim-d:#7C848F; --dim-l:#6B7078;
+  --blue:#5E9FE8; --green:#5FA97F; --red:#D9634F; --amber:#C9902F;
+  --shell:1180px;
+  --gut:clamp(20px,5vw,64px);
+  --band:clamp(64px,8vw,116px);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text-d);font:400 17px/1.62 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.shell{width:100%;max-width:var(--shell);margin:0 auto;padding-inline:var(--gut)}
+.band{padding-block:var(--band);position:relative}
+.band--paper{background:var(--paper);color:var(--text-l)}
+.band--paper h2,.band--paper h3{color:#16191D}
+.band--ink-2{background:var(--ink-2);border-block:1px solid var(--line-d)}
+h1,h2,h3{margin:0;font-weight:400;color:#F4F1EB}
+h1{font-family:var(--serif);font-size:clamp(36px,5.2vw,64px);line-height:1.05;letter-spacing:-.012em}
+h2{font-family:var(--serif);font-size:clamp(28px,3.8vw,48px);line-height:1.08;letter-spacing:-.01em}
+h3{font-family:var(--sans);font-weight:600;font-size:18px;line-height:1.35}
+.lede{font-size:clamp(16px,1.3vw,19px);line-height:1.66;color:var(--dim-d);max-width:64ch;margin:22px 0 0}
+.band--paper .lede{color:var(--dim-l)}
+.kicker{font-size:13.5px;color:var(--dim-d);margin:0 0 18px;padding-bottom:10px;border-bottom:1px solid var(--line-d);display:inline-block;letter-spacing:.02em}
+.band--paper .kicker{color:var(--dim-l);border-color:var(--line-l)}
+.head{max-width:740px;margin-bottom:clamp(36px,4.5vw,56px)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:8px;background:var(--paper);color:#0D1013;border:1px solid var(--paper);cursor:pointer;font-weight:500;font-size:16px;text-decoration:none;transition:background .25s,transform .35s var(--ease)}
+.btn:hover{background:#fff;transform:translateY(-1px)}
+.btn--ghost{background:transparent;color:#F4F1EB;border-color:var(--line-d)}
+.btn--ghost:hover{background:rgba(239,234,225,.07);border-color:rgba(239,234,225,.32)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.band--paper .btn{background:#12161A;color:var(--paper-3);border-color:#12161A}
+.band--paper .btn:hover{background:#000}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:50;background:rgba(13,16,19,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-d)}
+.top-in{max-width:var(--shell);margin:0 auto;padding:13px var(--gut);display:flex;align-items:center;gap:26px}
+.brand{font-family:var(--serif);font-size:23px;color:#F4F1EB;text-decoration:none}
+.top-nav{display:flex;gap:22px;margin-inline:auto;font-size:15px}
+.top-nav a{color:var(--dim-d);text-decoration:none;transition:color .2s}
+.top-nav a:hover,.top-nav a[aria-current]{color:#F4F1EB}
+.top .btn{padding:9px 17px;font-size:15px}
+
+.progress{position:fixed;top:0;left:0;height:2px;width:100%;transform:scaleX(0);transform-origin:0 50%;background:var(--blue);z-index:60}
+
+/* герой */
+.hero{padding-top:clamp(48px,6vw,84px);padding-bottom:clamp(40px,5vw,72px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,4vw,56px);align-items:center}
+.hero h1 em{font-style:italic;color:#fff}
+
+.rowdemo{background:var(--ink-2);border:1px solid var(--line-d);border-radius:14px;padding:20px}
+.rowdemo-h{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--dim-d);padding-bottom:14px;border-bottom:1px solid var(--line-d)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:13px;padding:6px 11px;border-radius:7px;border:1px solid var(--line-d);color:#E7E3DB;background:rgba(239,234,225,.04);opacity:0;transform:translateY(6px);animation:pop .5s var(--ease) forwards}
+.chip.k{border-color:rgba(94,159,232,.45);color:#BBD6F5;background:rgba(94,159,232,.1)}
+@keyframes pop{to{opacity:1;transform:none}}
+.rowdemo-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line-d);display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--dim-d)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(95,169,127,.16);flex:none}
+
+/* появление при скролле */
+.js .rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.js .rv.in{opacity:1;transform:none}
+
+.cols{display:grid;gap:clamp(16px,2.2vw,26px)}
+.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* уровни */
+.lvl{border:1px solid var(--line-l);border-radius:14px;padding:24px;background:rgba(255,255,255,.5);display:flex;flex-direction:column}
+.lvl-tag{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--dim-l);margin-bottom:14px}
+.lvl-tag i{width:8px;height:8px;border-radius:2px;background:var(--dim-l)}
+.lvl--must .lvl-tag i{background:var(--red)}
+.lvl--good .lvl-tag i{background:var(--amber)}
+.lvl--best .lvl-tag i{background:var(--green)}
+.lvl h3{margin-bottom:6px}
+.lvl p{margin:0 0 16px;font-size:15px;color:var(--dim-l)}
+.flist{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:15px}
+.flist li{display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start;line-height:1.5}
+.flist li::before{content:"";width:7px;height:7px;margin-top:8px;border-radius:2px;background:currentColor;opacity:.35}
+.lvl-foot{font-size:13.5px;color:var(--dim-l);border-top:1px solid var(--line-l);margin-top:20px;padding-top:16px}
+
+/* калькулятор */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,3.5vw,48px);align-items:center}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1px solid var(--line-d);border-radius:10px;cursor:pointer;transition:border-color .2s,background .2s;min-height:48px}
+.opt:hover{border-color:rgba(239,234,225,.3);background:rgba(239,234,225,.04)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.box{width:20px;height:20px;border-radius:5px;border:1px solid rgba(239,234,225,.34);flex:none;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.opt input:checked+.box{background:var(--blue);border-color:var(--blue)}
+.box svg{opacity:0;transition:opacity .15s}
+.opt input:checked+.box svg{opacity:1}
+.opt input:focus-visible+.box{outline:2px solid var(--blue);outline-offset:3px}
+.opt-t{font-size:15px;color:#E7E3DB}
+.opt-s{display:block;font-size:13px;color:var(--dim-d);margin-top:2px}
+.gauge{background:var(--ink-3);border:1px solid var(--line-d);border-radius:16px;padding:26px}
+.gauge-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line-d)}
+.gauge-num{font-family:var(--serif);font-size:62px;line-height:.9;color:#F4F1EB}
+.gauge-lbl{font-size:13.5px;color:var(--dim-d);margin-top:8px}
+.verdict{font-size:14px;text-align:right;max-width:20ch;line-height:1.4}
+.dims{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+.dim{display:grid;grid-template-columns:1fr auto;gap:5px 12px;font-size:14px}
+.dim span{color:var(--dim-d)}
+.dim b{font-weight:500;color:#E7E3DB}
+.bar{grid-column:1/-1;height:4px;border-radius:2px;background:rgba(239,234,225,.1);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;border-radius:2px;background:var(--green);transform:scaleX(0);transform-origin:0 50%;transition:transform .7s var(--ease),background .4s}
+.gauge-note{margin:20px 0 0;padding-top:16px;border-top:1px solid var(--line-d);font-size:13.5px;color:var(--dim-d)}
+
+/* где взять */
+.src{border-top:1px solid var(--line-l)}
+.src-row{display:grid;grid-template-columns:230px minmax(0,1fr) 170px;gap:20px;padding:20px 0;border-bottom:1px solid var(--line-l);align-items:baseline}
+.src-row b{font-weight:600;color:#16191D;font-size:16px}
+.src-row p{margin:0;font-size:15px;color:var(--dim-l)}
+.src-row .eff{font-size:13px;color:var(--dim-l);justify-self:end;text-align:right}
+.src-row .eff em{font-style:normal;display:block;color:#16191D;font-weight:600;font-size:14px}
+
+/* формат */
+.fmt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(22px,3vw,44px);align-items:start}
+.tbl{border:1px solid var(--line-d);border-radius:12px;overflow:hidden;font-size:13.5px}
+.tbl table{border-collapse:collapse;width:100%;table-layout:fixed}
+.tbl th,.tbl td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line-d);overflow-wrap:anywhere}
+.tbl th{background:rgba(239,234,225,.05);color:#E7E3DB;font-weight:500;font-size:12.5px}
+.tbl td{color:var(--dim-d)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.num{color:#E7E3DB}
+.tbl-note{margin:12px 2px 0;font-size:13px;color:var(--dim-d)}
+.rules{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.rules li{display:grid;grid-template-columns:26px 1fr;gap:12px;font-size:15.5px;line-height:1.55}
+.rules .ix{font-size:13px;color:var(--blue);padding-top:2px}
+
+/* ошибки */
+.bad{display:grid;gap:12px}
+.bad-item{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:16px 18px;border:1px solid var(--line-l);border-radius:12px;background:rgba(255,255,255,.5)}
+.bad-item span{font-size:14px;color:var(--dim-l)}
+.bad-item b{display:block;color:#16191D;font-size:15.5px;margin-bottom:3px}
+.mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:rgba(217,99,79,.13);color:var(--red);font-size:15px;flex:none}
+
+.cta{text-align:center;max-width:620px;margin:0 auto}
+.cta .lede{margin-inline:auto}
+.foot{border-top:1px solid var(--line-d);padding:26px 0;font-size:14px;color:var(--dim-d)}
+.foot-in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+.foot a{text-decoration:none;color:var(--dim-d)}
+.foot a:hover{color:#F4F1EB}
+
+@media (max-width:900px){
+  .hero-grid,.calc,.fmt,.cols-2,.cols-3{grid-template-columns:1fr}
+  .src-row{grid-template-columns:1fr;gap:6px}
+  .src-row .eff{justify-self:start;text-align:left}
+  .top-nav{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+  .js .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.className='js'</script>
+<div class="progress" id="prog"></div>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="/">Verstio</a>
+    <nav class="top-nav">
+      <a href="/#how">Как работает</a>
+      <a href="/data.html" aria-current="page">Данные</a>
+      <a href="/#price">Цены</a>
+    </nav>
+    <a class="btn" href="#start">Отправить данные</a>
+  </div>
+</header>
+
+<main>
+  <section class="band hero">
+    <div class="shell hero-grid">
+      <div>
+        <p class="kicker">Руководство для клиента · 6 минут</p>
+        <h1>Страницу делает не текст.<br>Её делают <em>ваши данные</em>.</h1>
+        <p class="lede">
+          Мы собираем сотни страниц из одной таблицы. Чем конкретнее строка — цифры, сроки,
+          условия, адреса — тем выше балл качества и тем быстрее страница попадает в поиск.
+          Ниже: минимум для старта, что усиливает страницу, где это взять и в каком виде прислать.
+        </p>
+        <div class="btn-row">
+          <a class="btn" href="#min">Что нужно минимум</a>
+          <a class="btn btn--ghost" href="#calc">Проверить свой набор</a>
+        </div>
+      </div>
+
+      <div class="rowdemo">
+        <div class="rowdemo-h"><span>одна строка таблицы</span><span>= одна страница</span></div>
+        <div class="chips" id="chips">
+          <span class="chip k">услуга: аренда экскаватора</span>
+          <span class="chip k">город: Волгоград</span>
+          <span class="chip">цена: от 1 800 ₽/час</span>
+          <span class="chip">смена: 8 ч, мин. заказ 4 ч</span>
+          <span class="chip">модели: JCB 3CX, Hitachi ZX200</span>
+          <span class="chip">глубина копания: 5,9 м</span>
+          <span class="chip">подача: 2 часа</span>
+          <span class="chip">доставка: 90 ₽/км</span>
+          <span class="chip">район: Кировский, Советский</span>
+          <span class="chip">оплата: нал, б/н с НДС</span>
+          <span class="chip">фото: 4 шт.</span>
+        </div>
+        <div class="rowdemo-foot"><span class="dot"></span> 11 заполненных полей → балл 84 из 100, публикуется без правок</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--paper" id="min">
+    <div class="shell">
+      <div class="head rv">
+        <p class="kicker">Три уровня</p>
+        <h2>Минимум, норма и то, что выносит в топ</h2>
+        <p class="lede">
+          Работать можно уже с первым столбцом. Но разница между уровнями — это разница между
+          «страница есть в индексе» и «страница приносит заявки».
+        </p>
+      </div>
+
+      <div class="cols cols-3">
+        <article class="lvl lvl--must rv">
+          <span class="lvl-tag"><i></i> Без этого не стартуем</span>
+          <h3>Сущности и адреса</h3>
+          <p>Скелет проекта: о чём страница и по какому URL она живёт.</p>
+          <ul class="flist">
+            <li>Что вы продаёте: услуга, товар, модель, категория</li>
+            <li>Где: город, район, метро или зона доставки</li>
+            <li>Название страницы человеческим языком</li>
+            <li>Домен и доступ к нему (или готовность выгрузки)</li>
+          </ul>
+          <p class="lvl-foot">Итог: страницы уникальны по смыслу, а не по синонимам.</p>
+        </article>
+
+        <article class="lvl lvl--good rv">
+          <span class="lvl-tag"><i></i> Рабочий уровень</span>
+          <h3>Цифры и условия</h3>
+          <p>Всё, что можно измерить. Это главный фактор балла — плотность фактов.</p>
+          <ul class="flist">
+            <li>Цены, вилки цен, единицы измерения</li>
+            <li>Сроки: подача, изготовление, доставка, гарантия</li>
+            <li>Характеристики: мощность, объём, габариты, состав</li>
+            <li>Условия: минимальный заказ, оплата, самовывоз</li>
+            <li>Контакты и адрес точки, график работы</li>
+          </ul>
+          <p class="lvl-foot">Итог: +15–25 баллов к странице и меньше правок вручную.</p>
+        </article>
+
+        <article class="lvl lvl--best rv">
+          <span class="lvl-tag"><i></i> Преимущество перед топом</span>
+          <h3>То, чего нет у конкурентов</h3>
+          <p>Данные, которые невозможно сгенерировать — только взять у вас.</p>
+          <ul class="flist">
+            <li>Свои фото объектов, техники, работ (с подписями)</li>
+            <li>Кейсы: объект, объём, срок, результат</li>
+            <li>Отзывы с именем и датой</li>
+            <li>Документы: сертификаты, допуски, договор</li>
+            <li>Частые вопросы от ваших же клиентов</li>
+            <li>Ограничения: куда не едем, что не берём</li>
+          </ul>
+          <p class="lvl-foot">Итог: страница отличается от топа, а не повторяет его.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--ink-2" id="calc">
+    <div class="shell">
+      <div class="head rv">
+        <p class="kicker">Прикидка</p>
+        <h2>Отметьте, что у вас есть</h2>
+        <p class="lede">Оценка приблизительная: она показывает, куда двинется балл качества, если добавить данные.</p>
+      </div>
+
+      <div class="calc rv">
+        <div class="opts" id="opts">
+          <label class="opt"><input type="checkbox" data-w="20" data-d="uniq" checked><span class="box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.4l2.6 2.6L10 3.6" stroke="#0D1013" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="opt-t">Список услуг и городов<span class="opt-s">базовая таблица сущностей</span></span></label>
+          <label class="opt"><input type="checkbox" data-w="22" data-d="facts" checked><span class="box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.4l2.6 2.6L10 3.6" stroke="#0D1013" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="opt-t">Цены и сроки<span class="opt-s">числа с единицами измерения</span></span></label>
+          <label class="opt"><input type="checkbox" data-w="18" data-d="depth"><span class="box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.4l2.6 2.6L10 3.6" stroke="#0D1013" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="opt-t">Характеристики и условия<span class="opt-s">5+ полей на строку</span></span></label>
+          <label class="opt"><input type="checkbox" data-w="16" data-d="uniq"><span class="box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.4l2.6 2.6L10 3.6" stroke="#0D1013" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="opt-t">Кейсы, отзывы, вопросы<span class="opt-s">свои, не из интернета</span></span></label>
+          <label class="opt"><input type="checkbox" data-w="14" data-d="media"><span class="box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.4l2.6 2.6L10 3.6" stroke="#0D1013" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="opt-t">Свои фото и документы<span class="opt-s">хотя бы 2–3 на страницу</span></span></label>
+          <label class="opt"><input type="checkbox" data-w="10" data-d="depth"><span class="box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.4l2.6 2.6L10 3.6" stroke="#0D1013" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="opt-t">Ограничения и нюансы<span class="opt-s">чего не делаете и почему</span></span></label>
+        </div>
+
+        <div class="gauge">
+          <div class="gauge-top">
+            <div>
+              <div class="gauge-num" id="score">0</div>
+              <div class="gauge-lbl">прогноз балла качества</div>
+            </div>
+            <div class="verdict" id="verdict">—</div>
+          </div>
+          <ul class="dims">
+            <li class="dim"><span>плотность фактов</span><b data-v="facts">0%</b><span class="bar"><i data-b="facts"></i></span></li>
+            <li class="dim"><span>глубина разделов</span><b data-v="depth">0%</b><span class="bar"><i data-b="depth"></i></span></li>
+            <li class="dim"><span>отличие от конкурентов</span><b data-v="uniq">0%</b><span class="bar"><i data-b="uniq"></i></span></li>
+            <li class="dim"><span>медиа и доверие</span><b data-v="media">0%</b><span class="bar"><i data-b="media"></i></span></li>
+          </ul>
+          <p class="gauge-note">Публикуем страницы от 70 баллов. Ниже — возвращаем на доработку данных, а не переписываем текст красивее.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--paper" id="where">
+    <div class="shell">
+      <div class="head rv">
+        <p class="kicker">Где это взять</p>
+        <h2>Почти всё у вас уже есть — просто в разных местах</h2>
+        <p class="lede">Порядок примерно такой: сначала выгрузки, потом сайт, в конце — час разговора с менеджером, который каждый день отвечает клиентам.</p>
+      </div>
+
+      <div class="src rv">
+        <div class="src-row"><b>1С, CRM, складская программа</b><p>Номенклатура, цены, остатки, единицы, сроки. Выгрузка в Excel за 10 минут.</p><span class="eff"><em>основа таблицы</em>60–70% полей</span></div>
+        <div class="src-row"><b>Прайс-лист и коммерческое</b><p>Вилки цен, скидки от объёма, условия оплаты и минимального заказа.</p><span class="eff"><em>цифры</em>главный фактор балла</span></div>
+        <div class="src-row"><b>Текущий сайт и карточки</b><p>Описания, характеристики, фото. Мы заберём сами, нужен только доступ или ссылка.</p><span class="eff"><em>медиа</em>без вашей работы</span></div>
+        <div class="src-row"><b>Менеджеры и отдел продаж</b><p>Топ-20 вопросов клиентов и типовые возражения. Это готовый блок FAQ на каждой странице.</p><span class="eff"><em>уникальность</em>1 час разговора</span></div>
+        <div class="src-row"><b>Закрытые заказы за год</b><p>Кейсы: объект, объём, срок, район. Даже 20 строк дают живые примеры для сотен страниц.</p><span class="eff"><em>доверие</em>выгрузка из CRM</span></div>
+        <div class="src-row"><b>2ГИС, Яндекс.Карты, отзывы</b><p>Адреса, графики, зоны выезда, отзывы с датами. Берём с вашей карточки.</p><span class="eff"><em>гео-данные</em>берём сами</span></div>
+        <div class="src-row"><b>Документы и сертификаты</b><p>Допуски, гарантийные условия, шаблон договора, страховка техники.</p><span class="eff"><em>доверие</em>папка файлов</span></div>
+        <div class="src-row"><b>Метрика и Вебмастер</b><p>Какие запросы уже приводят людей и где вы теряете позиции. Нужен гостевой доступ.</p><span class="eff"><em>приоритет страниц</em>доступ на чтение</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="format">
+    <div class="shell">
+      <div class="head rv">
+        <p class="kicker">Формат</p>
+        <h2>Как прислать, чтобы ничего не переделывать</h2>
+      </div>
+
+      <div class="fmt rv">
+        <div>
+          <div class="tbl">
+            <table>
+              <thead><tr><th>услуга</th><th>город</th><th>цена_час</th><th>подача_ч</th></tr></thead>
+              <tbody>
+                <tr><td>аренда экскаватора</td><td>Волгоград</td><td class="num">1800</td><td class="num">2</td></tr>
+                <tr><td>аренда экскаватора</td><td>Волжский</td><td class="num">1750</td><td class="num">3</td></tr>
+                <tr><td>аренда самосвала</td><td>Волгоград</td><td class="num">1400</td><td class="num">2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="tbl-note">Столбцов может быть сколько угодно — чем больше, тем лучше.</p>
+        </div>
+
+        <ol class="rules">
+          <li><span class="ix">01</span><span>Один файл: <b>Excel или CSV в UTF-8</b>. Google Sheets тоже подойдёт — пришлите ссылку с доступом.</span></li>
+          <li><span class="ix">02</span><span>Одна строка = одна будущая страница. Заголовки столбцов — в первой строке, без объединённых ячеек.</span></li>
+          <li><span class="ix">03</span><span>Числа — числами: <b>1800</b>, а не «от 1800 руб/час договорная». Единицы вынесите в название столбца.</span></li>
+          <li><span class="ix">04</span><span>Нет данных — оставьте ячейку пустой. Прочерк и «уточняйте» попадут в текст страницы как есть.</span></li>
+          <li><span class="ix">05</span><span>Фото — архивом, имя файла = значение из строки (например <b>ekskavator-volgograd-1.jpg</b>).</span></li>
+          <li><span class="ix">06</span><span>Одинаковое написание по всей таблице: «Волгоград» везде, а не «волгоград» и «г. Волгоград».</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--paper" id="bad">
+    <div class="shell">
+      <div class="head rv">
+        <p class="kicker">Частые заминки</p>
+        <h2>Из-за чего запуск сдвигается на неделю</h2>
+      </div>
+      <div class="cols cols-2 rv">
+        <div class="bad">
+          <div class="bad-item"><span class="mark">!</span><div><b>«Сделайте как у конкурентов»</b><span>Если данных нет, страница повторит топ и не получит своего балла. Нужны ваши цифры, даже приблизительные.</span></div></div>
+          <div class="bad-item"><span class="mark">!</span><div><b>Цены «по запросу» во всей таблице</b><span>Тогда лучше дать вилку «от–до» или расчёт за единицу: это законно и работает.</span></div></div>
+          <div class="bad-item"><span class="mark">!</span><div><b>Одно описание на 300 строк</b><span>Копия текста в каждой строке = дубли. Лучше 5 коротких полей, чем один общий абзац.</span></div></div>
+        </div>
+        <div class="bad">
+          <div class="bad-item"><span class="mark">!</span><div><b>Фото из интернета</b><span>Стоки не дают преимущества и рискованны по правам. Даже фото с телефона лучше.</span></div></div>
+          <div class="bad-item"><span class="mark">!</span><div><b>Данные в PDF и скриншотах</b><span>Разбор вручную стоит дней. Excel или выгрузка из 1С экономят неделю.</span></div></div>
+          <div class="bad-item"><span class="mark">!</span><div><b>Нет доступа к сайту</b><span>Публикация упирается в подрядчика. Доступ или ответственный человек нужен до старта.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--ink-2" id="start">
+    <div class="shell cta rv">
+      <p class="kicker">С чего начать</p>
+      <h2>Начните с того, что есть сейчас</h2>
+      <p class="lede">Пришлите выгрузку номенклатуры и список городов. Мы соберём паспорт данных, покажем прогноз балла и скажем, каких трёх полей не хватает до сильной страницы.</p>
+      <div class="btn-row" style="justify-content:center">
+        <a class="btn" href="mailto:hi@verstio.ru?subject=Данные%20для%20pSEO">Отправить данные</a>
+        <a class="btn btn--ghost" href="/#how">Как устроен процесс</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="shell foot-in">
+    <span>© Verstio</span>
+    <span><a href="/privacy.html">Политика конфиденциальности</a> · <a href="/offer.html">Оферта</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var prog=document.getElementById('prog');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-innerHeight;
+    prog.style.transform='scaleX('+(h>0?scrollY/h:0)+')';
+  }
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  document.querySelectorAll('#chips .chip').forEach(function(c,i){c.style.animationDelay=(120+i*70)+'ms';});
+
+  var rvs=[].slice.call(document.querySelectorAll('.rv'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+    },{threshold:.12});
+    rvs.forEach(function(el){io.observe(el);});
+    setTimeout(function(){rvs.forEach(function(el){
+      if(el.getBoundingClientRect().top<innerHeight)el.classList.add('in');
+    });},400);
+  }else{rvs.forEach(function(el){el.classList.add('in');});}
+
+  var opts=[].slice.call(document.querySelectorAll('#opts input'));
+  var scoreEl=document.getElementById('score'),verdict=document.getElementById('verdict');
+  var maxs={facts:0,depth:0,uniq:0,media:0};
+  opts.forEach(function(i){maxs[i.dataset.d]+=+i.dataset.w;});
+  var cur=0,anim;
+  function calc(){
+    var got={facts:0,depth:0,uniq:0,media:0},total=0;
+    opts.forEach(function(i){if(i.checked){got[i.dataset.d]+=+i.dataset.w;total+=+i.dataset.w;}});
+    var score=Math.round(18+total*0.82);
+    Object.keys(got).forEach(function(k){
+      var p=maxs[k]?Math.round(got[k]/maxs[k]*100):0;
+      var b=document.querySelector('[data-b="'+k+'"]');
+      b.style.transform='scaleX('+(p/100)+')';
+      b.style.background=p>=70?'var(--green)':p>=40?'var(--amber)':'var(--red)';
+      document.querySelector('[data-v="'+k+'"]').textContent=p+'%';
+    });
+    verdict.textContent=score>=85?'Сильная страница, конкурирует за топ'
+      :score>=70?'Публикуем, есть куда расти'
+      :score>=50?'Проходит только часть страниц'
+      :'Данных мало, запуск обсуждаем';
+    verdict.style.color=score>=70?'var(--green)':score>=50?'var(--amber)':'var(--red)';
+    cancelAnimationFrame(anim);
+    (function step(){
+      var d=score-cur;
+      cur+=Math.abs(d)<1?d:d*0.18;
+      scoreEl.textContent=Math.round(cur);
+      if(Math.abs(score-cur)>0.5)anim=requestAnimationFrame(step);else{cur=score;scoreEl.textContent=score;}
+    })();
+  }
+  opts.forEach(function(i){i.addEventListener('change',calc);});
+  calc();
+})();
+</script>
+</body>
+</html>
