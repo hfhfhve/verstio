@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 4bb1fa7dbe542b88809162790729c899342c175b
-# built:  2026-09-19 15:54 UTC
+# commit: d11ec7aadbfd1cf9c225dc001fb33ad4399db1f9
+# built:  2026-09-19 18:11 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2174 строк)
 app/index.html  (452 строк)
-app/leads.html  (567 строк)
+app/leads.html  (592 строк)
 app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
@@ -4797,6 +4797,7 @@ load();
 ════════════════════════════════════════════════════════
 
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -5038,20 +5039,45 @@ function renderScan(d) {
   }
 
   const det = d.detail || {};
-  const srcNote = d.source === 'sitemap'
-    ? 'по карте сайта — точно'
-    : 'обходом ссылок — приблизительно' + (det.capped ? ', упёрлись в лимит' : '');
+  const gap = !!d.sitemap_gap;
+  const known = d.pages_known || d.pages_total;
+
+  let srcNote;
+  if (d.source === 'sitemap') srcNote = 'по карте сайта';
+  else if (d.source === 'sitemap+crawl') srcNote = 'карта сайта + обход ссылок';
+  else srcNote = 'обходом ссылок — приблизительно';
+  if (det.capped) srcNote += ', упёрлись в лимит';
+  if (gap) srcNote += ' · нашли ' + num(d.pages_total) + ', по индексу больше';
+
+  const idxSub = d.index_share === null || d.index_share === undefined
+    ? escHtml(det.index_note || 'оценка Яндекса')
+    : (gap
+        ? 'больше, чем в карте сайта — карта неполная'
+        : d.index_share + '% от найденных страниц');
 
   const idxCard = d.pages_indexed >= 0
-    ? `<div class="scan-card ${d.index_share !== null && d.index_share < 70 ? 'warn' : 'good'}">
+    ? `<div class="scan-card ${!gap && d.index_share !== null && d.index_share < 70 ? 'warn' : 'good'}"
+            title="${escHtml(det.index_note || '')}">
          <div class="k">В индексе Яндекса</div>
-         <div class="v">${num(d.pages_indexed)}</div>
-         <div class="s">${d.index_share !== null ? d.index_share + '% от всех страниц' : 'оценка Яндекса'}</div>
+         <div class="v">≈ ${num(d.pages_indexed)}</div>
+         <div class="s">${idxSub}</div>
        </div>`
     : `<div class="scan-card warn">
          <div class="k">В индексе Яндекса</div>
          <div class="v">—</div>
          <div class="s">${escHtml(det.index_note || 'не считали')}</div>
+       </div>`;
+
+  const missCard = d.pages_missing === null || d.pages_missing === undefined
+    ? `<div class="scan-card">
+         <div class="k">Не в индексе</div>
+         <div class="v">—</div>
+         <div class="s">${gap ? 'индекс шире карты сайта' : 'считать не из чего'}</div>
+       </div>`
+    : `<div class="scan-card warn">
+         <div class="k">Не в индексе</div>
+         <div class="v">${num(d.pages_missing)}</div>
+         <div class="s">главный аргумент в письме</div>
        </div>`;
 
   const chips = (det.top_sections || []).map(s =>
@@ -5060,16 +5086,12 @@ function renderScan(d) {
   box.innerHTML =
     `<div class="scan-grid">
        <div class="scan-card">
-         <div class="k">Всего страниц</div>
-         <div class="v">${num(d.pages_total)}</div>
-         <div class="s">${srcNote}</div>
+         <div class="k">Страниц у сайта</div>
+         <div class="v">${gap ? '≈ ' + num(known) : num(d.pages_total)}</div>
+         <div class="s">${escHtml(srcNote)}</div>
        </div>
        ${idxCard}
-       <div class="scan-card">
-         <div class="k">Не в индексе</div>
-         <div class="v">${d.pages_missing === null || d.pages_missing === undefined ? '—' : num(d.pages_missing)}</div>
-         <div class="s">главный аргумент в письме</div>
-       </div>
+       ${missCard}
        <div class="scan-card good">
          <div class="k">Потолок pSEO</div>
          <div class="v">${num(d.pseo_base)}</div>
@@ -5095,7 +5117,7 @@ function renderScan(d) {
       await api.createLead({
         name: d.domain,
         site: d.domain,
-        comment: `Страниц ${d.pages_total}, в индексе ${d.pages_indexed >= 0 ? d.pages_indexed : '?'}, потолок pSEO ${d.pseo_base}`,
+        comment: `Страниц ~${known}, в индексе ~${d.pages_indexed >= 0 ? d.pages_indexed : '?'}, потолок pSEO ${d.pseo_base}`,
       });
       toast.ok('Лид заведён', d.domain);
       await loadLeads();
@@ -5106,8 +5128,11 @@ function renderScan(d) {
   if (copy) copy.onclick = () => {
     const text =
       `${d.domain}\n` +
-      `Страниц на сайте: ${d.pages_total}\n` +
-      (d.pages_indexed >= 0 ? `В индексе Яндекса: ${d.pages_indexed}\nНе в индексе: ${d.pages_missing}\n` : '') +
+      `Страниц на сайте: ${gap ? 'около ' + known : d.pages_total}\n` +
+      (d.pages_indexed >= 0
+        ? `В индексе Яндекса: около ${d.pages_indexed}\n` +
+          (d.pages_missing ? `Не в индексе: ${d.pages_missing}\n` : '')
+        : '') +
       `Можем сделать посадочных: ${d.pseo_base} (осторожная оценка ${d.pseo_safe})`;
     try {
       navigator.clipboard.writeText(text);
