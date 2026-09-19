@@ -1,7 +1,3 @@
-
-
-
-
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -9,7 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>Лиды и разведка — SEO-Фабрика</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=50">
+<link rel="stylesheet" href="style.css?v=51">
 <script>
   try {
     var t = localStorage.getItem('seo_theme');
@@ -19,28 +15,39 @@
 </script>
 <style>
   /* Стили только для этой страницы: в общий style.css не лезем, чтобы ничего не сломать. */
-  .lead-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl-x { overflow-x: auto; }
+  .lead-tbl { width: 100%; min-width: 880px; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
   .lead-tbl th {
-    text-align: left; font-weight: 600; font-size: 11px; letter-spacing: .04em;
-    text-transform: uppercase; opacity: .55; padding: 8px 10px; border-bottom: 1px solid var(--line, #2a2f36);
+    text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .03em;
+    text-transform: uppercase; opacity: .55; padding: 6px 8px; border-bottom: 1px solid var(--line, #2a2f36);
     white-space: nowrap;
   }
-  .lead-tbl td { padding: 7px 10px; border-bottom: 1px solid var(--line, #23272d); vertical-align: middle; }
+  .lead-tbl td { padding: 5px 8px; border-bottom: 1px solid var(--line, #23272d); vertical-align: middle; }
   .lead-tbl tr:hover td { background: rgba(127,127,127,.06); }
   .lead-tbl .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lead-tbl td, .lead-tbl th { overflow: hidden; text-overflow: ellipsis; }
+  .cell-wrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* колонка с кнопками всегда видна */
+  .lead-tbl th.td-act, .lead-tbl td.td-act {
+    position: sticky; right: 0; z-index: 2; padding-left: 6px;
+    background: var(--surface, #14181d);
+    box-shadow: -8px 0 8px -8px rgba(0,0,0,.45);
+  }
+  .lead-tbl tr:hover td.td-act { background: var(--surface-2, #1a1f26); }
+  .lead-tbl tr.is-editing td.td-act { background: var(--surface-2, #1a1f26); }
   .lead-inp {
     width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px;
-    padding: 4px 6px; color: inherit; font: inherit;
+    padding: 3px 5px; color: inherit; font: inherit;
   }
   .lead-inp:hover { border-color: var(--line, #2a2f36); }
   .lead-inp:focus { border-color: var(--accent, #2783de); outline: none; background: rgba(127,127,127,.08); }
-  .lead-sel { padding: 4px 6px; border-radius: 6px; font: inherit; }
-  .scan-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .lead-sel { padding: 3px 5px; border-radius: 6px; font: inherit; max-width: 100%; }
+  .scan-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
   .scan-card {
-    border: 1px solid var(--line, #2a2f36); border-radius: 10px; padding: 12px 14px;
+    border: 1px solid var(--line, #2a2f36); border-radius: 10px; padding: 10px 12px; min-width: 0;
   }
   .scan-card .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; opacity: .55; }
-  .scan-card .v { font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .scan-card .v { font-size: 21px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
   .scan-card .s { font-size: 11px; opacity: .6; margin-top: 2px; }
   .scan-card.good { border-color: rgba(60,160,110,.5); }
   .scan-card.warn { border-color: rgba(200,150,50,.5); }
@@ -48,7 +55,10 @@
   .sec-chip {
     border: 1px solid var(--line, #2a2f36); border-radius: 999px; padding: 3px 9px; font-size: 12px;
   }
-  .row-tools { display: flex; gap: 4px; justify-content: flex-end; }
+  .row-tools { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: nowrap; }
+  .row-tools .btn-sm { height: 24px; padding: 0 8px; font-size: 11.5px; }
+  .row-tools .icon-btn { width: 24px; height: 24px; min-height: 0; }
+  .row-tools .btn { min-height: 0; }
   .lead-empty { padding: 26px; text-align: center; opacity: .6; font-size: 13px; }
   .lead-tbl tr.is-editing td { background: rgba(39,131,222,.06); }
   .lead-inp.bordered { border-color: var(--line, #2a2f36); }
@@ -198,7 +208,7 @@
   </main>
 </div>
 
-<script src="app.js?v=50"></script>
+<script src="app.js?v=51"></script>
 <script>
 (function () {
 'use strict';
@@ -425,20 +435,20 @@ function viewRow(l, scan) {
 
   return `<tr data-id="${l.id}">
     <td>
-      <div><b>${escHtml(l.name || 'Без названия')}</b></div>
-      <div class="muted" style="font-size:11px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
+      <div class="cell-wrap"><b>${escHtml(l.name || 'Без названия')}</b></div>
+      <div class="muted cell-wrap" style="font-size:10.5px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
     </td>
-    <td>${contact}</td>
-    <td>${siteCell}</td>
+    <td><div class="cell-wrap">${contact}</div></td>
+    <td><div class="cell-wrap">${siteCell}</div></td>
     <td><select class="input input-sm lead-sel" data-act="status">${opts}</select></td>
     <td class="num">${pages}</td>
     <td class="num">${indexed}</td>
     <td class="num">${pseo}</td>
     <td><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
-    <td>
+    <td class="td-act">
       <div class="row-tools">
-        <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 15)}</button>
-        <button class="btn btn-sm" data-act="edit" type="button">Изменить</button>
+        <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 14)}</button>
+        <button class="btn btn-sm" data-act="edit" type="button" title="Редактировать">Ред.</button>
       </div>
     </td>
   </tr>`;
@@ -458,11 +468,11 @@ function editRow(l) {
     <td><select class="input input-sm lead-sel" data-f="status">${opts}</select></td>
     <td colspan="3"><input class="lead-inp bordered" data-f="comment" value="${escAttr(l.comment || '')}" placeholder="ниша, заметка о компании"></td>
     <td><input class="lead-inp bordered" data-f="admin_note" value="${escAttr(l.admin_note || '')}" placeholder="внутренняя заметка"></td>
-    <td>
+    <td class="td-act">
       <div class="row-tools">
-        <button class="btn btn-sm btn-primary" data-act="save" type="button">Сохранить</button>
-        <button class="btn btn-sm btn-quiet" data-act="cancel" type="button">Отмена</button>
-        <button class="icon-btn bordered danger" data-act="del" type="button" title="Удалить лид">${ico('trash', 15)}</button>
+        <button class="btn btn-sm btn-primary" data-act="save" type="button">Сохр.</button>
+        <button class="btn btn-sm btn-quiet" data-act="cancel" type="button">Отм.</button>
+        <button class="icon-btn bordered danger" data-act="del" type="button" title="Удалить лид">${ico('trash', 14)}</button>
       </div>
     </td>
   </tr>`;
@@ -482,14 +492,19 @@ function renderLeads() {
   }).join('');
 
   box.innerHTML =
-    `<table class="lead-tbl">
+    `<div class="tbl-x"><table class="lead-tbl">
+      <colgroup>
+        <col style="width:19%"><col style="width:16%"><col style="width:15%">
+        <col style="width:108px"><col style="width:64px"><col style="width:72px">
+        <col style="width:60px"><col><col style="width:104px">
+      </colgroup>
       <thead><tr>
         <th>Компания</th><th>Контакт</th><th>Сайт</th><th>Статус</th>
-        <th class="num">Страниц</th><th class="num">В индексе</th><th class="num">pSEO</th>
-        <th>Заметка</th><th></th>
+        <th class="num">Стр.</th><th class="num">В инд.</th><th class="num">pSEO</th>
+        <th>Заметка</th><th class="td-act"></th>
       </tr></thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table></div>`;
 
   metrics();
   bindRows();
@@ -720,4 +735,3 @@ document.addEventListener('keydown', e => {
 
 </body>
 </html>
-
