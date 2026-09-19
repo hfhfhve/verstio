@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 745d020b14943939fc31700debb46f1d19a47a68
-# built:  2026-09-19 15:40 UTC
+# commit: 4e3be1e38f1d4aa3bc6b68000fbf5de464020f0f
+# built:  2026-09-19 15:51 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -14,6 +14,7 @@ app/app.js  (2173 строк)
 app/index.html  (515 строк)
 app/leads.html  (567 строк)
 app/login.html  (382 строк)
+app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1403 строк)
@@ -5806,6 +5807,647 @@ form.addEventListener('submit', async (e) => {
     btn.textContent = 'Войти';
   }
 });
+</script>
+</body>
+</html>
+
+════════════════════════════════════════════════════════
+  app/playbook.html
+════════════════════════════════════════════════════════
+
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Плейбук — SEO-Фабрика</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232783de'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=50">
+<script>
+  try {
+    var t = localStorage.getItem('seo_theme');
+    if (t !== 'light' && t !== 'dark') t = 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+<style>
+  /* ── только для плейбука ───────────────────────────────────────────── */
+  .pb-head { display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;
+    border:1px solid var(--line); border-radius:16px; padding:20px 22px; margin-bottom:16px;
+    background:radial-gradient(800px 260px at 6% -50%, var(--accent-soft), transparent 70%), var(--surface, transparent); }
+  .pb-head h1 { font-size:24px; letter-spacing:-.02em; }
+  .pb-head p { margin:8px 0 0; font-size:13px; color:var(--text-2); max-width:620px; }
+  .pb-head-r { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .pb-acts { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .pb-state { font-size:11.5px; color:var(--text-2); min-height:14px; }
+
+  .pb-grid { display:grid; grid-template-columns:232px minmax(0,1fr); gap:20px; align-items:start; }
+  .pb-toc { position:sticky; top:74px; border:1px solid var(--line); border-radius:14px; padding:10px;
+    background:var(--surface, transparent); max-height:calc(100vh - 100px); overflow:auto; }
+  .pb-toc a { display:flex; gap:8px; align-items:center; padding:7px 9px; border-radius:9px;
+    font-size:12.5px; color:var(--text-2); text-decoration:none; line-height:1.3; }
+  .pb-toc a:hover { background:var(--surface-2); color:var(--text); }
+  .pb-toc a.on { background:var(--accent-soft); color:var(--accent); font-weight:550; }
+  .pb-toc a span.i { flex:0 0 auto; opacity:.8; }
+  .pb-toc-n { font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-2);
+    padding:6px 9px 8px; }
+
+  .pb-sec { border:1px solid var(--line); border-radius:14px; padding:18px 20px 16px;
+    background:var(--surface, transparent); margin-bottom:14px; scroll-margin-top:76px; }
+  .pb-sec-h { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  .pb-sec-ico { width:30px; height:30px; flex:0 0 auto; border-radius:9px; display:inline-flex;
+    align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent); }
+  .pb-sec-h h2 { font-size:17px; letter-spacing:-.01em; flex:1 1 auto; min-width:0; }
+  .pb-sec-sub { font-size:12.5px; color:var(--text-2); margin:0 0 12px 40px; }
+  .pb-sec-ctl { display:flex; gap:4px; opacity:0; transition:opacity .15s ease; }
+  .pb-sec:hover .pb-sec-ctl { opacity:1; }
+  .is-edit .pb-sec-ctl { opacity:.6; }
+
+  .pb-b { margin:0 0 12px; font-size:13.5px; line-height:1.6; color:var(--text); }
+  .pb-b:last-child { margin-bottom:0; }
+  .pb-b.text { white-space:pre-wrap; color:var(--text-2); }
+  .pb-b ul, .pb-b ol { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:5px; }
+  .pb-b li { color:var(--text-2); }
+  .pb-b li b, .pb-b li strong { color:var(--text); }
+
+  .pb-note { border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px;
+    padding:10px 13px; font-size:13px; color:var(--text-2); background:var(--surface-2); }
+  .pb-note.warn { border-left-color:#c9902f; }
+  .pb-note.ok { border-left-color:#4caf7d; }
+
+  .pb-tbl { width:100%; border-collapse:collapse; table-layout:fixed; font-size:12.5px; }
+  .pb-tbl th, .pb-tbl td { border:1px solid var(--line); padding:8px 10px; text-align:left;
+    vertical-align:top; overflow-wrap:anywhere; }
+  .pb-tbl th { background:var(--surface-2); font-weight:600; font-size:11.5px; color:var(--text-2);
+    letter-spacing:.02em; }
+  .pb-tbl td { color:var(--text-2); }
+  .pb-tbl tr:hover td { background:var(--surface-2); }
+
+  .pb-msg { border:1px solid var(--line); border-radius:11px; overflow:hidden; }
+  .pb-msg-h { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface-2);
+    font-size:12px; font-weight:600; color:var(--text); }
+  .pb-msg-h .sp { margin-left:auto; }
+  .pb-msg-b { padding:12px 14px; white-space:pre-wrap; font-size:13px; line-height:1.6; color:var(--text-2); }
+
+  .pb-edit-on [data-e] { outline:1px dashed var(--accent-line); outline-offset:3px; border-radius:4px; }
+  .pb-edit-on [data-e]:focus { outline:1.5px solid var(--accent); background:var(--accent-soft); }
+  .pb-add { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; padding-top:12px;
+    border-top:1px dashed var(--line); }
+  .pb-mini { border:1px solid var(--line); background:transparent; color:var(--text-2);
+    border-radius:8px; padding:4px 9px; font-size:11.5px; cursor:pointer; line-height:1.6; }
+  .pb-mini:hover { border-color:var(--accent-line); color:var(--accent); }
+  .pb-mini.danger:hover { border-color:#d9634f; color:#d9634f; }
+  .pb-brow { display:flex; gap:5px; justify-content:flex-end; margin-bottom:6px; }
+  .pb-blk { position:relative; }
+  .pb-sec-add { display:flex; justify-content:center; margin:6px 0 30px; }
+  .pb-hidden { display:none !important; }
+  .pb-search { width:220px; }
+</style>
+</head>
+<body class="is-plain">
+
+<div class="plain-shell">
+
+  <header class="topbar plain-topbar">
+    <div id="navSlot" data-nav="playbook" data-sub="внутренняя памятка"></div>
+
+    <span class="topbar-spacer"></span>
+
+    <input class="input pb-search" id="pbSearch" type="search" placeholder="Поиск по плейбуку…" autocomplete="off">
+
+    <div class="topbar-tools">
+      <button class="btn" id="editBtn" type="button">Режим правки</button>
+      <button class="icon-btn" id="themeBtn" type="button" title="Сменить тему (T)"><span data-theme-ico></span></button>
+      <button class="icon-btn" id="helpBtn" type="button" title="Горячие клавиши (?)"><span data-ico="keyboard"></span></button>
+    </div>
+  </header>
+
+  <main class="canvas">
+    <div class="wrap">
+
+      <section class="pb-head">
+        <div>
+          <h1>Плейбук: как продавать pSEO</h1>
+          <p>Личная памятка: цены, первое сообщение, вопросы клиенту, сроки, возражения.
+             Включите режим правки — меняется любой текст, цифры, строки таблиц и разделы.
+             Всё хранится в этом браузере, поэтому иногда делайте экспорт.</p>
+        </div>
+        <div class="pb-head-r">
+          <div class="pb-acts">
+            <button class="btn" id="pbExport" type="button">Экспорт</button>
+            <button class="btn" id="pbImport" type="button">Импорт</button>
+            <button class="btn" id="pbReset" type="button">Сброс</button>
+          </div>
+          <div class="pb-state" id="pbState"></div>
+        </div>
+      </section>
+
+      <div class="pb-grid">
+        <aside class="pb-toc" id="pbToc"></aside>
+        <div id="pbMain"></div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<input type="file" id="pbFile" accept="application/json" style="display:none">
+
+<script src="app.js?v=51"></script>
+<script>
+/* ==========================================================================
+   ПЛЕЙБУК. Данные лежат в localStorage, дефолты — в DEFAULT_PB.
+   Блоки: text | list | steps | note | table | msg
+   ========================================================================== */
+
+const PB_KEY = 'seo_playbook_v2';
+
+const DEFAULT_PB = { v: 2, sections: [
+  { id:'offer', icon:'spark', title:'Что я продаю и кому', sub:'Формулировки, которые работают в переписке.',
+    blocks:[
+      { t:'text', v:'Продаю не «SEO», а количество страниц под запросы, которых у клиента сейчас нет. Заходить лучше через цифру: «у вас 40 страниц в поиске, ниша позволяет 600».' },
+      { t:'list', v:[
+        '<b>Кому легко продать:</b> аренда техники, услуги с географией, опт и прайсы, клиники и студии с филиалами, B2B-сервисы с отраслями, интернет-магазины с параметрами.',
+        '<b>Кому тяжело:</b> один продукт без срезов, бренд без спроса, стартап без сайта, ниши с жёсткой модерацией (медицина без лицензий, финансы).',
+        '<b>Точка входа:</b> пилот на 10 страниц — дёшево, быстро, снимает страх «нагенерите мусора».',
+        '<b>Главный аргумент:</b> плачу один раз за страницу, трафик идёт годами; ручное написание тех же 300 страниц стоит в 5–10 раз дороже.'
+      ]},
+      { t:'note', k:'warn', v:'Не обещаю позиции и трафик в цифрах. Обещаю объём страниц, качество по внутренней шкале 100 баллов и прохождение проверок. Ожидания по индексации проговариваю сразу.' }
+    ]},
+
+  { id:'price', icon:'sheet', title:'Цены: ориентиры', sub:'Стартовая вилка. Правится под нишу и объём.',
+    blocks:[
+      { t:'table',
+        head:['Пакет','Что входит','Цена','Срок'],
+        rows:[
+          ['Пилот, 10 страниц','Разбор ниши, сбор срезов, шаблон страницы, 10 страниц, публикация или отдача HTML','15 000 – 25 000 ₽','3–5 дней'],
+          ['Базовый, 50–100 страниц','Кластеры, каркас, генерация, метатеги, перелинковка, sitemap','45 000 – 80 000 ₽','1–2 недели'],
+          ['Масштаб, 300–1000 страниц','Всё выше + хабы, фильтры, микроразметка, контроль индексации','120 000 – 250 000 ₽','3–5 недель'],
+          ['Цена за страницу сверх пакета','Доп. строки в уже готовом шаблоне','120 – 350 ₽ / стр','—'],
+          ['Шаблон под дизайн сайта','Вёрстка блока/шаблона под их CMS','20 000 – 50 000 ₽','3–7 дней'],
+          ['Сопровождение','Обновление данных, добор кластеров, отчёт по индексу и позициям','20 000 – 40 000 ₽ / мес','ежемесячно']
+        ]},
+      { t:'list', v:[
+        '<b>Вверх по вилке:</b> чужая CMS без API, медицина/юр. ниша, нужен копирайт вручную, дизайн под бренд, жёсткие сроки.',
+        '<b>Вниз по вилке:</b> чистая выгрузка в CSV, один срез, публикация на моей стороне, готовность быть кейсом.',
+        '<b>Оплата:</b> пилот — 100% вперёд; пакеты — 50% предоплата, 50% после сдачи; сопровождение — вперёд за месяц.',
+        '<b>Правки:</b> один круг правок шаблона включён, дальше по часам или пакетом.'
+      ]},
+      { t:'note', k:'info', v:'Называя цену, всегда привязываю к объёму: не «60 тысяч», а «60 тысяч за 100 страниц, это 600 ₽ за страницу с данными и разметкой».' }
+    ]},
+
+  { id:'first', icon:'bolt', title:'Первое сообщение', sub:'Шаблоны. Копировать и подставлять переменные в {}.',
+    blocks:[
+      { t:'msg', title:'Холодное письмо / форма на сайте',
+        v:'Здравствуйте! Меня зовут {имя}, я делаю страницы под поисковый спрос на автомате.\n\nПосмотрел {домен}: в поиске примерно {N} страниц. По запросам вашей ниши ({пример запроса}) люди ищут ещё по {M} комбинациям услуга + город, и на них у вас страниц нет — их занимают {конкурент1}, {конкурент2}.\n\nЯ собираю такие страницы из вашей же таблицы данных: цены, сроки, характеристики. Не рерайт, а фактические страницы со своим содержанием.\n\nГотов показать на деле: 10 страниц за {срок} и {цена}. Если результат не понравится — расходимся, дальше не продолжаем.\n\nСкинуть пример того, как это выглядит?' },
+      { t:'msg', title:'Напоминание через 3–4 дня',
+        v:'{Имя}, поднимаю сообщение наверх. Если тема неактуальна — так и скажите, не буду писать.\n\nЕсли актуальна, но некогда: мне нужно 15 минут и ваша выгрузка услуг/товаров, остальное делаю сам.' },
+      { t:'msg', title:'Ответ на «сколько стоит»',
+        v:'Зависит от количества страниц, но ориентиры такие:\n— пилот 10 страниц — {цена пилота}, {срок пилота};\n— 100 страниц — {цена пакета}, 1–2 недели;\n— от 300 страниц — считаю индивидуально.\n\nЧтобы назвать точную цифру, нужно понять две вещи: какие у вас услуги/товары и по каким срезам их можно размножить (города, отрасли, модели). Скиньте ссылку на сайт — посмотрю и скажу, сколько страниц реально собрать.' },
+      { t:'msg', title:'После согласия — запрос данных',
+        v:'Отлично. Дальше по шагам:\n1. Отправляю памятку по данным — там расписано, что нужно и в каком виде: {ссылка на гайд по данным}.\n2. Вы присылаете выгрузку (CSV/Excel как есть, приводить в порядок не нужно) и короткий паспорт компании.\n3. Я собираю 10 образцов страниц и показываю.\n4. Вы говорите правки, после них запускаю остальное.\n\nЕсть один момент: {что именно нужно от вас в первую очередь}. Без этого старт сдвинется.' }
+    ]},
+
+  { id:'dialog', icon:'waves', title:'Как вести диалог', sub:'Порядок, который меньше всего проваливается.',
+    blocks:[
+      { t:'steps', v:[
+        'Факт о сайте, а не комплимент. «У вас 40 страниц, у конкурента 600» — сразу задаёт разговор о цифре.',
+        'Один вопрос в сообщении. Не вываливать анкету: люди не отвечают на пять вопросов подряд.',
+        'Дать посмотреть, а не описывать. Пример страницы или пилот убеждают лучше любого текста.',
+        'Проговорить сроки индексации до оплаты: страницы за неделю, первый трафик через 1–3 месяца. Это снимает главный конфликт.',
+        'Закрыть на маленький шаг: не «давайте работать», а «скиньте выгрузку, посмотрю и скажу количество страниц».',
+        'Зафиксировать письменно: объём, цена, срок, что от них, что от меня — одним сообщением после созвона.'
+      ]},
+      { t:'list', v:[
+        '<b>Не спорить о том, «ИИ это или нет».</b> Отвечать: страницы собираются из ваших данных, каждая проходит проверку на уникальность и объём, шаблонные пустышки я не сдаю.',
+        '<b>Не давать бесплатный анализ на 3 часа.</b> Разведка домена в кабинете — 2 минуты, этого достаточно.',
+        '<b>Молчание клиента ≠ отказ.</b> Два напоминания с интервалом 3–4 дня, потом закрывающее «тема неактуальна?».'
+      ]}
+    ]},
+
+  { id:'ask', icon:'search', title:'Что спросить у клиента', sub:'Минимум, чтобы посчитать объём и цену.',
+    blocks:[
+      { t:'list', v:[
+        'Что продаёте и какие направления — сколько отдельных услуг/товаров/моделей?',
+        'По каким срезам это размножается: города, районы, отрасли клиента, платформы, бренды?',
+        'Есть ли выгрузка из 1С / CRM / прайса и в каком формате?',
+        'Какой сайт: CMS, кто её ведёт, есть ли доступ или разработчик?',
+        'Кто принимает решение и кто утверждает тексты?',
+        'Есть ли сейчас SEO-подрядчик и чем он занят?',
+        'Что для вас будет результатом через 3 месяца?',
+        'Есть ли ограничения: лицензии, запрет на цены, юридические формулировки?',
+        'Бюджет на задачу примерно какой? (спрашивать после того, как назвал вилку)',
+        'Как оформляем: ИП/самозанятый, счёт, договор?'
+      ]},
+      { t:'note', k:'info', v:'Вопросы задаю по 1–2 за сообщение. Полный список — для созвона или для себя, чтобы не забыть, что ещё не выяснено.' }
+    ]},
+
+  { id:'need', icon:'download', title:'Что нужно от клиента', sub:'Список для старта. Подробности — в памятке по данным.',
+    blocks:[
+      { t:'list', v:[
+        '<b>Таблица данных</b> — CSV/XLSX как есть: услуги/товары, срезы, цены, сроки, характеристики.',
+        '<b>Паспорт компании</b> — кто исполнитель, опыт, гарантии, оплата, контакты, реквизиты.',
+        '<b>E-E-A-T материалы</b> — кейсы, отзывы, лицензии, сертификаты, авторы, фото процесса.',
+        '<b>Ссылки для шапки и подвала</b> — какие разделы должны быть на новых страницах.',
+        '<b>Доступ к сайту</b> — админка, FTP, API или контакт разработчика. Либо забираю HTML и отдаю им.',
+        '<b>Один ответственный</b> — человек, который отвечает в течение дня.',
+        '<b>Обратная связь по 10 образцам</b> — одним списком, а не по одной правке в неделю.'
+      ]},
+      { t:'note', k:'warn', v:'Правило: пока нет таблицы и паспорта компании, проект не стартует и срок не считается. Иначе срыв сроков будет виноватым выглядеть с моей стороны.' }
+    ]},
+
+  { id:'time', icon:'clock', title:'Сроки', sub:'Что говорить клиенту и что держать в голове.',
+    blocks:[
+      { t:'table',
+        head:['Этап','Срок','Кто тормозит чаще'],
+        rows:[
+          ['Разбор ниши и расчёт объёма','1 день','я'],
+          ['Получение данных от клиента','2–7 дней','клиент'],
+          ['10 образцов страниц','2–3 дня','я'],
+          ['Правки и утверждение шаблона','1–3 дня','клиент'],
+          ['Генерация 100 страниц','3–5 дней','я'],
+          ['Генерация 300–1000 страниц','2–4 недели','я'],
+          ['Публикация и техпроверка','1–3 дня','доступы'],
+          ['Индексация первых страниц','2–8 недель','поисковик'],
+          ['Первый устойчивый трафик','1–3 месяца','поисковик']
+        ]},
+      { t:'note', k:'ok', v:'В переписке всегда добавляю запас 30% к своему сроку. Сдать раньше — плюс к репутации, сдать позже — минус к оплате второй части.' }
+    ]},
+
+  { id:'obj', icon:'shield', title:'Возражения', sub:'Короткие ответы, без спора.',
+    blocks:[
+      { t:'table',
+        head:['Возражение','Ответ'],
+        rows:[
+          ['Дорого','Считаем за страницу: 600 ₽ за страницу с ценами, характеристиками и разметкой. Копирайтер берёт 2–5 тысяч за такую же. Можно начать с пилота на 10 страниц.'],
+          ['Это же ИИ-тексты, будет фильтр','Фильтр ловит пустые шаблоны без данных. Каждая страница собирается из ваших фактов и проходит проверку на уникальность, объём и структуру; что не прошло — не публикуется.'],
+          ['У нас уже есть SEO-подрядчик','Отлично, я не конкурирую: он занимается стратегией и ссылками, я закрываю объём страниц, до которого у него не доходят руки. Могу работать через него.'],
+          ['У нас нет таких данных','Данные почти всегда есть: прайс, 1С, каталог, ответы менеджеров. Пришлите что есть, я скажу, чего не хватает.'],
+          ['Сделаем сами на конструкторе','Можно, вопрос объёма: 300 страниц вручную — это месяцы. Плюс уникальность и перелинковка вручную обычно рассыпаются.'],
+          ['Дайте гарантию позиций','Гарантий по позициям не даёт никто честный. Гарантирую объём, качество по шкале и переделку страниц, которые не прошли проверку.'],
+          ['Нужно подумать','Хорошо. Что именно вызывает сомнение: цена, качество текста или сроки? Отвечу по конкретике.']
+        ]}
+    ]},
+
+  { id:'deal', icon:'lock', title:'Оформление и деньги', sub:'Чтобы не спорить потом.',
+    blocks:[
+      { t:'list', v:[
+        'Статус: {самозанятый / ИП}. Чек или счёт после оплаты, оферта на сайте.',
+        'Фиксирую письменно: объём страниц, цена, срок, состав работ, что предоставляет клиент.',
+        'Предоплата 50% — старт работ только после неё.',
+        'Хостинг/домен/доступы — на стороне клиента, я не беру на себя их оплату.',
+        'Правки после сдачи — 7 дней, дальше платно.',
+        'Если клиент задерживает данные больше 7 дней, срок сдвигается на то же количество дней.'
+      ]}
+    ]},
+
+  { id:'after', icon:'redo', title:'После старта', sub:'Процесс и отчётность.',
+    blocks:[
+      { t:'steps', v:[
+        'Загрузил данные в проект, собрал каркас, показал 10 образцов.',
+        'Собрал правки одним списком, поправил шаблон, зафиксировал финальный вид.',
+        'Массовая генерация, проверка качества, отбраковка слабых страниц.',
+        'Публикация, sitemap, проверка индексации в Вебмастере.',
+        'Отчёт через 2, 4 и 8 недель: сколько страниц в индексе, что исключено и почему.',
+        'Допродажа: следующий срез, сопровождение, обновление цен.'
+      ]},
+      { t:'note', k:'ok', v:'Отчёт короткий: три цифры и один вывод. Длинные отчёты никто не читает, но их отсутствие клиенты замечают сразу.' }
+    ]}
+]};
+
+/* ── состояние ─────────────────────────────────────────────────────────── */
+
+let PB = loadPB();
+let EDIT = false;
+let saveTimer = null;
+
+function loadPB() {
+  try {
+    const raw = localStorage.getItem(PB_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.sections)) return d;
+    }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_PB));
+}
+
+function savePB(quiet) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(PB_KEY, JSON.stringify(PB));
+      if (!quiet) setState('Сохранено ' + new Date().toLocaleTimeString('ru-RU').slice(0, 5));
+    } catch (e) { setState('Не удалось сохранить: нет места в браузере'); }
+  }, 250);
+}
+
+function setState(t) { document.getElementById('pbState').textContent = t || ''; }
+function uid() { return 's' + Math.random().toString(36).slice(2, 8); }
+
+/* ── рендер ────────────────────────────────────────────────────────────── */
+
+function e(s) { return (window.escHtml ? escHtml(s) : String(s == null ? '' : s)); }
+function icon(name, size) { return (window.ico ? ico(name, size || 16) : ''); }
+
+/* текст внутри блоков допускает <b> и <br>, всё остальное экранируется */
+function rich(s) {
+  return e(s)
+    .replace(/&lt;(\/?)(b|strong|i|em|code)&gt;/g, '<$1$2>')
+    .replace(/&lt;br\s*\/?&gt;/g, '<br>');
+}
+
+function ed(path, cls, html, tag) {
+  const t = tag || 'div';
+  return `<${t} class="${cls || ''}" data-e="${path}"` +
+         (EDIT ? ' contenteditable="plaintext-only" spellcheck="false"' : '') +
+         `>${html}</${t}>`;
+}
+
+function renderBlock(si, bi, b) {
+  const p = si + '.' + bi;
+  let inner = '';
+
+  if (b.t === 'text') {
+    inner = ed(p + '.v', 'pb-b text', rich(b.v));
+
+  } else if (b.t === 'list' || b.t === 'steps') {
+    const tag = b.t === 'list' ? 'ul' : 'ol';
+    const items = (b.v || []).map((x, ii) =>
+      `<li>${ed(p + '.v.' + ii, '', rich(x), 'span')}` +
+      (EDIT ? ` <button class="pb-mini danger" data-a="delitem" data-p="${p}.${ii}">✕</button>` : '') +
+      `</li>`).join('');
+    inner = `<div class="pb-b"><${tag}>${items}</${tag}>` +
+      (EDIT ? `<div style="margin-top:8px"><button class="pb-mini" data-a="additem" data-p="${p}">+ пункт</button></div>` : '') +
+      `</div>`;
+
+  } else if (b.t === 'note') {
+    inner = `<div class="pb-b">` +
+      ed(p + '.v', 'pb-note ' + (b.k || 'info'), rich(b.v)) +
+      (EDIT ? `<div style="margin-top:6px"><button class="pb-mini" data-a="notekind" data-p="${p}">тип: ${e(b.k || 'info')}</button></div>` : '') +
+      `</div>`;
+
+  } else if (b.t === 'table') {
+    const head = (b.head || []).map((h, ci) =>
+      `<th>${ed(p + '.head.' + ci, '', rich(h), 'span')}</th>`).join('');
+    const rows = (b.rows || []).map((r, ri) =>
+      `<tr>` + r.map((c, ci) => `<td>${ed(p + '.rows.' + ri + '.' + ci, '', rich(c), 'span')}</td>`).join('') +
+      (EDIT ? `<td style="width:38px;border:0;padding:4px"><button class="pb-mini danger" data-a="delrow" data-p="${p}.${ri}">✕</button></td>` : '') +
+      `</tr>`).join('');
+    inner = `<div class="pb-b"><table class="pb-tbl"><thead><tr>${head}` +
+      (EDIT ? '<th style="width:38px;border:0"></th>' : '') +
+      `</tr></thead><tbody>${rows}</tbody></table>` +
+      (EDIT ? `<div style="margin-top:8px;display:flex;gap:6px">` +
+        `<button class="pb-mini" data-a="addrow" data-p="${p}">+ строка</button>` +
+        `<button class="pb-mini" data-a="addcol" data-p="${p}">+ столбец</button>` +
+        `<button class="pb-mini danger" data-a="delcol" data-p="${p}">− столбец</button></div>` : '') +
+      `</div>`;
+
+  } else if (b.t === 'msg') {
+    inner = `<div class="pb-b"><div class="pb-msg">` +
+      `<div class="pb-msg-h">${icon('file', 14)}` +
+      ed(p + '.title', '', rich(b.title || 'Шаблон'), 'span') +
+      `<span class="sp"></span>` +
+      `<button class="pb-mini" data-a="copy" data-p="${p}">Копировать</button></div>` +
+      ed(p + '.v', 'pb-msg-b', rich(b.v)) +
+      `</div></div>`;
+  }
+
+  const ctl = EDIT
+    ? `<div class="pb-brow">` +
+      `<button class="pb-mini" data-a="up" data-p="${p}">↑</button>` +
+      `<button class="pb-mini" data-a="down" data-p="${p}">↓</button>` +
+      `<button class="pb-mini danger" data-a="delblock" data-p="${p}">Удалить блок</button></div>`
+    : '';
+
+  return `<div class="pb-blk" data-blk="${p}">${ctl}${inner}</div>`;
+}
+
+function renderSection(s, si) {
+  const ctl = EDIT
+    ? `<div class="pb-sec-ctl">` +
+      `<button class="pb-mini" data-a="secico" data-p="${si}">значок</button>` +
+      `<button class="pb-mini" data-a="secup" data-p="${si}">↑</button>` +
+      `<button class="pb-mini" data-a="secdown" data-p="${si}">↓</button>` +
+      `<button class="pb-mini danger" data-a="secdel" data-p="${si}">Удалить</button></div>`
+    : `<div class="pb-sec-ctl"><button class="pb-mini" data-a="seccopy" data-p="${si}">Копировать раздел</button></div>`;
+
+  const add = EDIT
+    ? `<div class="pb-add">` +
+      ['text:+ текст', 'list:+ список', 'steps:+ шаги', 'table:+ таблица', 'msg:+ шаблон сообщения', 'note:+ заметка']
+        .map(x => { const [t, l] = x.split(':');
+          return `<button class="pb-mini" data-a="addblock" data-p="${si}" data-t="${t}">${l}</button>`; }).join('') +
+      `</div>`
+    : '';
+
+  return `<section class="pb-sec" id="sec-${e(s.id)}" data-sec="${si}">` +
+    `<div class="pb-sec-h">` +
+      `<span class="pb-sec-ico">${icon(s.icon || 'file', 17)}</span>` +
+      `<h2>${ed(si + '.title', '', e(s.title), 'span')}</h2>${ctl}</div>` +
+    `<p class="pb-sec-sub">${ed(si + '.sub', '', e(s.sub || ''), 'span')}</p>` +
+    (s.blocks || []).map((b, bi) => renderBlock(si, bi, b)).join('') +
+    add +
+  `</section>`;
+}
+
+function render() {
+  document.body.classList.toggle('pb-edit-on', EDIT);
+  document.getElementById('pbMain').innerHTML =
+    PB.sections.map(renderSection).join('') +
+    (EDIT ? `<div class="pb-sec-add"><button class="btn" data-a="addsec">+ Новый раздел</button></div>` : '<div style="height:24px"></div>');
+
+  document.getElementById('pbToc').innerHTML =
+    `<div class="pb-toc-n">Разделы</div>` +
+    PB.sections.map(s =>
+      `<a href="#sec-${e(s.id)}"><span class="i">${icon(s.icon || 'file', 14)}</span>${e(s.title)}</a>`).join('');
+
+  document.getElementById('editBtn').textContent = EDIT ? 'Готово' : 'Режим правки';
+  document.getElementById('editBtn').className = EDIT ? 'btn btn-primary' : 'btn';
+  applySearch();
+  spy();
+}
+
+/* ── правка значений ───────────────────────────────────────────────────── */
+
+function setByPath(path, val) {
+  const p = path.split('.');
+  const s = PB.sections[+p[0]];
+  if (!s) return;
+  if (p[1] === 'title') { s.title = val; return; }
+  if (p[1] === 'sub')   { s.sub = val; return; }
+  const b = s.blocks[+p[1]];
+  if (!b) return;
+  if (p[2] === 'v' && p.length === 3)      b.v = val;
+  else if (p[2] === 'v')                   b.v[+p[3]] = val;
+  else if (p[2] === 'title')               b.title = val;
+  else if (p[2] === 'head')                b.head[+p[3]] = val;
+  else if (p[2] === 'rows')                b.rows[+p[3]][+p[4]] = val;
+}
+
+document.addEventListener('input', ev => {
+  const el = ev.target.closest('[data-e]');
+  if (!el || !EDIT) return;
+  setByPath(el.dataset.e, el.innerText.replace(/\u00a0/g, ' '));
+  setState('Изменения…');
+  savePB();
+});
+
+/* ── кнопки ────────────────────────────────────────────────────────────── */
+
+const NEW_BLOCK = {
+  text:  () => ({ t:'text',  v:'Новый текст.' }),
+  list:  () => ({ t:'list',  v:['Первый пункт'] }),
+  steps: () => ({ t:'steps', v:['Первый шаг'] }),
+  note:  () => ({ t:'note',  k:'info', v:'Важная мысль.' }),
+  table: () => ({ t:'table', head:['Колонка 1','Колонка 2'], rows:[['',''],['','']] }),
+  msg:   () => ({ t:'msg',   title:'Новый шаблон', v:'Текст сообщения…' })
+};
+const NOTE_KINDS = ['info', 'warn', 'ok'];
+const ICO_LIST = ['spark','sheet','bolt','waves','search','download','clock','shield','lock','redo','target','list','file','key','table','pages','radar','info'];
+
+function blockAt(p) { const a = p.split('.'); return PB.sections[+a[0]].blocks[+a[1]]; }
+
+function sectionText(s) {
+  const out = [s.title, s.sub || ''];
+  (s.blocks || []).forEach(b => {
+    if (b.t === 'text' || b.t === 'note') out.push(b.v);
+    else if (b.t === 'list' || b.t === 'steps') out.push((b.v || []).join('\n— '));
+    else if (b.t === 'msg') out.push(b.title + ':\n' + b.v);
+    else if (b.t === 'table') {
+      out.push((b.head || []).join(' | '));
+      (b.rows || []).forEach(r => out.push(r.join(' | ')));
+    }
+  });
+  return out.join('\n').replace(/<\/?[a-z]+>/g, '');
+}
+
+document.addEventListener('click', ev => {
+  const btn = ev.target.closest('[data-a]');
+  if (!btn) return;
+  const a = btn.dataset.a;
+  const p = btn.dataset.p || '';
+  const a0 = p.split('.');
+  const si = +a0[0], bi = +a0[1], k = +a0[2];
+
+  if (a === 'copy' || a === 'seccopy') {
+    const txt = a === 'copy' ? blockAt(p).v : sectionText(PB.sections[si]);
+    navigator.clipboard.writeText(txt).then(() => {
+      const t = btn.textContent; btn.textContent = 'Скопировано';
+      setTimeout(() => { btn.textContent = t; }, 1400);
+    }).catch(() => {});
+    return;
+  }
+
+  if (!EDIT && a !== 'copy' && a !== 'seccopy') return;
+
+  const S = PB.sections;
+  if (a === 'delblock')      S[si].blocks.splice(bi, 1);
+  else if (a === 'up'   && bi > 0) S[si].blocks.splice(bi - 1, 0, S[si].blocks.splice(bi, 1)[0]);
+  else if (a === 'down' && bi < S[si].blocks.length - 1) S[si].blocks.splice(bi + 1, 0, S[si].blocks.splice(bi, 1)[0]);
+  else if (a === 'additem')  blockAt(p).v.push('Новый пункт');
+  else if (a === 'delitem')  S[si].blocks[bi].v.splice(k, 1);
+  else if (a === 'addrow')   { const b = blockAt(p); b.rows.push(b.head.map(() => '')); }
+  else if (a === 'delrow')   S[si].blocks[bi].rows.splice(k, 1);
+  else if (a === 'addcol')   { const b = blockAt(p); b.head.push('Колонка'); b.rows.forEach(r => r.push('')); }
+  else if (a === 'delcol')   { const b = blockAt(p); if (b.head.length > 1) { b.head.pop(); b.rows.forEach(r => r.pop()); } }
+  else if (a === 'notekind') { const b = blockAt(p); b.k = NOTE_KINDS[(NOTE_KINDS.indexOf(b.k || 'info') + 1) % NOTE_KINDS.length]; }
+  else if (a === 'addblock') S[si].blocks.push(NEW_BLOCK[btn.dataset.t]());
+  else if (a === 'secup'   && si > 0) S.splice(si - 1, 0, S.splice(si, 1)[0]);
+  else if (a === 'secdown' && si < S.length - 1) S.splice(si + 1, 0, S.splice(si, 1)[0]);
+  else if (a === 'secico') { const s = S[si]; s.icon = ICO_LIST[(ICO_LIST.indexOf(s.icon) + 1) % ICO_LIST.length]; }
+  else if (a === 'secdel') {
+    if (!confirm('Удалить раздел «' + S[si].title + '»?')) return;
+    S.splice(si, 1);
+  }
+  else if (a === 'addsec') {
+    S.push({ id: uid(), icon:'file', title:'Новый раздел', sub:'Короткое пояснение.',
+             blocks:[{ t:'text', v:'Текст раздела.' }] });
+  }
+  else return;
+
+  savePB();
+  render();
+  if (a === 'addsec') {
+    const last = document.querySelector('#pbMain .pb-sec:last-of-type');
+    if (last) last.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+});
+
+/* ── верхние кнопки ────────────────────────────────────────────────────── */
+
+document.getElementById('editBtn').addEventListener('click', () => {
+  EDIT = !EDIT;
+  render();
+  setState(EDIT ? 'Режим правки: меняйте любой текст прямо на странице' : 'Сохранено');
+});
+
+document.getElementById('pbExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(PB, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'playbook-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+
+document.getElementById('pbImport').addEventListener('click', () => document.getElementById('pbFile').click());
+document.getElementById('pbFile').addEventListener('change', ev => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!d || !Array.isArray(d.sections)) throw 0;
+      PB = d; savePB(); render(); setState('Импортировано');
+    } catch (e) { setState('Файл не похож на экспорт плейбука'); }
+  };
+  r.readAsText(f);
+  ev.target.value = '';
+});
+
+document.getElementById('pbReset').addEventListener('click', () => {
+  if (!confirm('Вернуть исходный текст плейбука? Ваши правки будут потеряны.')) return;
+  PB = JSON.parse(JSON.stringify(DEFAULT_PB));
+  savePB(); render(); setState('Сброшено к исходному');
+});
+
+/* ── поиск ─────────────────────────────────────────────────────────────── */
+
+function applySearch() {
+  const q = (document.getElementById('pbSearch').value || '').trim().toLowerCase();
+  document.querySelectorAll('#pbMain .pb-sec').forEach(el => {
+    const s = PB.sections[+el.dataset.sec];
+    const hit = !q || sectionText(s).toLowerCase().includes(q);
+    el.classList.toggle('pb-hidden', !hit);
+  });
+  document.querySelectorAll('#pbToc a').forEach((el, i) => {
+    const hit = !q || sectionText(PB.sections[i]).toLowerCase().includes(q);
+    el.classList.toggle('pb-hidden', !hit);
+  });
+}
+document.getElementById('pbSearch').addEventListener('input', applySearch);
+
+/* ── подсветка активного раздела ──────────────────────────────────────── */
+
+function spy() {
+  const secs = [...document.querySelectorAll('#pbMain .pb-sec')];
+  const links = [...document.querySelectorAll('#pbToc a')];
+  if (!secs.length) return;
+  const y = window.scrollY + 120;
+  let cur = 0;
+  secs.forEach((s, i) => { if (s.offsetTop <= y) cur = i; });
+  links.forEach(l => l.classList.remove('on'));
+  if (links[cur]) links[cur].classList.add('on');
+}
+window.addEventListener('scroll', () => { clearTimeout(window._pbS); window._pbS = setTimeout(spy, 80); });
+
+/* ── старт ─────────────────────────────────────────────────────────────── */
+
+render();
+setState('Хранится в этом браузере · делайте экспорт');
 </script>
 </body>
 </html>
