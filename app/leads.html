@@ -244,18 +244,17 @@ function renderScan(d) {
   const gap = !!d.sitemap_gap;
   const known = d.pages_known || d.pages_total;
 
-  let srcNote;
-  if (d.source === 'sitemap') srcNote = 'по карте сайта';
-  else if (d.source === 'sitemap+crawl') srcNote = 'карта сайта + обход ссылок';
-  else srcNote = 'обходом ссылок — приблизительно';
+  let srcNote = d.source === 'sitemap'
+    ? 'по карте сайта'
+    : 'обходом ссылок — приблизительно';
   if (det.capped) srcNote += ', упёрлись в лимит';
-  if (gap) srcNote += ' · нашли ' + num(d.pages_total) + ', по индексу больше';
+  if (gap) srcNote += ' · в карте ' + num(d.pages_total) + ', по индексу больше';
 
   const idxSub = d.index_share === null || d.index_share === undefined
     ? escHtml(det.index_note || 'оценка Яндекса')
     : (gap
         ? 'больше, чем в карте сайта — карта неполная'
-        : d.index_share + '% от найденных страниц');
+        : d.index_share + '% от страниц в карте');
 
   const idxCard = d.pages_indexed >= 0
     ? `<div class="scan-card ${!gap && d.index_share !== null && d.index_share < 70 ? 'warn' : 'good'}"
