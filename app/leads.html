@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -31,7 +32,22 @@
   .lead-tbl td.c-name  { width: 22%; max-width: 0; }
   .lead-tbl td.c-cont  { width: 18%; max-width: 0; }
   .lead-tbl td.c-site  { width: 18%; max-width: 0; }
-  .lead-tbl td.c-note  { width: 22%; max-width: 0; }
+  .lead-tbl td.c-note  { width: 26%; max-width: 0; vertical-align: top; }
+
+  /* Заметка больше не однострочный input: в неё пишут по три предложения,
+     и раньше текст уезжал за край ячейки без возможности развернуть. */
+  .note-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .note-src {
+    font-size: 11px; line-height: 1.4; opacity: .7; white-space: pre-wrap;
+    word-break: break-word; cursor: pointer;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .note-src.open { -webkit-line-clamp: unset; }
+  .note-src::before { content: 'ниша: '; opacity: .6; }
+  textarea.note-inp {
+    width: 100%; min-height: 28px; max-height: 240px; resize: vertical;
+    line-height: 1.4; white-space: pre-wrap; overflow-y: auto;
+  }
   /* колонка с кнопками всегда видна */
   .lead-tbl th.td-act, .lead-tbl td.td-act {
     position: sticky; right: 0; z-index: 3;
@@ -466,7 +482,12 @@ function viewRow(l, scan) {
     <td class="num">${pages}</td>
     <td class="num">${indexed}</td>
     <td class="num">${pseo}</td>
-    <td class="c-note"><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
+    <td class="c-note">
+      <div class="note-cell">
+        ${l.comment ? `<div class="note-src" data-act="comment" title="Нажмите, чтобы развернуть">${escHtml(l.comment)}</div>` : ''}
+        <textarea class="lead-inp note-inp" data-act="note" rows="1" placeholder="заметка…">${escHtml(l.admin_note || '')}</textarea>
+      </div>
+    </td>
     <td class="td-act">
       <div class="row-tools">
         <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 14)}</button>
@@ -488,8 +509,8 @@ function editRow(l) {
     </td>
     <td class="c-site"><input class="lead-inp bordered" data-f="site" value="${escAttr(l.site || '')}" placeholder="example.ru"></td>
     <td class="c-status"><select class="input input-sm lead-sel" data-f="status">${opts}</select></td>
-    <td colspan="3"><input class="lead-inp bordered" data-f="comment" value="${escAttr(l.comment || '')}" placeholder="ниша, заметка о компании"></td>
-    <td class="c-note"><input class="lead-inp bordered" data-f="admin_note" value="${escAttr(l.admin_note || '')}" placeholder="внутренняя заметка"></td>
+    <td colspan="3"><textarea class="lead-inp bordered note-inp" data-f="comment" rows="2" placeholder="ниша, заметка о компании">${escHtml(l.comment || '')}</textarea></td>
+    <td class="c-note"><textarea class="lead-inp bordered note-inp" data-f="admin_note" rows="2" placeholder="внутренняя заметка">${escHtml(l.admin_note || '')}</textarea></td>
     <td class="td-act">
       <div class="row-tools">
         <button class="btn btn-sm btn-primary" data-act="save" type="button">Сохр.</button>
@@ -518,13 +539,21 @@ function renderLeads() {
       <thead><tr>
         <th>Компания</th><th>Контакт</th><th>Сайт</th><th>Статус</th>
         <th class="num">Стр.</th><th class="num">В инд.</th><th class="num">pSEO</th>
-        <th>Заметка</th><th class="td-act">Действия</th>
+        <th>Ниша и заметка</th><th class="td-act">Действия</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
 
   metrics();
   bindRows();
+}
+
+/* Текстовое поле растёт под содержимое: заметку на три строки больше
+   не приходится угадывать по обрезанному куску. */
+function autoGrow(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight + 2, 240) + 'px';
 }
 
 function bindRows() {
@@ -546,10 +575,15 @@ function bindRows() {
         } catch (e) { toast.err('Не сохранилось', e); }
       };
 
+      const src = tr.querySelector('[data-act="comment"]');
+      if (src) src.onclick = () => src.classList.toggle('open');
+
       const note = tr.querySelector('[data-act="note"]');
       if (note) {
+        autoGrow(note);
         let timer = null;
         note.oninput = () => {
+          autoGrow(note);
           clearTimeout(timer);
           timer = setTimeout(async () => {
             try {
@@ -574,6 +608,11 @@ function bindRows() {
     }
 
     /* ---------- режим правки ---------- */
+    tr.querySelectorAll('textarea.note-inp').forEach(el => {
+      autoGrow(el);
+      el.addEventListener('input', () => autoGrow(el));
+    });
+
     const val = f => {
       const el = tr.querySelector(`[data-f="${f}"]`);
       return el ? el.value.trim() : '';
@@ -752,4 +791,3 @@ document.addEventListener('keydown', e => {
 
 </body>
 </html>
-
