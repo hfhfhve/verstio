@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: ba5246b2330d80b53509c7f9de48ee757c5a40b8
-# built:  2026-09-19 19:41 UTC
+# commit: 039bd73a8b53760c7e53cc111dccfb4382303057
+# built:  2026-09-20 07:57 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -12,7 +12,7 @@ privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2174 строк)
 app/index.html  (452 строк)
-app/leads.html  (738 строк)
+app/leads.html  (745 строк)
 app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
@@ -4813,23 +4813,29 @@ load();
 </script>
 <style>
   /* Стили только для этой страницы: в общий style.css не лезем, чтобы ничего не сломать. */
-  .tbl-x { overflow-x: auto; }
-  .lead-tbl { width: 100%; min-width: 880px; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
+  .tbl-x { overflow-x: auto; overflow-y: visible; }
+  /* table-layout: auto — колонки сами договариваются о ширине, ничего не расползается */
+  .lead-tbl { width: 100%; min-width: 1000px; border-collapse: collapse; font-size: 12.5px; table-layout: auto; }
   .lead-tbl th {
     text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .03em;
-    text-transform: uppercase; opacity: .55; padding: 6px 8px; border-bottom: 1px solid var(--line, #2a2f36);
+    text-transform: uppercase; opacity: .55; padding: 6px 10px; border-bottom: 1px solid var(--line, #2a2f36);
     white-space: nowrap;
   }
-  .lead-tbl td { padding: 5px 8px; border-bottom: 1px solid var(--line, #23272d); vertical-align: middle; }
+  .lead-tbl td { padding: 6px 10px; border-bottom: 1px solid var(--line, #23272d); vertical-align: middle; }
   .lead-tbl tr:hover td { background: rgba(127,127,127,.06); }
   .lead-tbl .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .lead-tbl td, .lead-tbl th { overflow: hidden; text-overflow: ellipsis; }
-  .cell-wrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* обрезаем текст только внутри ячейки, а не саму ячейку — иначе режет кнопки и ломает sticky */
+  .cell-wrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .lead-tbl td.c-name  { width: 22%; max-width: 0; }
+  .lead-tbl td.c-cont  { width: 18%; max-width: 0; }
+  .lead-tbl td.c-site  { width: 18%; max-width: 0; }
+  .lead-tbl td.c-note  { width: 22%; max-width: 0; }
   /* колонка с кнопками всегда видна */
   .lead-tbl th.td-act, .lead-tbl td.td-act {
-    position: sticky; right: 0; z-index: 2; padding-left: 6px;
+    position: sticky; right: 0; z-index: 3;
+    width: 1%; white-space: nowrap; padding-left: 10px; padding-right: 10px;
     background: var(--surface, #14181d);
-    box-shadow: -8px 0 8px -8px rgba(0,0,0,.45);
+    box-shadow: -10px 0 10px -10px rgba(0,0,0,.5);
   }
   .lead-tbl tr:hover td.td-act { background: var(--surface-2, #1a1f26); }
   .lead-tbl tr.is-editing td.td-act { background: var(--surface-2, #1a1f26); }
@@ -4853,10 +4859,15 @@ load();
   .sec-chip {
     border: 1px solid var(--line, #2a2f36); border-radius: 999px; padding: 3px 9px; font-size: 12px;
   }
-  .row-tools { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: nowrap; }
-  .row-tools .btn-sm { height: 24px; padding: 0 8px; font-size: 11.5px; }
-  .row-tools .icon-btn { width: 24px; height: 24px; min-height: 0; }
-  .row-tools .btn { min-height: 0; }
+  .row-tools { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: nowrap; align-items: center; }
+  .row-tools .btn, .row-tools .btn-sm {
+    height: 26px; min-height: 26px; padding: 0 10px; font-size: 11.5px; flex: none;
+  }
+  .row-tools .icon-btn {
+    width: 26px; height: 26px; min-width: 26px; min-height: 26px; flex: none;
+    display: grid; place-items: center;
+  }
+  .row-tools .icon-btn svg { display: block; }
   .lead-empty { padding: 26px; text-align: center; opacity: .6; font-size: 13px; }
   .lead-tbl tr.is-editing td { background: rgba(39,131,222,.06); }
   .lead-inp.bordered { border-color: var(--line, #2a2f36); }
@@ -5232,17 +5243,17 @@ function viewRow(l, scan) {
   const pseo = scan ? num(scan.pseo_base) : '—';
 
   return `<tr data-id="${l.id}">
-    <td>
+    <td class="c-name">
       <div class="cell-wrap"><b>${escHtml(l.name || 'Без названия')}</b></div>
       <div class="muted cell-wrap" style="font-size:10.5px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
     </td>
-    <td><div class="cell-wrap">${contact}</div></td>
-    <td><div class="cell-wrap">${siteCell}</div></td>
-    <td><select class="input input-sm lead-sel" data-act="status">${opts}</select></td>
+    <td class="c-cont"><div class="cell-wrap">${contact}</div></td>
+    <td class="c-site"><div class="cell-wrap">${siteCell}</div></td>
+    <td class="c-status"><select class="input input-sm lead-sel" data-act="status">${opts}</select></td>
     <td class="num">${pages}</td>
     <td class="num">${indexed}</td>
     <td class="num">${pseo}</td>
-    <td><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
+    <td class="c-note"><input class="lead-inp" data-act="note" value="${escAttr(l.admin_note || '')}" placeholder="заметка…"></td>
     <td class="td-act">
       <div class="row-tools">
         <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 14)}</button>
@@ -5257,15 +5268,15 @@ function editRow(l) {
     `<option value="${k}"${l.status === k ? ' selected' : ''}>${STATUS[k].label}</option>`).join('');
 
   return `<tr data-id="${l.id}" class="is-editing">
-    <td><input class="lead-inp bordered" data-f="name" value="${escAttr(l.name || '')}" placeholder="компания"></td>
-    <td>
+    <td class="c-name"><input class="lead-inp bordered" data-f="name" value="${escAttr(l.name || '')}" placeholder="компания"></td>
+    <td class="c-cont">
       <input class="lead-inp bordered" data-f="email" value="${escAttr(l.email || '')}" placeholder="почта">
       <input class="lead-inp bordered" data-f="phone" value="${escAttr(l.phone || '')}" placeholder="телефон / @ник" style="margin-top:4px">
     </td>
-    <td><input class="lead-inp bordered" data-f="site" value="${escAttr(l.site || '')}" placeholder="example.ru"></td>
-    <td><select class="input input-sm lead-sel" data-f="status">${opts}</select></td>
+    <td class="c-site"><input class="lead-inp bordered" data-f="site" value="${escAttr(l.site || '')}" placeholder="example.ru"></td>
+    <td class="c-status"><select class="input input-sm lead-sel" data-f="status">${opts}</select></td>
     <td colspan="3"><input class="lead-inp bordered" data-f="comment" value="${escAttr(l.comment || '')}" placeholder="ниша, заметка о компании"></td>
-    <td><input class="lead-inp bordered" data-f="admin_note" value="${escAttr(l.admin_note || '')}" placeholder="внутренняя заметка"></td>
+    <td class="c-note"><input class="lead-inp bordered" data-f="admin_note" value="${escAttr(l.admin_note || '')}" placeholder="внутренняя заметка"></td>
     <td class="td-act">
       <div class="row-tools">
         <button class="btn btn-sm btn-primary" data-act="save" type="button">Сохр.</button>
@@ -5291,15 +5302,10 @@ function renderLeads() {
 
   box.innerHTML =
     `<div class="tbl-x"><table class="lead-tbl">
-      <colgroup>
-        <col style="width:19%"><col style="width:16%"><col style="width:15%">
-        <col style="width:108px"><col style="width:64px"><col style="width:72px">
-        <col style="width:60px"><col><col style="width:104px">
-      </colgroup>
       <thead><tr>
         <th>Компания</th><th>Контакт</th><th>Сайт</th><th>Статус</th>
         <th class="num">Стр.</th><th class="num">В инд.</th><th class="num">pSEO</th>
-        <th>Заметка</th><th class="td-act"></th>
+        <th>Заметка</th><th class="td-act">Действия</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
