@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 0a8c627cfd82521dbb65f01bf882e935776b7bf1
-# built:  2026-09-20 12:25 UTC
+# commit: d6d083ddfe52a026e0287a99104e67a82c45e718
+# built:  2026-09-20 12:45 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -4357,7 +4357,7 @@ guardCabinet();
 <meta name="viewport" content="width=1280" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Разведка — Verstio</title>
-<link rel="stylesheet" href="style.css?v=52" />
+<link rel="stylesheet" href="style.css?v=53" />
 <script>
   /* Тема выставляется до отрисовки, как на остальных страницах кабинета.
      Без этого боковая панель и другие блоки брали светлые переменные
@@ -4373,32 +4373,32 @@ guardCabinet();
   .hunt-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
   .hunt-tbl th {
     text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--muted, #8b8b8b); font-weight: 600; padding: 8px 10px;
-    border-bottom: 1px solid var(--line, #e6e6e6); white-space: nowrap;
+    color: var(--muted); font-weight: 600; padding: 8px 10px;
+    border-bottom: 1px solid var(--line); white-space: nowrap;
   }
-  .hunt-tbl td { padding: 10px; border-bottom: 1px solid var(--line, #eee); vertical-align: top; }
-  .hunt-tbl tbody tr:hover { background: var(--hover, rgba(0,0,0,.02)); }
+  .hunt-tbl td { padding: 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  .hunt-tbl tbody tr:hover { background: var(--surface-2); }
 
   .c-score { width: 64px; }
   .score-num { font-size: 22px; font-weight: 700; line-height: 1; }
   .score-hi { color: #1a8f4a; }
   .score-mid { color: #b07a00; }
-  .score-low { color: var(--muted, #999); }
+  .score-low { color: var(--muted); }
   .score-bars { display: flex; gap: 2px; margin-top: 6px; }
-  .score-bars i { display: block; height: 3px; width: 12px; border-radius: 2px; background: #ddd; }
+  .score-bars i { display: block; height: 3px; width: 12px; border-radius: 2px; background: var(--line-strong); }
   .score-bars i.on { background: currentColor; }
 
   .c-name b { font-weight: 600; }
-  .c-name .sub { color: var(--muted, #8b8b8b); font-size: 12px; margin-top: 2px; }
+  .c-name .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
   .num-cell { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .dim { color: var(--muted, #9a9a9a); }
+  .dim { color: var(--muted); }
 
   /* Чипы-признаки: короткое объяснение, почему строка интересна. */
   .chips { display: flex; flex-wrap: wrap; gap: 4px; }
   .chip {
     display: inline-block; padding: 2px 7px; border-radius: 999px;
-    font-size: 11px; line-height: 16px; border: 1px solid var(--line, #e2e2e2);
-    background: var(--chip-bg, #fafafa); white-space: nowrap;
+    font-size: 11px; line-height: 16px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--text); white-space: nowrap;
   }
   .chip.good { border-color: #b8e0c6; background: #eefaf2; color: #12693a; }
   .chip.warn { border-color: #f0dca8; background: #fdf7e6; color: #8a6400; }
@@ -4408,33 +4408,33 @@ guardCabinet();
   .c-act { width: 190px; }
   .act-row { display: flex; gap: 6px; flex-wrap: wrap; opacity: 1; }
 
-  .hunt-empty { padding: 32px 12px; text-align: center; color: var(--muted, #8b8b8b); }
+  .hunt-empty { padding: 32px 12px; text-align: center; color: var(--muted); }
   .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .filters .input, .filters select { min-width: 0; }
   .flag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
 
   .runs { display: flex; gap: 10px; flex-wrap: wrap; }
   .run-card {
-    border: 1px solid var(--line, #e6e6e6); border-radius: 10px;
+    border: 1px solid var(--line); border-radius: 10px;
     padding: 10px 12px; min-width: 190px;
   }
-  .run-card .k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted, #999); }
+  .run-card .k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   .run-card .v { font-weight: 600; margin-top: 2px; }
-  .run-card .s { font-size: 12px; color: var(--muted, #8b8b8b); margin-top: 6px; }
+  .run-card .s { font-size: 12px; color: var(--muted); margin-top: 6px; }
 
   /* Карточка кандидата выезжает справа, чтобы не терять место в списке. */
   .drawer {
     position: fixed; top: 0; right: 0; bottom: 0; width: 420px; z-index: 60;
-    background: var(--card, #fff); border-left: 1px solid var(--line, #e6e6e6);
-    box-shadow: -18px 0 40px rgba(0,0,0,.08); transform: translateX(100%);
+    background: var(--surface); color: var(--text); border-left: 1px solid var(--line);
+    box-shadow: -18px 0 40px rgba(0,0,0,.28); transform: translateX(100%);
     transition: transform .18s ease; overflow: auto; padding: 18px 18px 40px;
   }
   .drawer.open { transform: translateX(0); }
   .drawer h3 { margin: 0 0 2px; font-size: 17px; }
-  .drawer .muted { color: var(--muted, #8b8b8b); font-size: 13px; }
+  .drawer .muted { color: var(--muted); font-size: 13px; }
   .meter { margin: 14px 0 4px; }
   .meter .lbl { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
-  .meter .bar { height: 8px; border-radius: 6px; background: #eee; overflow: hidden; }
+  .meter .bar { height: 8px; border-radius: 6px; background: var(--surface-3); overflow: hidden; }
   .meter .bar i { display: block; height: 100%; background: #2f6fed; }
   .meter.m2 .bar i { background: #1a8f4a; }
   .meter.m3 .bar i { background: #b07a00; }
