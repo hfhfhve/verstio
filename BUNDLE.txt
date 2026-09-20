@@ -1,13 +1,13 @@
 # Verstio Frontend — снимок репозитория
-# commit: 03b7dcc3bf456c5af3608a7c30680ceea4ed621d
-# built:  2026-09-20 18:21 UTC
+# commit: 70bb93aa2663fe1d45a9eb042be9ffde47d0dbdb
+# built:  2026-09-20 21:29 UTC
 
 ## Состав
 CNAME  (1 строк)
 README.md  (3 строк)
 data.html  (702 строк)
-index.html  (1054 строк)
-offer.html  (230 строк)
+index.html  (1236 строк)
+offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2183 строк)
@@ -750,12 +750,12 @@ pre .h{color:#7FB3EB}
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Verstio — программный SEO с измеримым качеством каждой страницы</title>
-<meta name="description" content="Verstio собирает pSEO-страницы на пяти системах добавленной ценности: паспорт данных, каркас и схема полей, анализ добавленной ценности страницы, гейт качества из 16 измерений и контроль в Яндекс.Вебмастере и Search Console после публикации.">
+<title>Verstio — программный SEO: платите только за страницы, попавшие в индекс</title>
+<meta name="description" content="pSEO-страницы с измеримым качеством: бесплатный пилот на 20 страниц, фиксированный запуск от 30 000 ₽ и оплата только за страницы, попавшие в индекс на 90-й день. Проверка по Яндекс.Вебмастеру.">
 <link rel="canonical" href="https://verstio.ru/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Verstio — программный SEO с измеримым качеством">
-<meta property="og:description" content="Не 2000 текстов от ИИ и не копирайтеры на потоке. Пять систем добавленной ценности: данные, каркас, анализ добавленной ценности, гейт качества и контроль после публикации.">
+<meta property="og:title" content="Verstio — платите только за страницы, попавшие в индекс">
+<meta property="og:description" content="Не 2000 текстов от ИИ и не копирайтеры на потоке. Бесплатный пилот на 20 страниц, балл качества по каждой странице и оплата по факту индексации.">
 <meta property="og:url" content="https://verstio.ru/">
 <meta property="og:image" content="https://verstio.ru/assets/hero.webp">
 <meta name="theme-color" content="#0D1013">
@@ -783,7 +783,7 @@ pre .h{color:#7FB3EB}
   --amber:#C9902F;
   --shell:1180px;
   --gut:clamp(20px,5vw,64px);
-  --band:clamp(72px,9vw,132px);
+  --band:clamp(60px,7.2vw,104px);
   --serif:'Instrument Serif',Georgia,serif;
   --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --ease:cubic-bezier(.2,.8,.2,1);
@@ -984,6 +984,81 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .reveal.is-in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── герой: плотнее, без пустот ───────────────────── */
+.hero{padding-top:clamp(36px,4.6vw,64px);padding-bottom:clamp(30px,3.6vw,48px)}
+.hero-grid{align-items:center;gap:clamp(24px,3.2vw,48px)}
+.hero h1{font-size:clamp(32px,4.1vw,52px);line-height:1.08}
+.hero .lede{margin-top:18px;max-width:54ch;font-size:clamp(15.5px,1.15vw,17.5px)}
+.hero .btn-row{margin-top:26px}
+.hero-note{margin-top:22px}
+.offer{display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;padding:7px 14px;border:1px solid rgba(94,159,232,.45);background:rgba(94,159,232,.1);border-radius:100px;font-size:14px;color:#BFD8F5}
+.offer i{width:6px;height:6px;border-radius:50%;background:var(--blue);font-style:normal;flex:none}
+
+/* полоса фактов под героем */
+.strip{border-top:1px solid var(--line-d);border-bottom:1px solid var(--line-d);background:var(--ink-2)}
+.strip-in{max-width:var(--shell);margin:0 auto;padding:22px var(--gut);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 28px}
+.strip-i b{display:block;font-family:var(--serif);font-size:clamp(24px,2.5vw,32px);line-height:1;color:#F4F1EB;margin-bottom:7px}
+.strip-i span{font-size:14px;color:var(--dim-d);line-height:1.5;display:block;max-width:26ch}
+
+/* ── прайс ────────────────────────────────────────── */
+.price-hero{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2vw,24px);margin-bottom:clamp(28px,3vw,40px)}
+.pcard{background:var(--paper-3);border:1px solid var(--line-l);border-radius:14px;padding:24px;display:flex;flex-direction:column}
+.pcard--key{background:#12161A;border-color:#12161A;color:var(--paper-3)}
+.pstep{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim-l);margin:0 0 14px}
+.pnum{font-family:var(--serif);font-size:clamp(30px,3.4vw,42px);line-height:1;color:#16191D;margin:0 0 6px}
+.pnum small{font-family:var(--sans);font-size:14px;color:var(--dim-l);display:block;margin-top:8px;line-height:1.45}
+.pcard h3{font-size:17px;color:#16191D;margin:0 0 10px}
+.pcard p{color:var(--dim-l);font-size:15px;margin:0;line-height:1.55}
+.pcard--key h3,.pcard--key .pnum{color:#F4F1EB}
+.pcard--key p{color:#AEB5BE}
+.pcard--key .pstep{color:#7F8A97}
+.pcard--key .pnum small{color:#8E98A4}
+.pcard .pfoot{margin-top:auto;padding-top:16px}
+
+.ptable{width:100%;border-collapse:collapse;font-size:15.5px;margin:0 0 18px}
+.ptable th{text-align:left;font-weight:600;font-size:13.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--dim-l);padding:0 14px 11px;border-bottom:1px solid var(--line-l)}
+.ptable td{padding:15px 14px;border-bottom:1px solid var(--line-l);vertical-align:top;color:#22262B}
+.ptable td:first-child{width:42%}
+.ptable td b{font-weight:500;color:#16191D;display:block}
+.ptable td em{font-style:normal;color:var(--dim-l);font-size:14px;display:block;margin-top:4px}
+.ptable .num{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:500;color:#16191D}
+.ptable tr:last-child td{border-bottom:0}
+
+.calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line-l);border:1px solid var(--line-l);border-radius:12px;overflow:hidden;margin-top:6px}
+.calc div{background:var(--paper-3);padding:18px 20px}
+.calc b{display:block;font-family:var(--serif);font-size:clamp(22px,2.4vw,30px);color:#16191D;line-height:1;margin-bottom:8px}
+.calc span{font-size:14px;color:var(--dim-l);line-height:1.5;display:block}
+
+.rescue{margin-top:clamp(28px,3vw,40px);background:#12161A;border-radius:14px;padding:clamp(24px,3vw,34px);color:var(--text-d)}
+.rescue h3{color:#F4F1EB;font-size:20px;margin:0 0 10px}
+.rescue .kicker{color:#7F8A97;border-color:var(--line-d)}
+.rescue p{color:#A9B1BB;font-size:15.5px;margin:0;line-height:1.6}
+.rescue .facts li{color:#C2C8D0}
+.rlist{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:0}
+.rlist li{display:grid;grid-template-columns:1fr auto;gap:12px;padding:13px 0;border-top:1px solid var(--line-d);font-size:15.5px;color:#C2C8D0;align-items:baseline}
+.rlist li b{color:#F4F1EB;font-weight:500;white-space:nowrap}
+
+/* короткий призыв */
+.cta{background:var(--paper-2);color:var(--text-l)}
+.cta-in{max-width:var(--shell);margin:0 auto;padding:clamp(34px,4vw,54px) var(--gut);display:flex;flex-wrap:wrap;gap:22px 34px;align-items:center;justify-content:space-between}
+.cta-in h2{font-size:clamp(24px,2.8vw,34px);color:#16191D;max-width:22ch}
+.cta-in p{margin:10px 0 0;color:var(--dim-l);font-size:16px;max-width:52ch}
+.cta .btn{background:#12161A;color:var(--paper-3);border-color:#12161A}
+
+@media (max-width:920px){
+  .strip-in{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .price-hero,.calc{grid-template-columns:1fr}
+  .calc{gap:1px}
+  .ptable td:first-child{width:auto}
+  .ptable,.ptable tbody,.ptable tr,.ptable td{display:block;width:100%}
+  .ptable thead{display:none}
+  .ptable tr{border-bottom:1px solid var(--line-l);padding:14px 0}
+  .ptable tr:last-child{border-bottom:0}
+  .ptable td{border:0;padding:3px 0}
+  .ptable td.num::before{content:attr(data-l) " ";color:var(--dim-l);font-weight:400;text-transform:none;letter-spacing:0}
+  .rlist li{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -992,13 +1067,12 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   <div class="top-in">
     <a class="brand" href="#top">Verstio</a>
     <nav class="top-nav">
+      <a href="#pricing">Оплата</a>
+      <a href="#form">Заявка</a>
       <a href="#what">Что это такое</a>
       <a href="#pipeline">Как это работает</a>
       <a href="#score">Оценка качества</a>
-      <a href="#after">После публикации</a>
       <a href="#cases">Примеры задач</a>
-      <a href="#deliver">Что вы получаете</a>
-      <a href="#pricing">Оплата</a>
     </nav>
     <a class="btn" href="#form">Обсудить проект</a>
   </div>
@@ -1010,14 +1084,14 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 <section class="band hero shell">
   <div class="hero-grid">
     <div>
-      <p class="kicker">Программный SEO для малого и среднего бизнеса</p>
-      <h1>Мы не пишем две тысячи страниц.<br>Мы их <em>измеряем</em> и публикуем только те, что выживут в индексе.</h1>
-      <p class="lede">Verstio — небольшая студия с собственной системой pSEO. За каждой страницей работают пять систем добавленной ценности: паспорт данных, проектирование каркаса и схемы полей, анализ добавленной ценности страницы, гейт качества из девяти блокеров и шестнадцати измерений и контроль после публикации. На выходе — балл от 0 до 100 и объяснение, где именно страница теряет баллы.</p>
+      <p class="offer"><i></i>Оплата только за страницы, попавшие в индекс</p>
+      <h1>Мы не пишем две тысячи страниц. Мы их <em>измеряем</em> и публикуем только те, что выживут в индексе.</h1>
+      <p class="lede">Программный SEO для малого и среднего бизнеса. Каждая страница проходит гейт качества до публикации и получает балл от 0 до 100. На 90-й день считаем, сколько страниц оказалось в поиске — платите только за них.</p>
       <div class="btn-row">
-        <a class="btn" href="#form">Оставить заявку</a>
-        <a class="btn btn--ghost" href="#pipeline">Посмотреть конвейер</a>
+        <a class="btn" href="#form">Получить бесплатный пилот</a>
+        <a class="btn btn--ghost" href="#pricing">Сколько это стоит</a>
       </div>
-      <p class="hero-note">Бесплатный разбор до начала работы: скажем честный потолок страниц, чем ваши страницы будут полезнее того, что уже есть в выдаче, и чего не хватает для этого сейчас.</p>
+      <p class="hero-note">Пилот на 20 страниц — бесплатно. До него — разбор данных: скажем честный потолок страниц и чем ваши страницы будут полезнее того, что уже есть в выдаче.</p>
     </div>
 
     <div class="card" aria-label="Пример отчёта по странице">
@@ -1044,6 +1118,216 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
         <span>Теряем: живость −3,4</span>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ПОЛОСА ФАКТОВ -->
+<section class="strip">
+  <div class="strip-in">
+    <div class="strip-i"><b>0 ₽</b><span>пилот на 20 страниц, до любых договорённостей</span></div>
+    <div class="strip-i"><b>90 дней</b><span>расчётный период: считаем, что попало в индекс</span></div>
+    <div class="strip-i"><b>0–100</b><span>балл по каждой странице до публикации</span></div>
+    <div class="strip-i"><b>от 100</b><span>минимальный объём проекта, страниц</span></div>
+  </div>
+</section>
+
+<!-- ОПЛАТА -->
+<section class="band band--paper" id="pricing">
+  <div class="shell">
+    <div class="head">
+      <p class="kicker">Оплата</p>
+      <h2>Вы платите только за страницы, попавшие в индекс</h2>
+      <p class="lede">Обычно за pSEO берут помесячно или за объём выгрузки — и неважно, увидел ли эти страницы поиск. У нас иначе: фиксированная стоимость запуска, а дальше — оплата за каждую страницу, которая через 90 дней есть в поиске. Остальные не оплачиваются.</p>
+    </div>
+
+    <div class="price-hero">
+      <div class="pcard">
+        <p class="pstep">Шаг 1 · пилот</p>
+        <div class="pnum">0 ₽<small>20 страниц, 7–10 дней</small></div>
+        <h3>Сначала показываем, потом считаем деньги</h3>
+        <p>Собираем 20 страниц на ваших данных и отдаём с отчётом: балл по каждой, где теряет, что можно усилить. Ничего не платите и ничем не обязаны.</p>
+      </div>
+
+      <div class="pcard pcard--key">
+        <p class="pstep">Шаг 2 · запуск</p>
+        <div class="pnum">от 30 000 ₽<small>разово, до первой партии</small></div>
+        <h3>Датасет, шаблон, интеграция</h3>
+        <p>Самая тяжёлая часть работы: паспорт данных, каркас страницы и схема полей, логика перелинковки, выгрузка в вашу CMS. Делается один раз и одинакова для сотни страниц и для десяти тысяч.</p>
+      </div>
+
+      <div class="pcard">
+        <p class="pstep">Шаг 3 · страницы</p>
+        <div class="pnum">от 250 ₽<small>за проиндексированную страницу</small></div>
+        <h3>Считаем на 90-й день</h3>
+        <p>Публикуем волнами, отправляем в индекс через IndexNow и sitemap, каждую неделю присылаем отчёт. На 90-й день считаем, сколько страниц в поиске, — счёт выставляется только за них.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 style="color:#16191D;margin-bottom:16px">Прайс</h3>
+      <table class="ptable">
+        <thead>
+          <tr><th>Проект</th><th>Запуск</th><th>За проиндексированную страницу</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>До 500 страниц</b><em>один шаблон, типовая CMS</em></td>
+            <td class="num" data-l="Запуск:">30 000 ₽</td>
+            <td class="num" data-l="За страницу:">450 ₽</td>
+          </tr>
+          <tr>
+            <td><b>500 – 5 000 страниц</b><em>один-два шаблона</em></td>
+            <td class="num" data-l="Запуск:">60 000 ₽</td>
+            <td class="num" data-l="За страницу:">375 ₽</td>
+          </tr>
+          <tr>
+            <td><b>От 5 000 страниц</b><em>несколько шаблонов и источников данных</em></td>
+            <td class="num" data-l="Запуск:">60 000 ₽<em>+ 40 000 ₽ за каждый следующий шаблон</em></td>
+            <td class="num" data-l="За страницу:">250 ₽</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="hint" style="margin:0 0 20px">Нестандартный источник данных или интеграция через API — плюс 30 000 ₽ к запуску. Минимальный объём проекта — 100 страниц.</p>
+
+      <h3 style="color:#16191D;margin:0 0 6px">Сколько получится у вас</h3>
+      <p class="hint" style="margin:0 0 14px">Расчёт при индексации 80% — это типичный результат на здоровом домене с нормальными данными.</p>
+      <div class="calc">
+        <div><b>≈ 66 000 ₽</b><span>100 страниц: 30 000 ₽ запуск + 80 проиндексированных по 450 ₽</span></div>
+        <div><b>≈ 210 000 ₽</b><span>500 страниц: 30 000 ₽ запуск + 400 проиндексированных по 450 ₽</span></div>
+        <div><b>≈ 1 560 000 ₽</b><span>5 000 страниц: 60 000 ₽ запуск + 4 000 проиндексированных по 375 ₽</span></div>
+      </div>
+    </div>
+
+    <div class="cols cols-2" style="margin-top:clamp(28px,3vw,40px);align-items:start">
+      <div class="panel">
+        <h3 style="color:#16191D;margin-bottom:14px">Что считается проиндексированной страницей</h3>
+        <ul class="facts">
+          <li>Страница имеет статус присутствия в поиске в <b>Яндекс.Вебмастере</b> на 90-й день после публикации. Это проверяемо в вашем же кабинете.</li>
+          <li>Позиции и трафик значения не имеют — только факт присутствия в поиске. Обещать позиции мы не можем и не будем.</li>
+          <li>Индексация в Google показывается в отчёте дополнительно: она наступает раньше и помогает нам увидеть проблему заранее.</li>
+          <li>Страница, не попавшая в индекс за 90 дней, дорабатывается или заменяется бесплатно. Не попала после этого — не оплачивается вовсе.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3 style="color:#16191D;margin-bottom:14px">Как идут деньги</h3>
+        <ul class="facts">
+          <li><b>Запуск</b> оплачивается полностью до начала работ — это фиксированная часть, она не зависит от индексации.</li>
+          <li><b>Аванс за партию</b> — половина от суммы при консервативном прогнозе индексации. Остальное на 90-й день по факту.</li>
+          <li>Если фактическая индексация оказалась ниже аванса, разница переносится в следующую партию, а не сгорает.</li>
+          <li>Крупные объёмы идут волнами по 200–3 000 страниц: так их успевает переварить робот, а вы платите частями.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rescue">
+      <p class="kicker">Отдельный случай</p>
+      <h3>У вас уже есть pSEO, и оно не работает</h3>
+      <p>Сайт, на котором тысячи страниц висят со статусом «недостаточно качественная» — это не просто потерянные деньги. Это испорченная репутация домена и выжранный краулинговый бюджет, из-за которых не индексируются и нормальные страницы. Такие проекты мы берём отдельным порядком.</p>
+      <ul class="rlist">
+        <li><span>Скан 20 существующих страниц: балл по каждой, где теряют</span><b>0 ₽</b></li>
+        <li><span>Аудит всего массива: карта «спасать / переписать / удалить», оценка потерь</span><b>от 40 000 ₽</b></li>
+        <li><span>Расчистка: удаление мусора, склейка дублей, sitemap, переобход</span><b>60 000 – 100 000 ₽</b></li>
+        <li><span>Реанимация страниц — по той же модели, за вернувшуюся в индекс</span><b>300 ₽</b></li>
+      </ul>
+      <p style="margin-top:18px;font-size:14.5px;color:#8E98A4">Пока домен не пришёл в норму, оплата за индексацию не применяется: расчищать чужие последствия за процент от результата нечестно по отношению к самим себе. После восстановления переходим на обычную схему.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ФОРМА -->
+<section class="band band--ink-2" id="form">
+  <div class="shell lead">
+    <div>
+      <p class="kicker">Заявка</p>
+      <h2>Начнём с бесплатного пилота</h2>
+      <p class="lede">Расскажите про проект — вернёмся с вердиктом: сколько страниц реально можно сделать на ваших данных, каких колонок не хватает и сколько это будет стоить. Если всё сходится, собираем 20 страниц бесплатно. Ответ в течение рабочего дня.</p>
+      <ul class="contact">
+        <li><span>Заявки и вопросы</span><a href="mailto:hello@verstio.ru">hello@verstio.ru</a></li>
+        <li><span>Поддержка</span><a href="mailto:support@verstio.ru">support@verstio.ru</a></li>
+        <li><span>Телеграм</span><a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a></li>
+      </ul>
+      <p class="signed">
+        <b>Тимур Рахимзянов</b>
+        Отвечаю на заявки и веду проекты сам — от разбора данных до отчёта после публикации.
+        Работаю по <a href="/offer.html">договору-оферте</a>: пилот бесплатный, дальше — фиксированный запуск и оплата за страницы, попавшие в индекс. На каждую оплату приходит чек.
+      </p>
+      <figure class="figure" style="margin-top:28px">
+        <img src="assets/studio.webp" alt="Рабочий стол студии: таблица данных и разложенные макеты страниц" loading="lazy">
+      </figure>
+    </div>
+
+    <form class="form" id="leadForm" novalidate>
+      <div class="form-inner">
+        <label class="field" data-f="name">
+          <span>Как к вам обращаться</span>
+          <input name="name" type="text" autocomplete="name" placeholder="Тимур" required>
+          <em class="err">Впишите имя</em>
+        </label>
+        <label class="field" data-f="phone">
+          <span>Телефон</span>
+          <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00" required>
+          <em class="err">Нужен номер, на который можно позвонить или написать</em>
+        </label>
+        <label class="field" data-f="email">
+          <span>Почта</span>
+          <input name="email" type="email" autocomplete="email" placeholder="you@company.ru" required>
+          <em class="err">Проверьте адрес почты</em>
+        </label>
+        <label class="field">
+          <span>Сайт или домен проекта <i style="font-style:normal;color:#6E7681">— если есть</i></span>
+          <input name="site" type="text" placeholder="example.ru">
+        </label>
+        <label class="field">
+          <span>Ниша и что за страницы нужны</span>
+          <input name="niche" type="text" placeholder="Например: аренда квартир по районам Казани">
+        </label>
+        <label class="field">
+          <span>Сколько страниц ориентировочно</span>
+          <select name="volume">
+            <option value="">Ещё не считал</option>
+            <option>до 100</option>
+            <option>100–500</option>
+            <option>500–2000</option>
+            <option>больше 2000</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Уже пробовали массовые страницы?</span>
+          <select name="legacy">
+            <option value="">Нет, начинаем с нуля</option>
+            <option>Да, страницы есть и работают</option>
+            <option>Да, но большая часть не в индексе</option>
+            <option>Были, уже удалили</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Есть ли таблица с данными</span>
+          <select name="data">
+            <option value="">Не уверен, нужно обсудить</option>
+            <option>Да, готовая таблица или база</option>
+            <option>Данные есть, но разрознены</option>
+            <option>Данных нет, нужна помощь со сбором</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Что важно учесть <i style="font-style:normal;color:#6E7681">— необязательно</i></span>
+          <textarea name="comment" placeholder="Сроки, конкуренты, прошлый опыт с SEO"></textarea>
+        </label>
+        <button class="btn" type="submit">Отправить заявку</button>
+        <label class="consent" for="leadConsent">
+          <input type="checkbox" id="leadConsent" data-consent>
+          <span>Я согласен(на) с <a href="/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="/offer.html" target="_blank" rel="noopener">договором-офертой</a> и разрешаю обработку указанных данных для ответа на заявку.</span>
+        </label>
+        <p class="consent-err" data-consent-err>Отметьте согласие, чтобы отправить заявку</p>
+        <p class="form-note">Не любите формы — напишите на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a> или в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>.</p>
+      </div>
+
+      <div class="done" role="status">
+        <h3>Заявка отправлена</h3>
+        <p style="color:var(--dim-d);margin:0 0 14px">Ответим в течение рабочего дня с почты hello@verstio.ru. Если срочно — напишите в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener" style="color:#F4F1EB">@VerstioBot</a>.</p>
+        <p style="color:var(--dim-d);margin:0;font-size:15px">К разбору пригодится ваша таблица данных — можно прислать ссылку на Яндекс Документы или Google Sheets либо файл в ответном письме.</p>
+      </div>
+    </form>
   </div>
 </section>
 
@@ -1305,10 +1589,10 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <div>
         <p class="kicker">После публикации</p>
         <h2>Страница либо приносит показы, либо переписывается</h2>
-        <p class="lede">Массовые проекты обычно умирают после выгрузки: никто не знает, какие из тысячи адресов вообще попали в индекс. Мы подключаем Яндекс.Вебмастер и Search Console и смотрим по каждому URL.</p>
+        <p class="lede">Массовые проекты обычно умирают после выгрузки: никто не знает, какие из тысячи адресов вообще попали в индекс. Мы подключаем Яндекс.Вебмастер и Search Console и смотрим по каждому URL — и делаем это не из добросовестности, а потому что от этого зависит наш собственный счёт.</p>
         <div class="cols cols-2" style="margin-top:30px;gap:20px">
-          <div class="stat"><b>Живые</b><span>есть показы: работают, трогать не нужно</span></div>
-          <div class="stat"><b>Мёртвые</b><span>нет показов: уходят на переписывание в следующий круг</span></div>
+          <div class="stat"><b>В индексе</b><span>страница есть в поиске: работает, идёт в счёт</span></div>
+          <div class="stat"><b>Вне индекса</b><span>дорабатываем бесплатно, не зашла — не оплачивается</span></div>
         </div>
       </div>
       <figure class="figure">
@@ -1400,7 +1684,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
         <p style="color:var(--dim-d);font-size:16px;margin:12px 0 0">Позиции в Яндексе и Google не продаются — их не гарантирует никто, кто разбирается в поиске. Мы отвечаем за то, что находится в нашей зоне контроля, и говорим об этом прямо.</p>
       </div>
       <ul class="facts">
-        <li>При качественных исходных данных и здоровой репутации домена проекты такого класса стабильно набирают охват в поиске — страницы попадают в индекс и начинают собирать показы по длинному запросу.</li>
+        <li>Мы ставим деньги на то, что контролируем: страницы, не попавшие в индекс за 90 дней, вы не оплачиваете. Это не гарантия позиций, а честная цена риска — и единственный способ показать, что мы уверены в качестве.</li>
         <li>Мы отвечаем за качество самих страниц: балл, уникальность против корпуса проекта, отсутствие блокеров, корректную разметку и перелинковку. Это проверяемо по отчёту, а не на словах.</li>
         <li>Что мы не контролируем: историю и репутацию домена, конкуренцию в нише и алгоритмы Яндекса и Google. Слабый домен снижает показы даже у безупречных страниц — поэтому мы смотрим на домен до начала работы.</li>
         <li>Ориентиры по охвату именно для вашего проекта разбираем на консультации, после того как увидим данные и домен. Без данных любые цифры были бы выдумкой.</li>
@@ -1409,127 +1693,14 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   </div>
 </section>
 
-<!-- ОПЛАТА -->
-<section class="band band--paper" id="pricing">
-  <div class="shell">
-    <div class="head">
-      <p class="kicker">Оплата</p>
-      <h2>Платите по этапам, а не за обещания</h2>
-      <p class="lede">Стоимость зависит от объёма и состояния данных, поэтому прайса на сайте нет: сумму называем после бесплатного разбора, когда понятен реальный объём работы. Зато порядок всегда один.</p>
-    </div>
-
-    <div class="cols cols-2" style="align-items:start">
-      <div class="panel">
-        <p class="kicker" style="margin-bottom:10px">Шаг 1 · бесплатно</p>
-        <h3>разбор проекта</h3>
-        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Смотрим данные и сайт, называем честный потолок страниц и стоимость. Если проект не имеет смысла — скажем об этом и не возьмём денег.</p>
-      </div>
-      <div class="panel">
-        <p class="kicker" style="margin-bottom:10px">Шаг 2 · пилот</p>
-        <h3>Небольшая партия страниц</h3>
-        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Начинаем с пилотной партии — порядка сотни страниц или пятой части объёма, если проект небольшой. Вы видите реальное качество и отчёт до того, как вложиться в полный объём.</p>
-      </div>
-      <div class="panel">
-        <p class="kicker" style="margin-bottom:10px">Шаг 3 · основной объём</p>
-        <h3>Остальные страницы и готовый сайт</h3>
-        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Оплата делится на две части: на старте и при сдаче. Срок — около двух недель на обычный объём.</p>
-      </div>
-      <div class="panel">
-        <p class="kicker" style="margin-bottom:10px">Шаг 4 · по желанию</p>
-        <h3>Наблюдение и доработка</h3>
-        <p style="color:var(--dim-l);font-size:15.5px;margin:12px 0 0">Месячное сопровождение: смотрим Яндекс.Вебмастер и Search Console, находим страницы без показов и переделываем их. Можно подключить позже или не подключать вовсе.</p>
-      </div>
-    </div>
-
-    <p class="hint" style="margin-top:24px">Первые проекты берём по льготной цене: нам нужны открытые кейсы, вам — результат дешевле. Напишите об этом в заявке.</p>
-  </div>
-</section>
-
-<!-- ФОРМА -->
-<section class="band band--ink-2" id="form">
-  <div class="shell lead">
+<!-- КОРОТКИЙ ПРИЗЫВ -->
+<section class="cta">
+  <div class="cta-in">
     <div>
-      <p class="kicker">Заявка</p>
-      <h2>Начнём с разбора ваших данных</h2>
-      <p class="lede">Расскажите про проект — вернёмся с вердиктом: сколько страниц реально можно сделать на ваших данных, каких колонок не хватает и сколько это будет стоить. Разбор бесплатный, ответ в течение рабочего дня.</p>
-      <ul class="contact">
-        <li><span>Заявки и вопросы</span><a href="mailto:hello@verstio.ru">hello@verstio.ru</a></li>
-        <li><span>Поддержка</span><a href="mailto:support@verstio.ru">support@verstio.ru</a></li>
-        <li><span>Телеграм</span><a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a></li>
-      </ul>
-      <p class="signed">
-        <b>Тимур Рахимзянов</b>
-        Отвечаю на заявки и веду проекты сам — от разбора данных до отчёта после публикации.
-        Работаю по <a href="/offer.html">договору-оферте</a>, на каждую оплату приходит чек.
-      </p>
-      <figure class="figure" style="margin-top:28px">
-        <img src="assets/studio.webp" alt="Рабочий стол студии: таблица данных и разложенные макеты страниц" loading="lazy">
-      </figure>
+      <h2>Начать можно без денег и без обязательств</h2>
+      <p>Двадцать страниц на ваших данных, отчёт с баллами и честный потолок объёма. Дальше решаете сами.</p>
     </div>
-
-    <form class="form" id="leadForm" novalidate>
-      <div class="form-inner">
-        <label class="field" data-f="name">
-          <span>Как к вам обращаться</span>
-          <input name="name" type="text" autocomplete="name" placeholder="Тимур" required>
-          <em class="err">Впишите имя</em>
-        </label>
-        <label class="field" data-f="phone">
-          <span>Телефон</span>
-          <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00" required>
-          <em class="err">Нужен номер, на который можно позвонить или написать</em>
-        </label>
-        <label class="field" data-f="email">
-          <span>Почта</span>
-          <input name="email" type="email" autocomplete="email" placeholder="you@company.ru" required>
-          <em class="err">Проверьте адрес почты</em>
-        </label>
-        <label class="field">
-          <span>Сайт или домен проекта <i style="font-style:normal;color:#6E7681">— если есть</i></span>
-          <input name="site" type="text" placeholder="example.ru">
-        </label>
-        <label class="field">
-          <span>Ниша и что за страницы нужны</span>
-          <input name="niche" type="text" placeholder="Например: аренда квартир по районам Казани">
-        </label>
-        <label class="field">
-          <span>Сколько страниц ориентировочно</span>
-          <select name="volume">
-            <option value="">Ещё не считал</option>
-            <option>до 100</option>
-            <option>100–500</option>
-            <option>500–2000</option>
-            <option>больше 2000</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>Есть ли таблица с данными</span>
-          <select name="data">
-            <option value="">Не уверен, нужно обсудить</option>
-            <option>Да, готовая таблица или база</option>
-            <option>Данные есть, но разрознены</option>
-            <option>Данных нет, нужна помощь со сбором</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>Что важно учесть <i style="font-style:normal;color:#6E7681">— необязательно</i></span>
-          <textarea name="comment" placeholder="Сроки, конкуренты, прошлый опыт с SEO"></textarea>
-        </label>
-        <button class="btn" type="submit">Отправить заявку</button>
-        <label class="consent" for="leadConsent">
-          <input type="checkbox" id="leadConsent" data-consent>
-          <span>Я согласен(на) с <a href="/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a> и <a href="/offer.html" target="_blank" rel="noopener">договором-офертой</a> и разрешаю обработку указанных данных для ответа на заявку.</span>
-        </label>
-        <p class="consent-err" data-consent-err>Отметьте согласие, чтобы отправить заявку</p>
-        <p class="form-note">Не любите формы — напишите на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a> или в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>.</p>
-      </div>
-
-      <div class="done" role="status">
-        <h3>Заявка отправлена</h3>
-        <p style="color:var(--dim-d);margin:0 0 14px">Ответим в течение рабочего дня с почты hello@verstio.ru. Если срочно — напишите в <a href="https://t.me/VerstioBot" target="_blank" rel="noopener" style="color:#F4F1EB">@VerstioBot</a>.</p>
-        <p style="color:var(--dim-d);margin:0;font-size:15px">К разбору пригодится ваша таблица данных — можно прислать ссылку на Яндекс Документы или Google Sheets либо файл в ответном письме.</p>
-      </div>
-    </form>
+    <a class="btn" href="#form">Оставить заявку</a>
   </div>
 </section>
 
@@ -1551,11 +1722,23 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       </details>
       <details>
         <summary>Сколько это стоит и как платить?</summary>
-        <p>Цена зависит от объёма и состояния данных, поэтому называем её после бесплатного разбора. Оплата идёт этапами: сначала пилотная партия страниц, и только если результат устраивает — основной объём. За позиции и трафик денег не берём: это не наша зона контроля, и обещать их было бы враньём.</p>
+        <p>Пилот на 20 страниц — бесплатно. Дальше фиксированная стоимость запуска от 30 000 ₽ и оплата за каждую страницу, которая через 90 дней есть в поиске: от 250 до 450 ₽ в зависимости от объёма. Страницы, не попавшие в индекс, не оплачиваются. За позиции и трафик денег не берём: это не наша зона контроля, и обещать их было бы враньём.</p>
+      </details>
+      <details>
+        <summary>Почему расчёт именно через 90 дней?</summary>
+        <p>Столько нужно Яндексу, чтобы обойти новые страницы и принять решение. Мы ускоряем обход как можем — IndexNow, sitemap с датами, перелинковка с живых разделов, обход по счётчику Метрики, — но оценку качества это не отменяет: робот придёт быстро, а решение примет по содержанию. Раньше 60 дней объективной картины не бывает, поэтому мы не обещаем того, чего не можем показать.</p>
+      </details>
+      <details>
+        <summary>А если я закрою страницы от индексации, чтобы не платить?</summary>
+        <p>Такие страницы считаются принятыми и оплачиваются. То же касается страниц, которые вы не опубликовали в течение 10 дней после сдачи или изменили сами. Модель работает в обе стороны: мы рискуем своей работой, вы не меняете условия задним числом. Всё это прописано в оферте.</p>
+      </details>
+      <details>
+        <summary>У меня несколько тысяч старых страниц, и почти все вне индекса. Это лечится?</summary>
+        <p>Лечится, но не за один шаг. Сначала аудит и расчистка: мусор отдаём под 410, дубли склеиваем, sitemap пересобираем. Дальше ждём, пока Вебмастер это переварит, — обычно один-три месяца. Только потом запускаем новые страницы небольшой волной и смотрим процент захода. Пока домен не восстановился, оплата за индексацию не применяется — работаем по фиксу, иначе это нечестная ставка против самих себя.</p>
       </details>
       <details>
         <summary>Сколько идёт работа?</summary>
-        <p>Около двух недель на обычный проект — вместе с разбором данных, согласованием образца страницы, сборкой и проверками. Срок растёт, если данные нужно собирать с нуля. Показы в поиске появляются позже: индексирование зависит от поисковых систем, а не от нас.</p>
+        <p>Пилот — 7–10 дней. Основной объём — около двух недель на обычный проект вместе с разбором данных, согласованием образца, сборкой и проверками. Крупные объёмы публикуются волнами по 200–3 000 страниц. Дальше идёт 90-дневный расчётный период, в течение которого мы дорабатываем то, что не зашло в индекс.</p>
       </details>
       <details>
         <summary>Сколько страниц можно сделать?</summary>
@@ -1581,7 +1764,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 
 <footer>
   <div class="shell foot">
-    <div><span class="brand" style="font-size:20px">Verstio</span> — программный SEO: страницы, которые приносят трафик</div>
+    <div><span class="brand" style="font-size:20px">Verstio</span> — программный SEO: платите за страницы, попавшие в индекс</div>
     <div style="display:flex;gap:20px;flex-wrap:wrap">
       <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
       <a href="mailto:support@verstio.ru">support@verstio.ru</a>
@@ -1589,7 +1772,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <a href="/privacy.html">Политика конфиденциальности</a>
       <a href="/offer.html">Договор-оферта</a>
     </div>
-    <div class="foot-legal">Рахимзянов Тимур Альбертович · ИНН 165056174418 · чек на каждую оплату</div>
+    <div class="foot-legal">© 2026 Verstio · Рахимзянов Тимур Альбертович · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
   </div>
 </footer>
 
@@ -1802,13 +1985,14 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   offer.html
 ════════════════════════════════════════════════════════
 
+
 <!doctype html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Договор-оферта — Verstio</title>
-<meta name="description" content="Публичная оферта на оказание услуг по подготовке и сопровождению страниц сайта. Verstio.">
+<meta name="description" content="Публичная оферта Verstio: бесплатный пилот, фиксированная стоимость запуска и оплата страниц по факту индексации на 90-й день.">
 <meta name="robots" content="noindex,follow">
 <meta name="theme-color" content="#0D1013">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D1013'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23EFEAE1' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E">
@@ -1853,40 +2037,41 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 
 <main class="doc"><div class="shell">
 <h1>Публичная оферта на оказание услуг</h1>
-<p class="meta">Редакция от 16 сентября 2026 года · действует для сайта verstio.ru и телеграм-бота @VerstioBot</p>
+<p class="meta">Редакция от 20 сентября 2026 года · действует для сайта verstio.ru и телеграм-бота @VerstioBot</p>
 
-<div class="note"><b>Коротко.</b> Это договор, который заключается без подписи: вы оплачиваете счёт или подтверждаете заказ в переписке — и договор заключён на условиях ниже. Работа идёт этапами по Заданию, каждый этап принимается отдельно, права на готовые страницы переходят к вам после оплаты. Ниже — полный текст, который имеет юридическую силу.</div>
+<div class="note"><b>Коротко.</b> Это договор, который заключается без подписи: вы оплачиваете счёт или подтверждаете заказ в переписке — и договор заключён на условиях ниже. Пилот на 20 страниц бесплатный. Дальше вы оплачиваете фиксированную стоимость Запуска, а сами страницы — по факту индексации: на 90-й день считаем, сколько страниц попало в поиск, и счёт выставляется только за них. Ниже — полный текст, который имеет юридическую силу.</div>
 
 <div class="toc"><ol>
 <li><a href="#o1">Общие положения</a></li>
 <li><a href="#o2">Термины</a></li>
 <li><a href="#o3">Предмет договора</a></li>
 <li><a href="#o4">Акцепт оферты и заключение договора</a></li>
-<li><a href="#o5">Стоимость и порядок оплаты</a></li>
-<li><a href="#o6">Права и обязанности сторон</a></li>
-<li><a href="#o7">Материалы и доступы Заказчика</a></li>
-<li><a href="#o8">Сдача-приёмка результата</a></li>
-<li><a href="#o9">Отсутствие гарантий результата поиска</a></li>
-<li><a href="#o10">Исключительные права</a></li>
-<li><a href="#o11">Конфиденциальность и персональные данные</a></li>
-<li><a href="#o12">Ответственность</a></li>
-<li><a href="#o13">Изменение и расторжение</a></li>
-<li><a href="#o14">Форс-мажор</a></li>
-<li><a href="#o15">Споры и претензии</a></li>
-<li><a href="#o16">Прочие условия и реквизиты</a></li>
+<li><a href="#o5">Пилот</a></li>
+<li><a href="#o6">Стоимость и порядок оплаты</a></li>
+<li><a href="#o7">Расчёт по индексации</a></li>
+<li><a href="#o8">Права и обязанности сторон</a></li>
+<li><a href="#o9">Материалы, доступы и технические требования</a></li>
+<li><a href="#o10">Сдача-приёмка результата</a></li>
+<li><a href="#o11">Отсутствие гарантий результата поиска</a></li>
+<li><a href="#o12">Исключительные права</a></li>
+<li><a href="#o13">Конфиденциальность и персональные данные</a></li>
+<li><a href="#o14">Ответственность</a></li>
+<li><a href="#o15">Изменение и расторжение</a></li>
+<li><a href="#o16">Форс-мажор</a></li>
+<li><a href="#o17">Споры, прочие условия и реквизиты</a></li>
 </ol></div>
 
 <h2 id="o1">1. Общие положения</h2>
-<p>1.1. Настоящий документ является публичной офертой в значении п. 2 ст. 437 Гражданского кодекса РФ — предложением Исполнителя, указанного в разделе 16, заключить договор возмездного оказания услуг на изложенных ниже условиях.</p>
+<p>1.1. Настоящий документ является публичной офертой в значении п. 2 ст. 437 Гражданского кодекса РФ — предложением Исполнителя, указанного в разделе 17, заключить договор возмездного оказания услуг на изложенных ниже условиях.</p>
 <p>1.2. Оферта размещена на странице <a href="https://verstio.ru/offer.html">verstio.ru/offer.html</a> и адресована неопределённому кругу лиц. Действующей считается редакция, опубликованная на Сайте на дату акцепта; дата редакции указана в начале и в конце документа.</p>
 <p>1.3. Оферта адресована индивидуальным предпринимателям и юридическим лицам, приобретающим услуги для целей предпринимательской деятельности. Законодательство о защите прав потребителей к отношениям Сторон не применяется. Если услуги приобретает гражданин для личных нужд, Стороны заключают отдельный договор, а условия настоящей оферты, ухудшающие положение потребителя по сравнению с законом, не применяются.</p>
 <p>1.4. Акцептуя оферту, Заказчик подтверждает, что полностью ознакомился с её условиями, они ему понятны и приняты без оговорок, а также что он ознакомлен с <a href="/privacy.html">Политикой конфиденциальности</a>.</p>
-<p>1.5. Исполнитель вправе отказать в заключении договора без объяснения причин, в том числе если задание противоречит закону, правилам поисковых систем или деловой этике.</p>
+<p>1.5. Исполнитель вправе отказать в заключении договора без объяснения причин, в том числе если задание противоречит закону, правилам поисковых систем или деловой этике, а также если состояние Сайта Заказчика делает работу заведомо безрезультатной.</p>
 <p>1.6. Договор заключается в электронной форме. Обмен документами и согласованиями в Переписке имеет силу простой электронной подписи Сторон (ст. 160, 434 ГК РФ, ст. 6 Федерального закона № 63-ФЗ).</p>
 
 <h2 id="o2">2. Термины</h2>
 <ul>
-<li><b>Исполнитель</b> — лицо, указанное в разделе 16 настоящей оферты.</li>
+<li><b>Исполнитель</b> — лицо, указанное в разделе 17 настоящей оферты.</li>
 <li><b>Заказчик</b> — лицо, акцептовавшее оферту в порядке раздела 4.</li>
 <li><b>Стороны</b> — Исполнитель и Заказчик совместно.</li>
 <li><b>Сайт</b> — совокупность страниц в домене verstio.ru и его поддоменах.</li>
@@ -1894,20 +2079,25 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 <li><b>Услуги</b> — работы по подготовке, разметке и сопровождению массивов Страниц, а также сопутствующие работы, согласованные Сторонами.</li>
 <li><b>Страницы</b> — подготовленные Исполнителем материалы: тексты, структура, метаданные, разметка и связанные с ними файлы.</li>
 <li><b>Задание</b> — согласованное Сторонами в Переписке описание объёма, формата, тематики, количества Страниц, срока и стоимости этапа. Задание может быть оформлено сообщением, документом, счётом или карточкой заказа в телеграм-боте.</li>
-<li><b>Этап</b> — часть Услуг, выделенная в Задании и принимаемая отдельно.</li>
-<li><b>Пилот</b> — предварительный оплачиваемый этап на ограниченном количестве Страниц, выполняемый для демонстрации качества и согласования формата до запуска основного объёма.</li>
-<li><b>Период наблюдения</b> — согласованный срок после публикации, в течение которого Исполнитель отслеживает поведение Страниц и вносит согласованные корректировки.</li>
+<li><b>Пилот</b> — бесплатный предварительный этап на ограниченном количестве Страниц (по умолчанию 20), выполняемый для демонстрации качества и согласования формата до запуска основного объёма.</li>
+<li><b>Запуск</b> — подготовительный этап основного объёма: паспорт данных, проектирование каркаса Страницы и схемы полей, логика внутренней перелинковки, настройка выгрузки в систему управления Сайтом Заказчика. Оплачивается фиксированной суммой и не зависит от количества Страниц и от результата индексации.</li>
+<li><b>Партия (Волна)</b> — количество Страниц, согласованное к подготовке и публикации в рамках одного приложения к Заданию.</li>
+<li><b>Дата публикации Партии</b> — дата, в которую все Страницы Партии размещены на Сайте Заказчика и доступны для обхода поисковыми роботами.</li>
+<li><b>Расчётный период</b> — 90 календарных дней с Даты публикации Партии, если иной срок не согласован в Задании.</li>
+<li><b>Расчётная дата</b> — последний день Расчётного периода.</li>
+<li><b>Проиндексированная страница</b> — Страница, которая на Расчётную дату имеет в сервисе «Яндекс.Вебмастер» для Сайта Заказчика статус присутствия в поиске (раздел «Страницы в поиске»). Позиции Страницы, количество показов, кликов и визитов для целей настоящего определения значения не имеют.</li>
+<li><b>Отчёт по индексации</b> — формируемый Исполнителем перечень Страниц Партии с указанием их статуса в «Яндекс.Вебмастере» и, справочно, в Google Search Console, с датой проверки.</li>
 <li><b>Эталон качества</b> — состав, структура и уровень проработки Страниц, принятых Заказчиком по итогам Пилота.</li>
 <li><b>Переписка</b> — обмен сообщениями по адресам hello@verstio.ru и support@verstio.ru, в телеграм-боте @VerstioBot и по контактам, указанным Заказчиком при оформлении заказа.</li>
 </ul>
 
 <h2 id="o3">3. Предмет договора</h2>
 <p>3.1. Исполнитель обязуется оказать Заказчику Услуги в объёме и в срок, согласованные в Задании, а Заказчик обязуется принять и оплатить их на условиях настоящей оферты.</p>
-<p>3.2. Конкретный перечень Услуг, количество Страниц, формат передачи результата, сроки и стоимость определяются Заданием на каждый Этап. Задание является неотъемлемой частью договора.</p>
+<p>3.2. Конкретный перечень Услуг, количество Страниц, формат передачи результата, сроки и стоимость определяются Заданием на каждый этап. Задание является неотъемлемой частью договора.</p>
 <p>3.3. Услуги оказываются дистанционно. Исполнитель вправе привлекать третьих лиц и программные средства, оставаясь ответственным за результат перед Заказчиком.</p>
-<p>3.4. Если иное не указано в Задании, в предмет договора не входят: публикация Страниц на Сайте Заказчика, доработка шаблонов и вёрстки, техническая поддержка сайта, настройка рекламных кампаний, закупка ссылок и работы, требующие доступа к инфраструктуре Заказчика.</p>
-<p>3.5. По умолчанию сотрудничество начинается с Пилота. Запуск основного объёма без Пилота возможен по письменному согласованию Сторон.</p>
-<p>3.6. Услуги считаются оказанными надлежащим образом при соответствии результата Заданию, с учётом раздела 8 и ограничений раздела 9.</p>
+<p>3.4. Если иное не указано в Задании, в предмет договора не входят: доработка дизайна и вёрстки Сайта Заказчика, техническая поддержка Сайта, настройка рекламных кампаний, закупка ссылок, ведение и развитие Страниц за пределами Расчётного периода.</p>
+<p>3.5. Сотрудничество начинается с Пилота. Запуск основного объёма без Пилота возможен по письменному согласованию Сторон; в этом случае Эталоном качества считаются требования Задания и примеры работ, направленные Исполнителем до акцепта.</p>
+<p>3.6. Услуги считаются оказанными надлежащим образом при соответствии результата Заданию, с учётом разделов 7, 10 и ограничений раздела 11.</p>
 
 <h2 id="o4">4. Акцепт оферты и заключение договора</h2>
 <p>4.1. Акцептом оферты является любое из следующих действий Заказчика:</p>
@@ -1918,100 +2108,125 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 <li>передача Исполнителю материалов или доступов для начала работ по согласованному Заданию.</li>
 </ul>
 <p>4.2. Акцепт означает полное и безоговорочное принятие условий оферты (п. 3 ст. 438 ГК РФ). Подписание договора на бумаге не требуется.</p>
-<p>4.3. Договор считается заключённым с момента совершения первого из действий, указанных в п. 4.1, и действует до исполнения Сторонами обязательств по всем согласованным Этапам.</p>
+<p>4.3. Договор считается заключённым с момента совершения первого из действий, указанных в п. 4.1, и действует до исполнения Сторонами обязательств по всем согласованным этапам и Партиям.</p>
 <p>4.4. Акцепт распространяется на редакцию оферты, действовавшую на дату акцепта. Исполнитель хранит архив редакций и предоставляет нужную редакцию по запросу Заказчика.</p>
 <p>4.5. Проставление отметки о согласии с офертой в форме на Сайте или в боте, а также время такого действия, фиксируются Исполнителем и признаются Сторонами надлежащим доказательством акцепта.</p>
-<p>4.6. Каждое новое Задание в рамках действующего договора отдельного акцепта оферты не требует и согласовывается в Переписке.</p>
+<p>4.6. Каждое новое Задание или приложение на очередную Партию в рамках действующего договора отдельного акцепта оферты не требует и согласовывается в Переписке.</p>
 <p>4.7. Частичный акцепт, акцепт на иных условиях или с оговорками не допускается. Предложение Заказчика изменить условия оферты рассматривается как новая оферта и требует письменного согласия Исполнителя.</p>
 
+<h2 id="o5">5. Пилот</h2>
+<p>5.1. Пилот выполняется бесплатно. Заказчик не несёт обязанности заключать договор на основной объём по итогам Пилота и не оплачивает выполненные в рамках Пилота работы ни при каких обстоятельствах.</p>
+<p>5.2. Условия выполнения Пилота: одна тематическая группа Страниц, один шаблон, количество Страниц по умолчанию — 20, срок — от 7 до 10 рабочих дней с даты получения Исполнителем необходимых материалов и доступов.</p>
+<p>5.3. Исполнитель вправе отказать в проведении Пилота или прекратить его, если предоставленные данные не позволяют подготовить Страницы с различающимся содержанием, а также при наличии у Сайта Заказчика действующих санкций поисковых систем.</p>
+<p>5.4. Результат Пилота передаётся вместе с отчётом, содержащим балл каждой Страницы и перечень её слабых мест.</p>
+<p>5.5. Принятые Заказчиком Страницы Пилота образуют Эталон качества (раздел 10). Страницы основного объёма готовятся по тем же правилам.</p>
+<p>5.6. Исключительные права на Страницы Пилота переходят к Заказчику при заключении Задания на основной объём. До этого момента Страницы Пилота передаются исключительно для оценки качества, а их размещение на Сайте Заказчика допускается только с письменного согласия Исполнителя.</p>
 
-<h2 id="o5">5. Стоимость и порядок оплаты</h2>
-<p>5.1. Стоимость определяется индивидуально и фиксируется в Задании или счёте на каждый этап. Цены на Сайте, если они там указаны, имеют справочный характер.</p>
-<p>5.2. Исполнитель применяет специальный налоговый режим «Налог на профессиональный доход». НДС не начисляется. На каждую оплату Исполнитель формирует чек из приложения «Мой налог» и направляет его Заказчику.</p>
-<p>5.3. Способы оплаты: перевод на банковскую карту или счёт Исполнителя по реквизитам из раздела 16. Обязательство по оплате считается исполненным с момента зачисления средств.</p>
-<p>5.4. Комиссии банков и платёжных сервисов оплачивает Заказчик.</p>
-<p>5.5. Пилот и период наблюдения оплачиваются до начала работ. Основной объём по умолчанию делится на аванс 50% и остаток 50% при сдаче результата.</p>
-<p>5.6. Остаток оплачивается в течение 3 рабочих дней с даты направления результата или уведомления о готовности. До полной оплаты Исполнитель вправе не передавать исходные файлы и не публиковать страницы, а также приостановить работы без ответственности за срок.</p>
-<p>5.7. При просрочке оплаты более 10 календарных дней Исполнитель вправе потребовать неустойку 0,1% от просроченной суммы за день, но не более 10% суммы этапа, или отказаться от договора.</p>
-<p>5.8. При отказе Заказчика от договора в ходе этапа уже выполненный объём оплачивается пропорционально, остаток аванса возвращается в течение 10 рабочих дней.</p>
-<p>5.9. Изменение задания после начала этапа, увеличивающее объём работ, оформляется новым Заданием и оплачивается дополнительно.</p>
+<h2 id="o6">6. Стоимость и порядок оплаты</h2>
+<p>6.1. Стоимость складывается из двух частей: фиксированной стоимости Запуска и стоимости Страниц, определяемой по правилам раздела 7. Конкретные суммы и ставка за одну Проиндексированную страницу фиксируются в Задании. Цены, указанные на Сайте, имеют справочный характер и применяются только после подтверждения в Задании.</p>
+<p>6.2. Исполнитель применяет специальный налоговый режим «Налог на профессиональный доход». НДС не начисляется. На каждую оплату Исполнитель формирует чек из приложения «Мой налог» и направляет его Заказчику.</p>
+<p>6.3. Способы оплаты: перевод на банковскую карту или счёт Исполнителя по реквизитам из раздела 17. Обязательство по оплате считается исполненным с момента зачисления средств. Комиссии банков и платёжных сервисов оплачивает Заказчик.</p>
+<p>6.4. Запуск оплачивается в размере 100% до начала работ. Стоимость Запуска не зависит от результата индексации и возврату не подлежит, за исключением случая, когда Исполнитель не приступил к работам.</p>
+<p>6.5. По каждой Партии Заказчик вносит аванс в размере 50% от расчётной стоимости Партии. Расчётная стоимость Партии определяется как количество Страниц Партии, умноженное на согласованную ставку и на консервативный прогноз индексации, указанный в Задании.</p>
+<p>6.6. Окончательный расчёт по Партии производится в течение 5 рабочих дней с Расчётной даты на основании Отчёта по индексации: из суммы, причитающейся за Проиндексированные страницы, вычитается ранее внесённый аванс.</p>
+<p>6.7. Если сумма аванса превысила стоимость Проиндексированных страниц, разница по выбору Заказчика засчитывается в счёт следующей Партии либо возвращается в течение 10 рабочих дней с момента получения Исполнителем соответствующего требования.</p>
+<p>6.8. При просрочке окончательного расчёта более 10 календарных дней Исполнитель вправе потребовать неустойку 0,1% от просроченной суммы за каждый день просрочки, но не более 10% суммы Партии, либо отказаться от договора.</p>
+<p>6.9. При отказе Заказчика от договора до Расчётной даты оплачиваются Запуск в полном объёме и фактически подготовленные Страницы по согласованной ставке, применяемой ко всем переданным Страницам вне зависимости от их индексации.</p>
+<p>6.10. Изменение Задания после начала этапа, увеличивающее объём работ, оформляется новым Заданием и оплачивается дополнительно.</p>
+<p>6.11. Работы по аудиту и расчистке ранее созданных массивов страниц (в том числе удаление, склейка и переоформление страниц, созданных не Исполнителем) оплачиваются фиксированной суммой по Заданию. К таким работам модель расчёта по индексации не применяется.</p>
 
-<h2 id="o6">6. Права и обязанности сторон</h2>
-<p>6.1. Исполнитель обязан: оказать услуги в согласованном объёме и сроке; информировать о обстоятельствах, мешающих работе; соблюдать конфиденциальность; исправлять обоснованные замечания по правилам раздела 8.</p>
-<p>6.2. Исполнитель вправе: самостоятельно выбирать инструменты и подходы; приостановить работы при неоплате или непредоставлении материалов; отказаться от задания, противоречащего закону, правилам поисковых систем или деловой этике.</p>
-<p>6.3. Заказчик обязан: своевременно оплачивать этапы; предоставлять материалы и доступы; назначить одно контактное лицо для согласований; отвечать на запросы в течение 3 рабочих дней.</p>
-<p>6.4. Заказчик вправе: получать сведения о ходе работ; направлять замечания по правилам раздела 8; отказаться от дальнейших этапов после любой приёмки.</p>
-<p>6.5. Публикация, доработка и дальнейшее использование страниц на сайте Заказчика находятся в зоне ответственности Заказчика, если публикация не входит в Задание.</p>
-<p>6.6. Заказчик гарантирует, что вправе распоряжаться сайтом и переданными материалами и что их использование не нарушает прав третьих лиц.</p>
+<h2 id="o7">7. Расчёт по индексации</h2>
+<p>7.1. Стоимость Страниц определяется как количество Проиндексированных страниц Партии на Расчётную дату, умноженное на ставку за одну Проиндексированную страницу, согласованную в Задании.</p>
+<p>7.2. Страницы, не являющиеся Проиндексированными на Расчётную дату, Заказчиком не оплачиваются, за исключением случаев, прямо указанных в п. 7.6.</p>
+<p>7.3. Источником сведений об индексации является сервис «Яндекс.Вебмастер» для Сайта Заказчика. Данные Google Search Console приводятся в Отчёте справочно и на расчёт не влияют, если иное не согласовано в Задании. Исполнитель направляет Отчёт по индексации не реже одного раза в 7 календарных дней, а также на 30-й, 60-й день и на Расчётную дату.</p>
+<p>7.4. В течение Расчётного периода Исполнитель за свой счёт дорабатывает или заменяет Страницы, не попавшие в индекс. Такие доработки дополнительной оплатой не являются и продления Расчётного периода не влекут.</p>
+<p>7.5. Публикация Страниц Партии производится последовательными волнами в объёме, согласованном в Задании. Расчётный период исчисляется отдельно по каждой волне от даты её публикации.</p>
+<p>7.6. Проиндексированными считаются и подлежат оплате по согласованной ставке также Страницы, в отношении которых наступило любое из следующих обстоятельств:</p>
+<ul>
+<li>Страница не была опубликована Заказчиком на Сайте Заказчика в течение 10 рабочих дней с даты её передачи Исполнителем;</li>
+<li>Страница удалена Заказчиком, закрыта от индексации (в том числе через robots.txt, метатег noindex, заголовок X-Robots-Tag, канонический адрес на другую страницу) или сделана недоступной для поисковых роботов;</li>
+<li>содержание, адрес или метаданные Страницы изменены Заказчиком или привлечёнными им третьими лицами без письменного согласования с Исполнителем;</li>
+<li>Страница не попала в индекс вследствие недоступности Сайта Заказчика, ошибок его настройки или действий Заказчика, перечисленных в разделе 9.</li>
+</ul>
+<p>7.7. Модель расчёта по индексации применяется при одновременном соблюдении следующих условий: у Сайта Заказчика отсутствуют действующие санкции поисковых систем; Сайт Заказчика соответствует техническим требованиям, направленным Исполнителем до начала работ; Заказчик предоставил и сохраняет Исполнителю доступ к «Яндекс.Вебмастеру» и Google Search Console на весь Расчётный период.</p>
+<p>7.8. Если любое из условий п. 7.7 не соблюдается или перестало соблюдаться, Стороны переходят на фиксированную оплату за подготовленную Страницу по ставке, указанной в Задании для такого случая. Исполнитель уведомляет Заказчика о переходе в Переписке с указанием обстоятельства.</p>
+<p>7.9. Если после публикации первой волны доля Проиндексированных страниц по итогам 60 дней составляет менее 50%, каждая из Сторон вправе приостановить публикацию последующих волн до выяснения и устранения причин. Приостановка не является нарушением и не влечёт для Сторон ответственности.</p>
+<p>7.10. Расчёт по индексации не является гарантией индексации, позиций, трафика или иного коммерческого результата. Это исключительно порядок определения цены: Исполнитель принимает на себя риск неоплаты работ, результат которых не подтверждён поисковой системой, и не принимает иных обязательств (раздел 11).</p>
 
-<h2 id="o7">7. Материалы и доступы Заказчика</h2>
-<p>7.1. Для работы могут потребоваться: сведения о товарах, услугах или географии; выгрузки или доступ к сайту и аналитике; фирменные материалы и ограничения.</p>
-<p>7.2. Наличие базы данных или структурированных выгрузок у Заказчика не является обязательным условием. При их отсутствии Исполнитель готовит исходные данные самостоятельно; это может влиять на срок и стоимость.</p>
-<p>7.3. Заказчик отвечает за достоверность переданных сведений. Исполнитель не проверяет цены, наличие, характеристики товаров и правовые особенности рекламы в нише Заказчика.</p>
-<p>7.4. Если работы требуют доступа к сайту, Заказчик предоставляет отдельную учётную запись с минимально необходимыми правами и отзывает её после завершения работ. Исполнитель не отвечает за сбои и потери данных, не вызванные его действиями; резервное копирование сайта обеспечивает Заказчик.</p>
+<h2 id="o8">8. Права и обязанности сторон</h2>
+<p>8.1. Исполнитель обязан: оказать услуги в согласованном объёме и сроке; направлять Отчёты по индексации в порядке п. 7.3; информировать об обстоятельствах, мешающих работе; соблюдать конфиденциальность; исправлять обоснованные замечания по правилам раздела 10.</p>
+<p>8.2. Исполнитель вправе: самостоятельно выбирать инструменты и подходы; не публиковать Страницы, не прошедшие внутренний контроль качества, заменяя их доработанными; приостановить работы при неоплате или непредоставлении материалов; отказаться от задания, противоречащего закону, правилам поисковых систем или деловой этике.</p>
+<p>8.3. Заказчик обязан: своевременно оплачивать этапы и Партии; предоставлять материалы и доступы; публиковать переданные Страницы в срок по п. 7.6; не изменять и не закрывать их от индексации без согласования; назначить одно контактное лицо; отвечать на запросы в течение 3 рабочих дней.</p>
+<p>8.4. Заказчик вправе: получать сведения о ходе работ и Отчёты по индексации; самостоятельно проверять данные об индексации в своих кабинетах; направлять замечания по правилам раздела 10; отказаться от дальнейших Партий после любого окончательного расчёта.</p>
+<p>8.5. Заказчик гарантирует, что вправе распоряжаться Сайтом Заказчика и переданными материалами и что их использование не нарушает прав третьих лиц.</p>
 
-<h2 id="o8">8. Сдача-приёмка результата</h2>
-<p>8.1. Исполнитель направляет результат этапа или уведомление о его готовности в Переписке.</p>
-<p>8.2. Заказчик в течение <b>5 рабочих дней</b> либо принимает результат, либо направляет конкретные замечания со ссылками на пункты Задания.</p>
-<p>8.3. Если в этот срок замечаний не поступило, результат считается принятым в полном объёме без замечаний, а услуги — оказанными надлежаще. Начало фактического использования страниц также означает приёмку.</p>
-<p>8.4. Обоснованные замечания — это отклонения от Задания: недостача объёма, ошибки в данных или разметке, неработающие связи, несоответствие согласованному формату или тематике.</p>
-<p>8.5. Не являются недостатками: субъективные предпочтения по стилю и формулировкам вне Задания, отсутствие роста позиций или трафика, сроки или решения поисковых систем по индексации, последствия изменений, внесённых в страницы Заказчиком или третьими лицами.</p>
-<p>8.6. Исполнитель устраняет обоснованные недостатки бесплатно в разумный срок, как правило до 5 рабочих дней. Доработки вне Задания выполняются за отдельную плату.</p>
-<p>8.7. По требованию Заказчика может быть подписан акт оказанных услуг, в том числе сканом или по электронной почте.</p>
+<h2 id="o9">9. Материалы, доступы и технические требования</h2>
+<p>9.1. Для работы могут потребоваться: сведения о товарах, услугах или географии; выгрузки или доступ к Сайту Заказчика и аналитике; фирменные материалы и ограничения.</p>
+<p>9.2. Наличие базы данных или структурированных выгрузок у Заказчика не является обязательным условием. При их отсутствии Исполнитель готовит исходные данные самостоятельно; это влияет на стоимость Запуска и срок.</p>
+<p>9.3. Заказчик предоставляет Исполнителю доступ к «Яндекс.Вебмастеру» и Google Search Console для Сайта Заказчика на весь срок работ и Расчётного периода. Без такого доступа расчёт по индексации невозможен, и применяется п. 7.8.</p>
+<p>9.4. Заказчик обеспечивает соблюдение технических требований, направляемых Исполнителем до начала работ, в том числе: доступность Сайта для поисковых роботов, корректный файл sitemap.xml и его обновление, отсутствие ошибок ответа сервера на адресах Страниц, приемлемое время ответа сервера, сохранение согласованной структуры адресов.</p>
+<p>9.5. Заказчик отвечает за достоверность переданных сведений. Исполнитель не проверяет цены, наличие, характеристики товаров и правовые особенности рекламы в нише Заказчика.</p>
+<p>9.6. Если работы требуют доступа к Сайту Заказчика, Заказчик предоставляет отдельную учётную запись с минимально необходимыми правами и отзывает её после завершения работ. Исполнитель не отвечает за сбои и потери данных, не вызванные его действиями; резервное копирование Сайта обеспечивает Заказчик.</p>
 
-<p>8.8. Пилот определяет Эталон качества. Страницы основного объёма готовятся по тем же правилам, что и Страницы, принятые Заказчиком по итогам Пилота: сопоставимый состав блоков и разделов, сопоставимая глубина проработки текста и данных, тот же формат метаданных и разметки, та же логика внутренних связей.</p>
-<p>8.9. Существенное ухудшение по сравнению с Эталоном качества является обоснованным недостатком по п. 8.4. К существенному ухудшению относятся, в частности: отсутствие блоков или разделов, предусмотренных Пилотом; сокращение среднего объёма содержательной части Страницы более чем на 20% без согласования; шаблонные повторы текста, не связанные с темой Страницы; отсутствие или некорректность метаданных и разметки; неработающие внутренние связи.</p>
-<p>8.10. Заказчик вправе проверить соответствие Эталону качества на выборке не менее 10% Страниц Этапа. Если отклонения подтвердятся, Исполнитель бесплатно приводит к Эталону все Страницы Этапа в срок по п. 8.6.</p>
-<p>8.11. Если Исполнитель не устранил подтверждённое отклонение от Эталона качества в срок по п. 8.6 и в дополнительный разумный срок, Заказчик вправе отказаться от Этапа и потребовать возврата оплаты за Страницы, не приведённые к Эталону, в порядке п. 5.8.</p>
-<p>8.12. Отклонения, согласованные Сторонами в Задании заранее (иной формат, иной объём, иной состав блоков), нарушением Эталона качества не являются. Если Пилот не проводился, Эталоном качества считаются требования Задания и примеры работ, направленные Исполнителем Заказчику до акцепта.</p>
+<h2 id="o10">10. Сдача-приёмка результата</h2>
+<p>10.1. Исполнитель направляет результат этапа или уведомление о его готовности в Переписке.</p>
+<p>10.2. Заказчик в течение <b>5 рабочих дней</b> либо принимает результат, либо направляет конкретные замечания со ссылками на пункты Задания.</p>
+<p>10.3. Если в этот срок замечаний не поступило, результат считается принятым в полном объёме без замечаний. Начало фактического использования Страниц также означает приёмку.</p>
+<p>10.4. Обоснованные замечания — это отклонения от Задания: недостача объёма, ошибки в данных или разметке, неработающие связи, несоответствие согласованному формату или тематике, а также существенное ухудшение по сравнению с Эталоном качества.</p>
+<p>10.5. Существенным ухудшением по сравнению с Эталоном качества признаются, в частности: отсутствие блоков или разделов, предусмотренных Пилотом; сокращение среднего объёма содержательной части Страницы более чем на 20% без согласования; шаблонные повторы текста, не связанные с темой Страницы; отсутствие или некорректность метаданных и разметки; неработающие внутренние связи.</p>
+<p>10.6. Заказчик вправе проверить соответствие Эталону качества на выборке не менее 10% Страниц Партии. Если отклонения подтвердятся, Исполнитель бесплатно приводит к Эталону все Страницы Партии в срок до 5 рабочих дней.</p>
+<p>10.7. Не являются недостатками: субъективные предпочтения по стилю и формулировкам вне Задания, отсутствие роста позиций или трафика, сроки и решения поисковых систем по индексации, последствия изменений, внесённых в Страницы Заказчиком или третьими лицами.</p>
+<p>10.8. Приёмка Страниц не отменяет и не заменяет расчёт по индексации: приёмка подтверждает соответствие Страниц Заданию, а стоимость определяется по правилам раздела 7 на Расчётную дату.</p>
+<p>10.9. По требованию Заказчика может быть подписан акт оказанных услуг, в том числе сканом или по электронной почте.</p>
 
-<h2 id="o9">9. Отсутствие гарантий результата поиска</h2>
-<p>9.1. Услуги имеют характер работ по подготовке материалов и не являются обязательством по достижению коммерческого результата.</p>
-<p>9.2. Исполнитель не гарантирует конкретные позиции в поиске, количество визитов, заявок или выручки, сроки и полноту индексации страниц.</p>
-<p>9.3. Решения об индексации и ранжировании принимают поисковые системы, которые не являются сторонами договора и меняют свои алгоритмы без уведомления.</p>
-<p>9.4. Статистика, примеры и расчёты на Сайте и в переписке носят иллюстративный характер, не являются прогнозом и не входят в условия договора.</p>
-<p>9.5. Отсутствие коммерческого эффекта не является основанием для возврата оплаты за фактически выполненные работы.</p>
+<h2 id="o11">11. Отсутствие гарантий результата поиска</h2>
+<p>11.1. Услуги имеют характер работ по подготовке материалов и не являются обязательством по достижению коммерческого результата.</p>
+<p>11.2. Исполнитель не гарантирует конкретные позиции в поиске, количество показов, визитов, заявок или выручки, а также сроки и полноту индексации Страниц.</p>
+<p>11.3. Порядок расчёта по индексации (раздел 7) является способом определения цены и не создаёт обязательства Исполнителя обеспечить индексацию какого-либо количества Страниц.</p>
+<p>11.4. Решения об индексации и ранжировании принимают поисковые системы, которые не являются сторонами договора и меняют свои алгоритмы без уведомления.</p>
+<p>11.5. Статистика, примеры и расчёты на Сайте и в переписке, включая примерные доли индексации, носят иллюстративный характер, не являются прогнозом и не входят в условия договора.</p>
+<p>11.6. Отсутствие коммерческого эффекта не является основанием для возврата оплаты за фактически выполненные и оплаченные по правилам раздела 7 работы.</p>
 
-<h2 id="o10">10. Исключительные права</h2>
-<p>10.1. Исключительные права на переданные страницы и тексты переходят к Заказчику в полном объёме с момента полной оплаты соответствующего этапа, без ограничения по сроку и территории.</p>
-<p>10.2. До полной оплаты права сохраняются за Исполнителем, а использование материалов Заказчиком не допускается.</p>
-<p>10.3. Методика, программные средства, шаблоны и служебные материалы Исполнителя остаются его собственностью и Заказчику не передаются.</p>
-<p>10.4. Исполнитель вправе указывать факт сотрудничества и обезличенные показатели в портфолио, если Заказчик не запретил это письменно.</p>
+<h2 id="o12">12. Исключительные права</h2>
+<p>12.1. Исключительные права на переданные Страницы и тексты переходят к Заказчику в полном объёме с момента окончательного расчёта по соответствующей Партии, без ограничения по сроку и территории.</p>
+<p>12.2. На период от публикации до окончательного расчёта Заказчику предоставляется безвозмездное право использования Страниц путём их размещения на Сайте Заказчика.</p>
+<p>12.3. Страницы, не оплаченные по итогам Расчётного периода как не попавшие в индекс, остаются в распоряжении Заказчика: их удаление не требуется, отдельная плата за них не взимается.</p>
+<p>12.4. Методика, программные средства, шаблоны и служебные материалы Исполнителя остаются его собственностью и Заказчику не передаются.</p>
+<p>12.5. Исполнитель вправе указывать факт сотрудничества и обезличенные показатели в портфолио, если Заказчик не запретил это письменно.</p>
 
-<h2 id="o11">11. Конфиденциальность и персональные данные</h2>
-<p>11.1. Стороны не раскрывают третьим лицам сведения, полученные в рамках договора, кроме случаев, предусмотренных законом, и привлечения исполнителей в объёме, необходимом для работы.</p>
-<p>11.2. Обязанность по конфиденциальности действует в течение 3 лет после завершения работ.</p>
-<p>11.3. Обработка персональных данных осуществляется согласно <a href="/privacy.html">Политике конфиденциальности</a>.</p>
-<p>11.4. Если Заказчик передаёт Исполнителю персональные данные своих клиентов или сотрудников, он остаётся оператором таких данных, имеет законное основание для их передачи и отвечает за получение согласий; Исполнитель действует как обработчик по его поручению.</p>
-<p>11.5. По завершении работ Исполнитель удаляет рабочие копии переданных материалов по письменному требованию Заказчика в течение 30 дней.</p>
+<h2 id="o13">13. Конфиденциальность и персональные данные</h2>
+<p>13.1. Стороны не раскрывают третьим лицам сведения, полученные в рамках договора, кроме случаев, предусмотренных законом, и привлечения исполнителей в объёме, необходимом для работы.</p>
+<p>13.2. Обязанность по конфиденциальности действует в течение 3 лет после завершения работ.</p>
+<p>13.3. Обработка персональных данных осуществляется согласно <a href="/privacy.html">Политике конфиденциальности</a>.</p>
+<p>13.4. Если Заказчик передаёт Исполнителю персональные данные своих клиентов или сотрудников, он остаётся оператором таких данных, имеет законное основание для их передачи и отвечает за получение согласий; Исполнитель действует как обработчик по его поручению.</p>
+<p>13.5. По завершении работ Исполнитель удаляет рабочие копии переданных материалов по письменному требованию Заказчика в течение 30 дней.</p>
 
-<h2 id="o12">12. Ответственность</h2>
-<p>12.1. Стороны отвечают по законодательству РФ с учётом ограничений настоящего раздела.</p>
-<p>12.2. Общая ответственность Исполнителя ограничена суммой, фактически оплаченной Заказчиком за этап, в котором возникло нарушение.</p>
-<p>12.3. Исполнитель не возмещает упущенную выгоду, косвенные убытки, потери трафика, выручки или репутационный ущерб.</p>
-<p>12.4. Исполнитель не отвечает за действия поисковых систем, хостинга, CMS и иных сервисов Заказчика, а также за изменения, внесённые в страницы после сдачи без его участия.</p>
-<p>12.5. Заказчик самостоятельно отвечает за соблюдение законодательства о рекламе и о защите прав потребителей при размещении страниц и предоставленных им сведений.</p>
-<p>12.6. Если претензии третьих лиц вызваны материалами или сведениями Заказчика, Заказчик урегулирует их самостоятельно и за свой счёт.</p>
+<h2 id="o14">14. Ответственность</h2>
+<p>14.1. Стороны отвечают по законодательству РФ с учётом ограничений настоящего раздела.</p>
+<p>14.2. Общая ответственность Исполнителя ограничена суммой, фактически оплаченной Заказчиком по Партии или этапу, в котором возникло нарушение.</p>
+<p>14.3. Исполнитель не возмещает упущенную выгоду, косвенные убытки, потери трафика, выручки или репутационный ущерб.</p>
+<p>14.4. Исполнитель не отвечает за действия поисковых систем, хостинга, CMS и иных сервисов Заказчика, а также за изменения, внесённые в Страницы после сдачи без его участия.</p>
+<p>14.5. Заказчик самостоятельно отвечает за соблюдение законодательства о рекламе и о защите прав потребителей при размещении Страниц и предоставленных им сведений.</p>
+<p>14.6. Если претензии третьих лиц вызваны материалами или сведениями Заказчика, Заказчик урегулирует их самостоятельно и за свой счёт.</p>
 
-<h2 id="o13">13. Изменение и расторжение</h2>
-<p>13.1. Исполнитель вправе изменять оферту. К уже начатому этапу применяется редакция, действовавшая на дату акцепта.</p>
-<p>13.2. Каждая Сторона вправе отказаться от договора, уведомив другую в Переписке, с расчётом за фактически выполненный объём по п. 5.8.</p>
-<p>13.3. Исполнитель вправе отказаться от договора, если Заказчик не отвечает или не предоставляет необходимые материалы более 20 календарных дней; в этом случае выполненный объём признаётся принятым.</p>
-<p>13.4. Прекращение договора не освобождает Стороны от расчётов и обязательств по разделам 10 и 11.</p>
+<h2 id="o15">15. Изменение и расторжение</h2>
+<p>15.1. Исполнитель вправе изменять оферту. К уже начатым этапам и Партиям применяется редакция, действовавшая на дату акцепта.</p>
+<p>15.2. Каждая Сторона вправе отказаться от договора, уведомив другую в Переписке, с расчётом по правилам п. 6.9.</p>
+<p>15.3. Исполнитель вправе отказаться от договора, если Заказчик не отвечает, не публикует переданные Страницы или не предоставляет необходимые материалы и доступы более 20 календарных дней; в этом случае выполненный объём признаётся принятым и оплачивается по п. 6.9.</p>
+<p>15.4. Прекращение договора не освобождает Стороны от расчётов и обязательств по разделам 12 и 13.</p>
 
-<h2 id="o14">14. Форс-мажор</h2>
-<p>14.1. Стороны освобождаются от ответственности за неисполнение, вызванное обстоятельствами непреодолимой силы, включая массовые сбои связи и блокировки сервисов, акты государственных органов, стихийные бедствия и военные действия.</p>
-<p>14.2. Сроки продлеваются на время действия таких обстоятельств. Если они длятся более 30 дней, любая Сторона вправе расторгнуть договор с расчётом за выполненный объём.</p>
+<h2 id="o16">16. Форс-мажор</h2>
+<p>16.1. Стороны освобождаются от ответственности за неисполнение, вызванное обстоятельствами непреодолимой силы, включая массовые сбои связи и блокировки сервисов, акты государственных органов, стихийные бедствия и военные действия.</p>
+<p>16.2. Сроки продлеваются на время действия таких обстоятельств. Если они длятся более 30 дней, любая Сторона вправе расторгнуть договор с расчётом за выполненный объём.</p>
+<p>16.3. Прекращение работы, недоступность или существенное изменение условий сервисов «Яндекс.Вебмастер» и Google Search Console, делающее невозможным определение статуса индексации, является основанием для перехода на фиксированную оплату по п. 7.8.</p>
 
-<h2 id="o15">15. Споры и претензии</h2>
-<p>15.1. Стороны решают разногласия переговорами. Претензия направляется на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>; срок ответа — 15 рабочих дней.</p>
-<p>15.2. Переписка по указанным адресам и в телеграм-боте признаётся надлежащим доказательством согласований и уведомлений.</p>
-<p>15.3. Неурегулированные споры рассматриваются судом в соответствии с законодательством РФ.</p>
-
-<h2 id="o16">16. Прочие условия и реквизиты</h2>
-<p>16.1. Документы и сканы, переданные по электронной почте, имеют силу документов на бумаге (ст. 160, 434 ГК РФ).</p>
-<p>16.2. Заказчик согласен на получение сообщений, связанных с исполнением договора, на указанные им контакты.</p>
-<p>16.3. Если отдельное условие окажется недействительным, остальные сохраняют силу.</p>
+<h2 id="o17">17. Споры, прочие условия и реквизиты</h2>
+<p>17.1. Стороны решают разногласия переговорами. Претензия направляется на <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>; срок ответа — 15 рабочих дней.</p>
+<p>17.2. Переписка по указанным адресам и в телеграм-боте признаётся надлежащим доказательством согласований и уведомлений. Отчёты по индексации, направленные Исполнителем и не оспоренные Заказчиком в течение 5 рабочих дней, признаются согласованными Сторонами.</p>
+<p>17.3. Неурегулированные споры рассматриваются судом в соответствии с законодательством РФ.</p>
+<p>17.4. Документы и сканы, переданные по электронной почте, имеют силу документов на бумаге (ст. 160, 434 ГК РФ).</p>
+<p>17.5. Заказчик согласен на получение сообщений, связанных с исполнением договора, на указанные им контакты.</p>
+<p>17.6. Если отдельное условие окажется недействительным, остальные сохраняют силу.</p>
 <table>
 <tbody>
 <tr><th style="width:32%">Исполнитель</th><td>Рахимзянов Тимур Альбертович, плательщик НПД</td></tr>
@@ -2026,7 +2241,7 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 </div></main>
 
 <footer><div class="shell">
-<div>Verstio — программный SEO. Редакция оферты от 16.09.2026</div>
+<div>© 2026 Verstio — программный SEO. Редакция оферты от 20.09.2026</div>
 <div class="row"><a href="/">Главная</a><a href="/privacy.html">Политика конфиденциальности</a><a href="mailto:hello@verstio.ru">hello@verstio.ru</a></div>
 </div></footer>
 </body>
