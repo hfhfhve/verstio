@@ -1,5 +1,6 @@
 
 
+
 /* ==========================================================================
    SEO-Фабрика — ядро фронтенда
 
@@ -2081,6 +2082,7 @@ const TOPBAR_NAV = [
   { key: 'projects', href: 'index.html',    icon: 'pages',  label: 'Проекты' },
   { key: 'leads',    href: 'leads.html',    icon: 'target', label: 'Лиды и разведка' },
   { key: 'playbook', href: 'playbook.html', icon: 'file',   label: 'Плейбук' },
+  { key: 'hunt',     href: 'hunt.html',     icon: 'compass', label: 'Разведка' },
   { key: 'settings', href: 'settings.html', icon: 'gear',   label: 'Настройки' },
 ];
 
@@ -2171,3 +2173,4 @@ function mountLogoutButton() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
+
