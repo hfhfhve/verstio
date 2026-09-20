@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: f6ce08f23756f87d5450c730f66d24cb493cbdfa
-# built:  2026-09-20 09:09 UTC
+# commit: ab7017795d908b8203307f7658204d2b26a6fb2d
+# built:  2026-09-20 10:55 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,7 +10,7 @@ index.html  (1019 строк)
 offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2177 строк)
+app/app.js  (2183 строк)
 app/hunt.html  (510 строк)
 app/index.html  (452 строк)
 app/leads.html  (756 строк)
@@ -2162,9 +2162,6 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 ════════════════════════════════════════════════════════
   app/app.js
 ════════════════════════════════════════════════════════
-
-
-
 
 /* ==========================================================================
    SEO-Фабрика — ядро фронтенда
@@ -4325,8 +4322,16 @@ function mountLogoutButton() {
   });
 }
 
-(function guardCabinet() {
+// Глобальная функция, а не самовызов внутри скобок: страницы кабинета
+// (например, hunt.html) вызывают guardCabinet() у себя, и раньше это
+// падало с ReferenceError, обрывая весь скрипт страницы.
+// Повторный вызов безопасен — тело отрабатывает один раз.
+let _cabinetGuarded = false;
+
+function guardCabinet() {
   if (/login\.html$/.test(location.pathname)) return;
+  if (_cabinetGuarded) return;
+  _cabinetGuarded = true;
 
   if (!auth.token()) { auth.toLogin(); return; }
 
@@ -4337,7 +4342,9 @@ function mountLogoutButton() {
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
-})();
+}
+
+guardCabinet();
 
 ════════════════════════════════════════════════════════
   app/hunt.html
