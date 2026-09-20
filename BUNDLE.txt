@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: a9223882bb02e190091b7d7b2d4d5634e7dafc30
+# commit: f6ce08f23756f87d5450c730f66d24cb493cbdfa
 # built:  2026-09-20 09:09 UTC
 
 ## Состав
@@ -11,6 +11,7 @@ offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2177 строк)
+app/hunt.html  (510 строк)
 app/index.html  (452 строк)
 app/leads.html  (756 строк)
 app/login.html  (150 строк)
@@ -4337,6 +4338,520 @@ function mountLogoutButton() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
+
+════════════════════════════════════════════════════════
+  app/hunt.html
+════════════════════════════════════════════════════════
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Разведка — Verstio</title>
+<link rel="stylesheet" href="style.css?v=52" />
+<style>
+  /* Скор крупной цифрой: глаз должен цепляться за нужные строки сразу. */
+  .hunt-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .hunt-tbl th {
+    text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted, #8b8b8b); font-weight: 600; padding: 8px 10px;
+    border-bottom: 1px solid var(--line, #e6e6e6); white-space: nowrap;
+  }
+  .hunt-tbl td { padding: 10px; border-bottom: 1px solid var(--line, #eee); vertical-align: top; }
+  .hunt-tbl tbody tr:hover { background: var(--hover, rgba(0,0,0,.02)); }
+
+  .c-score { width: 64px; }
+  .score-num { font-size: 22px; font-weight: 700; line-height: 1; }
+  .score-hi { color: #1a8f4a; }
+  .score-mid { color: #b07a00; }
+  .score-low { color: var(--muted, #999); }
+  .score-bars { display: flex; gap: 2px; margin-top: 6px; }
+  .score-bars i { display: block; height: 3px; width: 12px; border-radius: 2px; background: #ddd; }
+  .score-bars i.on { background: currentColor; }
+
+  .c-name b { font-weight: 600; }
+  .c-name .sub { color: var(--muted, #8b8b8b); font-size: 12px; margin-top: 2px; }
+  .num-cell { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dim { color: var(--muted, #9a9a9a); }
+
+  /* Чипы-признаки: короткое объяснение, почему строка интересна. */
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip {
+    display: inline-block; padding: 2px 7px; border-radius: 999px;
+    font-size: 11px; line-height: 16px; border: 1px solid var(--line, #e2e2e2);
+    background: var(--chip-bg, #fafafa); white-space: nowrap;
+  }
+  .chip.good { border-color: #b8e0c6; background: #eefaf2; color: #12693a; }
+  .chip.warn { border-color: #f0dca8; background: #fdf7e6; color: #8a6400; }
+  .chip.bad  { border-color: #f0c4c4; background: #fdeeee; color: #9b2c2c; }
+
+  /* Действия всегда видны. Никакого opacity:0 — на лидах это уже мешало. */
+  .c-act { width: 190px; }
+  .act-row { display: flex; gap: 6px; flex-wrap: wrap; opacity: 1; }
+
+  .hunt-empty { padding: 32px 12px; text-align: center; color: var(--muted, #8b8b8b); }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filters .input, .filters select { min-width: 0; }
+  .flag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
+
+  .runs { display: flex; gap: 10px; flex-wrap: wrap; }
+  .run-card {
+    border: 1px solid var(--line, #e6e6e6); border-radius: 10px;
+    padding: 10px 12px; min-width: 190px;
+  }
+  .run-card .k { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted, #999); }
+  .run-card .v { font-weight: 600; margin-top: 2px; }
+  .run-card .s { font-size: 12px; color: var(--muted, #8b8b8b); margin-top: 6px; }
+
+  /* Карточка кандидата выезжает справа, чтобы не терять место в списке. */
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 420px; z-index: 60;
+    background: var(--card, #fff); border-left: 1px solid var(--line, #e6e6e6);
+    box-shadow: -18px 0 40px rgba(0,0,0,.08); transform: translateX(100%);
+    transition: transform .18s ease; overflow: auto; padding: 18px 18px 40px;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer h3 { margin: 0 0 2px; font-size: 17px; }
+  .drawer .muted { color: var(--muted, #8b8b8b); font-size: 13px; }
+  .meter { margin: 14px 0 4px; }
+  .meter .lbl { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .meter .bar { height: 8px; border-radius: 6px; background: #eee; overflow: hidden; }
+  .meter .bar i { display: block; height: 100%; background: #2f6fed; }
+  .meter.m2 .bar i { background: #1a8f4a; }
+  .meter.m3 .bar i { background: #b07a00; }
+  .why { margin: 6px 0 0; padding: 0; list-style: none; font-size: 13px; }
+  .why li { display: flex; gap: 8px; padding: 3px 0; }
+  .why .k { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 34px; }
+  .why .k.minus { color: #9b2c2c; }
+  .drawer-foot { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.18); z-index: 55; display: none; }
+  .scrim.open { display: block; }
+</style>
+</head>
+<body>
+<div class="plain-shell">
+  <div id="navSlot" data-nav="hunt" data-sub="Кандидаты из 2ГИС"></div>
+
+  <div class="canvas">
+    <div class="wrap">
+
+      <div class="view-head">
+        <div class="view-head-body">
+          <div class="view-eyebrow">Поиск клиентов</div>
+          <h1 class="view-title">Разведка</h1>
+          <div class="view-sub">
+            Карточки собираются на вашем компьютере, сервер сам сканирует сайты и ставит баллы.
+          </div>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-sm" id="scanBtn">Сканировать новых</button>
+          <button class="btn btn-sm" id="rescoreBtn">Пересчитать баллы</button>
+        </div>
+      </div>
+
+      <div class="metrics" id="huntMetrics"></div>
+
+      <!-- 1. Прогоны: что и когда собирали -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Прогоны</div>
+            <div class="panel-sub" id="scanState">Скан не запущен</div>
+          </div>
+          <div class="panel-tools">
+            <button class="btn btn-sm btn-quiet" id="runsReload">Обновить</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="runs" id="runsBox"><div class="sk sk-card"></div></div>
+        </div>
+      </section>
+
+      <!-- 2. Фильтры -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Фильтры</div>
+            <div class="panel-sub">По умолчанию показаны только кандидаты с баллом от 60</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="filters">
+            <input class="input input-sm" id="fQ" placeholder="Название или домен" style="width:200px" />
+            <select class="input input-sm" id="fCity" style="width:170px"><option value="">Все города</option></select>
+            <select class="input input-sm" id="fNiche" style="width:170px"><option value="">Все ниши</option></select>
+            <select class="input input-sm" id="fScore" style="width:150px">
+              <option value="60">Балл от 60</option>
+              <option value="70">Балл от 70</option>
+              <option value="40">Балл от 40</option>
+              <option value="0">Любой балл</option>
+            </select>
+            <select class="input input-sm" id="fStatus" style="width:190px">
+              <option value="">Все, кроме скрытых</option>
+              <option value="scored">Оценённые</option>
+              <option value="new">Ждут скана</option>
+              <option value="rejected">Дисквалифицированы</option>
+              <option value="taken">Ушли в лиды</option>
+              <option value="hidden">Скрытые</option>
+            </select>
+            <select class="input input-sm" id="fQuality" style="width:210px">
+              <option value="">Любые данные</option>
+              <option value="good">Данные полные</option>
+              <option value="partial">Частичные</option>
+              <option value="poor">Нужна ручная проверка</option>
+            </select>
+            <label class="flag"><input type="checkbox" id="fNoSite" /> Без сайта</label>
+            <label class="flag"><input type="checkbox" id="fReviews" /> С отзывами</label>
+            <button class="btn btn-sm" id="fApply">Показать</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Список -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-body">
+            <div class="panel-title">Кандидаты</div>
+            <div class="panel-sub" id="huntCount">—</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="tbl-x">
+            <table class="hunt-tbl" id="huntTbl">
+              <thead>
+                <tr>
+                  <th class="c-score">Балл</th>
+                  <th>Компания</th>
+                  <th>Город</th>
+                  <th>Отзывы</th>
+                  <th>Товаров</th>
+                  <th>В индексе</th>
+                  <th>Признаки</th>
+                  <th class="c-act">Действия</th>
+                </tr>
+              </thead>
+              <tbody id="huntBody">
+                <tr><td colspan="8"><div class="sk sk-card"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel-foot">
+          Балл = 0.35 × Деньги + 0.35 × Потолок + 0.30 × Дефицит. Нажмите на строку, чтобы увидеть расчёт.
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="plain-foot"><span id="wireDot" class="dot"></span><span id="wireText">—</span></div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<script src="app.js?v=52"></script>
+<script>
+(function () {
+  'use strict';
+
+  guardCabinet();
+  mountTopbar();
+  mountLogoutButton();
+
+  var state = { items: [], counts: {}, byId: {} };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function num(v) { return (v == null || v < 0) ? '—' : String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+
+  /* Цвет балла: зелёный — звонить сегодня, серый — можно не смотреть. */
+  function scoreClass(n) { return n >= 70 ? 'score-hi' : (n >= 40 ? 'score-mid' : 'score-low'); }
+
+  function bars(p) {
+    var parts = [p.score_money, p.score_ceiling, p.score_gap];
+    return '<div class="score-bars">' + parts.map(function (v) {
+      return '<i class="' + (v >= 40 ? 'on' : '') + '"></i>';
+    }).join('') + '</div>';
+  }
+
+  function chips(p) {
+    var out = [];
+    if (!p.domain) out.push(['good', 'нет сайта']);
+    if (p.is_autosite) out.push(['good', 'автосайт']);
+    if (p.platform && !p.is_autosite) out.push(['', p.platform]);
+    if (p.is_ad) out.push(['good', 'платит 2ГИС']);
+    if (p.cities_count > 1) out.push(['good', 'городов ' + p.cities_count]);
+    if (p.reject_reason) out.push(['bad', p.reject_reason]);
+    if (p.data_quality === 'poor') out.push(['warn', 'нужна ручная проверка']);
+    else if (p.data_quality === 'partial') out.push(['warn', 'данные неполные']);
+    if (p.status === 'taken') out.push(['good', 'в лидах']);
+    return '<div class="chips">' + out.map(function (c) {
+      return '<span class="chip ' + c[0] + '">' + esc(c[1]) + '</span>';
+    }).join('') + '</div>';
+  }
+
+  function row(p) {
+    var site = p.domain
+      ? '<div class="sub">' + esc(p.domain) + '</div>'
+      : '<div class="sub dim">сайта нет</div>';
+    return '' +
+      '<tr data-id="' + p.id + '">' +
+        '<td class="c-score"><div class="score-num ' + scoreClass(p.score) + '">' + p.score + '</div>' +
+          '<div class="' + scoreClass(p.score) + '">' + bars(p) + '</div></td>' +
+        '<td class="c-name"><b>' + esc(p.name) + '</b>' + site +
+          (p.phone ? '<div class="sub">' + esc(p.phone) + '</div>' : '') + '</td>' +
+        '<td>' + esc(p.city || '—') + '</td>' +
+        '<td class="num-cell">' + (p.reviews || '—') +
+          (p.rating ? ' <span class="dim">/ ' + p.rating.toFixed(1) + '</span>' : '') + '</td>' +
+        '<td class="num-cell">' + num(p.catalog_items) +
+          (p.catalog_source && p.catalog_source !== 'none'
+            ? '<div class="dim" style="font-size:11px">' + esc(p.catalog_source) + '</div>' : '') + '</td>' +
+        '<td class="num-cell">' + num(p.pages_indexed) + '</td>' +
+        '<td>' + chips(p) + '</td>' +
+        '<td class="c-act"><div class="act-row">' +
+          (p.lead_id
+            ? '<a class="btn btn-sm" href="leads.html">В лидах</a>'
+            : '<button class="btn btn-sm btn-primary" data-act="promote">В лиды</button>') +
+          '<button class="btn btn-sm" data-act="rescan">Скан</button>' +
+          '<button class="btn btn-sm btn-quiet" data-act="hide">Скрыть</button>' +
+        '</div></td>' +
+      '</tr>';
+  }
+
+  function renderList() {
+    var body = document.getElementById('huntBody');
+    if (!state.items.length) {
+      body.innerHTML = '<tr><td colspan="8"><div class="hunt-empty">' +
+        'Пусто. Запустите сбор на своём компьютере или ослабьте фильтры.' +
+        '</div></td></tr>';
+    } else {
+      body.innerHTML = state.items.map(row).join('');
+    }
+    document.getElementById('huntCount').textContent = state.items.length + ' на экране';
+  }
+
+  function renderMetrics() {
+    var c = state.counts || {};
+    var cards = [
+      ['Всего собрано', (c.new || 0) + (c.scored || 0) + (c.rejected || 0) + (c.taken || 0) + (c.hidden || 0)],
+      ['Ждут скана', c.new || 0],
+      ['Оценены', c.scored || 0],
+      ['Ушли в лиды', c.taken || 0]
+    ];
+    document.getElementById('huntMetrics').innerHTML = cards.map(function (x) {
+      return '<div class="run-card"><div class="k">' + x[0] + '</div><div class="v">' + x[1] + '</div></div>';
+    }).join('');
+  }
+
+  function renderScanState(s) {
+    var el = document.getElementById('scanState');
+    if (s && s.running) {
+      el.textContent = 'Идёт скан: ' + s.done + ' из ' + s.total;
+    } else {
+      el.textContent = 'Скан не запущен';
+    }
+  }
+
+  /* --- Карточка справа: почему балл именно такой ---------------- */
+  function why(list) {
+    if (!list || !list.length) return '<div class="muted">Нет слагаемых</div>';
+    return '<ul class="why">' + list.map(function (d) {
+      var minus = String(d.k).indexOf('-') === 0 ? ' minus' : '';
+      return '<li><span class="k' + minus + '">' + esc(d.k) + '</span><span>' + esc(d.t) + '</span></li>';
+    }).join('') + '</ul>';
+  }
+  function meter(cls, title, value) {
+    return '<div class="meter ' + cls + '"><div class="lbl"><span>' + title + '</span><b>' + value + '</b></div>' +
+      '<div class="bar"><i style="width:' + Math.max(0, Math.min(100, value)) + '%"></i></div></div>';
+  }
+
+  function openDrawer(id) {
+    var p = state.byId[id];
+    if (!p) return;
+    var d = p.score_detail || {};
+    document.getElementById('drawer').innerHTML = '' +
+      '<h3>' + esc(p.name) + '</h3>' +
+      '<div class="muted">' + esc([p.city, p.domain || 'без сайта', p.phone].filter(Boolean).join(' · ')) + '</div>' +
+      '<div class="score-num ' + scoreClass(p.score) + '" style="margin:14px 0 0">' + p.score + '</div>' +
+      '<div class="muted">' + esc(d.formula || '') + '</div>' +
+      meter('m1', 'Деньги', p.score_money) + why(d.money) +
+      meter('m2', 'Потолок pSEO', p.score_ceiling) + why(d.ceiling) +
+      meter('m3', 'Дефицит органики', p.score_gap) + why(d.gap) +
+      (d.penalty && d.penalty.length ? '<h4>Штрафы</h4>' + why(d.penalty) : '') +
+      '<div class="muted" style="margin-top:14px">' +
+        'Страниц всего: ' + num(p.pages_total) + ' · в индексе: ' + num(p.pages_indexed) +
+        ' · разделов: ' + (p.sections || 0) + ' · потолок: ' + num(p.pseo_base) +
+      '</div>' +
+      (p.scan_error ? '<div class="muted" style="color:#9b2c2c">Ошибка скана: ' + esc(p.scan_error) + '</div>' : '') +
+      '<div class="drawer-foot">' +
+        (p.lead_id ? '' : '<button class="btn btn-sm btn-primary" data-d="promote">В лиды</button>') +
+        '<button class="btn btn-sm" data-d="rescan">Пересканировать</button>' +
+        (p.domain ? '<a class="btn btn-sm btn-quiet" target="_blank" rel="noopener" href="//' + esc(p.domain) + '">Открыть сайт</a>' : '') +
+        '<button class="btn btn-sm btn-quiet" data-d="close">Закрыть</button>' +
+      '</div>';
+    document.getElementById('drawer').dataset.id = id;
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('scrim').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('scrim').classList.remove('open');
+  }
+
+  /* --- Данные ------------------------------------------------------ */
+  function filters() {
+    var p = {
+      limit: 300,
+      min_score: document.getElementById('fScore').value,
+      status: document.getElementById('fStatus').value,
+      quality: document.getElementById('fQuality').value,
+      city: document.getElementById('fCity').value,
+      niche: document.getElementById('fNiche').value,
+      q: document.getElementById('fQ').value.trim()
+    };
+    Object.keys(p).forEach(function (k) { if (!p[k]) delete p[k]; });
+    return p;
+  }
+
+  async function load() {
+    try {
+      var data = await req('/hunt/prospects' + qs(filters()));
+      var items = data.items || [];
+      if (document.getElementById('fNoSite').checked) {
+        items = items.filter(function (x) { return !x.domain; });
+      }
+      if (document.getElementById('fReviews').checked) {
+        items = items.filter(function (x) { return (x.reviews || 0) > 0; });
+      }
+      state.items = items;
+      state.counts = data.counts || {};
+      state.byId = {};
+      items.forEach(function (x) { state.byId[x.id] = x; });
+      renderList();
+      renderMetrics();
+      renderScanState(data.scan);
+      wire.set(true, 'Список обновлён');
+      if (data.scan && data.scan.running) setTimeout(load, 5000);
+    } catch (e) {
+      wire.set(false, e.missingEndpoint
+        ? 'На сервере ещё нет модуля разведки — обновите бэкенд'
+        : ('Ошибка: ' + (e.message || e)));
+      document.getElementById('huntBody').innerHTML =
+        '<tr><td colspan="8"><div class="hunt-empty">Не удалось загрузить список</div></td></tr>';
+    }
+  }
+
+  async function loadRuns() {
+    try {
+      var data = await req('/hunt/runs?limit=8');
+      var items = data.items || [];
+      document.getElementById('runsBox').innerHTML = items.length
+        ? items.map(function (r) {
+            return '<div class="run-card"><div class="k">' + esc(r.niche || 'без ниши') + '</div>' +
+              '<div class="v">' + r.total + ' карточек</div>' +
+              '<div class="s">отсканировано ' + r.scanned + ' · годных ' + r.qualified + '</div>' +
+              '<div class="s">' + esc(r.cities || '') + '</div></div>';
+          }).join('')
+        : '<div class="hunt-empty">Прогонов пока нет</div>';
+    } catch (e) {
+      document.getElementById('runsBox').innerHTML = '<div class="hunt-empty">Нет данных по прогонам</div>';
+    }
+  }
+
+  async function loadDicts() {
+    try {
+      var data = await req('/hunt/cities');
+      var city = document.getElementById('fCity');
+      (data.cities || []).forEach(function (c) {
+        var o = document.createElement('option');
+        o.value = c.name; o.textContent = c.name + ' (' + c.count + ')';
+        city.appendChild(o);
+      });
+      var niche = document.getElementById('fNiche');
+      (data.niches || []).forEach(function (c) {
+        var o = document.createElement('option');
+        o.value = c.name; o.textContent = c.name + ' (' + c.count + ')';
+        niche.appendChild(o);
+      });
+    } catch (e) { /* справочники не критичны */ }
+  }
+
+  /* --- Действия ----------------------------------------------------- */
+  async function act(id, what) {
+    try {
+      if (what === 'promote') {
+        var r = await req('/hunt/prospects/' + id + '/promote', { method: 'POST', body: JSON.stringify({}) });
+        wire.set(true, r.created ? 'Лид создан' : (r.note || 'Уже был в лидах'));
+      } else if (what === 'rescan') {
+        wire.set(true, 'Сканирую…');
+        await req('/hunt/prospects/' + id + '/rescan', { method: 'POST', body: JSON.stringify({}) });
+        wire.set(true, 'Готово');
+      } else if (what === 'hide') {
+        await req('/hunt/prospects/' + id + '/status', { method: 'POST', body: JSON.stringify({ status: 'hidden' }) });
+        wire.set(true, 'Скрыт');
+      }
+      await load();
+    } catch (e) {
+      wire.set(false, 'Ошибка: ' + (e.message || e));
+    }
+  }
+
+  document.getElementById('huntBody').addEventListener('click', function (ev) {
+    var tr = ev.target.closest('tr[data-id]');
+    if (!tr) return;
+    var id = Number(tr.dataset.id);
+    var btn = ev.target.closest('[data-act]');
+    if (btn) { ev.stopPropagation(); act(id, btn.dataset.act); return; }
+    if (!ev.target.closest('a')) openDrawer(id);
+  });
+
+  document.getElementById('drawer').addEventListener('click', function (ev) {
+    var btn = ev.target.closest('[data-d]');
+    if (!btn) return;
+    var id = Number(document.getElementById('drawer').dataset.id);
+    if (btn.dataset.d === 'close') { closeDrawer(); return; }
+    closeDrawer();
+    act(id, btn.dataset.d);
+  });
+  document.getElementById('scrim').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+
+  document.getElementById('fApply').addEventListener('click', load);
+  document.getElementById('fQ').addEventListener('keydown', function (e) { if (e.key === 'Enter') load(); });
+  ['fCity', 'fNiche', 'fScore', 'fStatus', 'fQuality', 'fNoSite', 'fReviews'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', load);
+  });
+  document.getElementById('runsReload').addEventListener('click', function () { loadRuns(); load(); });
+
+  document.getElementById('scanBtn').addEventListener('click', async function () {
+    try {
+      await req('/hunt/scan', { method: 'POST', body: JSON.stringify({ limit: 500 }) });
+      wire.set(true, 'Скан запущен');
+      load();
+    } catch (e) { wire.set(false, 'Ошибка: ' + (e.message || e)); }
+  });
+
+  document.getElementById('rescoreBtn').addEventListener('click', async function () {
+    try {
+      var r = await req('/hunt/rescore', { method: 'POST', body: JSON.stringify({}) });
+      wire.set(true, 'Пересчитано: ' + r.updated);
+      load();
+    } catch (e) { wire.set(false, 'Ошибка: ' + (e.message || e)); }
+  });
+
+  loadDicts();
+  loadRuns();
+  load();
+})();
+</script>
+</body>
+</html>
 
 ════════════════════════════════════════════════════════
   app/index.html
