@@ -1,11 +1,21 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=1280" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Разведка — Verstio</title>
 <link rel="stylesheet" href="style.css?v=52" />
+<script>
+  /* Тема выставляется до отрисовки, как на остальных страницах кабинета.
+     Без этого боковая панель и другие блоки брали светлые переменные
+     и на тёмной странице выглядели белым пятном. */
+  try {
+    var t = localStorage.getItem('seo_theme');
+    if (t !== 'light' && t !== 'dark') t = 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
 <style>
   /* Скор крупной цифрой: глаз должен цепляться за нужные строки сразу. */
   .hunt-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
