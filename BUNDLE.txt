@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: ab7017795d908b8203307f7658204d2b26a6fb2d
-# built:  2026-09-20 10:55 UTC
+# commit: 0a8c627cfd82521dbb65f01bf882e935776b7bf1
+# built:  2026-09-20 12:25 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -11,7 +11,7 @@ offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2183 строк)
-app/hunt.html  (510 строк)
+app/hunt.html  (520 строк)
 app/index.html  (452 строк)
 app/leads.html  (756 строк)
 app/login.html  (150 строк)
@@ -4351,13 +4351,23 @@ guardCabinet();
 ════════════════════════════════════════════════════════
 
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=1280" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Разведка — Verstio</title>
 <link rel="stylesheet" href="style.css?v=52" />
+<script>
+  /* Тема выставляется до отрисовки, как на остальных страницах кабинета.
+     Без этого боковая панель и другие блоки брали светлые переменные
+     и на тёмной странице выглядели белым пятном. */
+  try {
+    var t = localStorage.getItem('seo_theme');
+    if (t !== 'light' && t !== 'dark') t = 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
 <style>
   /* Скор крупной цифрой: глаз должен цепляться за нужные строки сразу. */
   .hunt-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
