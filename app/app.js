@@ -1,6 +1,3 @@
-
-
-
 /* ==========================================================================
    SEO-Фабрика — ядро фронтенда
 
@@ -2160,8 +2157,16 @@ function mountLogoutButton() {
   });
 }
 
-(function guardCabinet() {
+// Глобальная функция, а не самовызов внутри скобок: страницы кабинета
+// (например, hunt.html) вызывают guardCabinet() у себя, и раньше это
+// падало с ReferenceError, обрывая весь скрипт страницы.
+// Повторный вызов безопасен — тело отрабатывает один раз.
+let _cabinetGuarded = false;
+
+function guardCabinet() {
   if (/login\.html$/.test(location.pathname)) return;
+  if (_cabinetGuarded) return;
+  _cabinetGuarded = true;
 
   if (!auth.token()) { auth.toLogin(); return; }
 
@@ -2172,5 +2177,6 @@ function mountLogoutButton() {
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
-})();
+}
 
+guardCabinet();
