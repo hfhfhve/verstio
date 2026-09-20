@@ -61,7 +61,10 @@
   .sec-chip {
     border: 1px solid var(--line, #2a2f36); border-radius: 999px; padding: 3px 9px; font-size: 12px;
   }
-  .row-tools { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: nowrap; align-items: center; }
+  /* ВАЖНО: в style.css у .row-tools стоит opacity:0 и включается только на .tbl tr:hover.
+     Наша таблица называется .lead-tbl, поэтому кнопки были невидимы всегда. Возвращаем видимость. */
+  .lead-tbl .row-tools,
+  .row-tools { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: nowrap; align-items: center; opacity: 1 !important; visibility: visible !important; }
   .row-tools .btn, .row-tools .btn-sm {
     height: 26px; min-height: 26px; padding: 0 10px; font-size: 11.5px; flex: none;
   }
@@ -73,6 +76,14 @@
   .lead-empty { padding: 26px; text-align: center; opacity: .6; font-size: 13px; }
   .lead-tbl tr.is-editing td { background: rgba(39,131,222,.06); }
   .lead-inp.bordered { border-color: var(--line, #2a2f36); }
+  /* кнопки в строке всегда с видимой рамкой и контрастным текстом */
+  .lead-tbl .row-tools .icon-btn {
+    border: 1px solid var(--line, #2a2f36);
+    background: var(--surface, #14181d);
+    color: var(--text, #e6e9ee);
+  }
+  .lead-tbl .row-tools .icon-btn:hover { background: var(--surface-2, #1a1f26); border-color: var(--accent, #2783de); }
+  .lead-tbl .row-tools .btn { border: 1px solid var(--line, #2a2f36); color: var(--text, #e6e9ee); }
   .icon-btn.danger { color: #d4574a; }
   .icon-btn.danger:hover { border-color: #d4574a; }
 </style>
