@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 00412e6812c50c223ffa39905077d00273e61754
-# built:  2026-09-20 13:16 UTC
+# commit: b6b08b1fabb259f2e6bc6a2bf847c56676bbf1a9
+# built:  2026-09-20 14:14 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -11,7 +11,7 @@ offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2183 строк)
-app/hunt.html  (520 строк)
+app/hunt.html  (706 строк)
 app/index.html  (452 строк)
 app/leads.html  (756 строк)
 app/login.html  (150 строк)
@@ -4443,6 +4443,25 @@ guardCabinet();
   .act-row { display: flex; gap: 6px; flex-wrap: wrap; opacity: 1; }
 
   .hunt-empty { padding: 32px 12px; text-align: center; color: var(--muted); }
+
+  /* Массовая обработка: три тысячи строк мышкой по одной не разобрать. */
+  .c-pick { width: 34px; }
+  .bulk {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 10px; margin-bottom: 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--surface-2);
+  }
+  .bulk[hidden] { display: none; }
+  .bulk .n { font-weight: 600; }
+
+  /* Полоса прогресса скана. */
+  .scan-bar { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; margin-top: 8px; }
+  .scan-bar i { display: block; height: 100%; background: #2f6fed; width: 0; transition: width .3s ease; }
+  .scan-bar[hidden] { display: none; }
+
+  /* Подсветка строки под клавиатурную навигацию. */
+  .hunt-tbl tbody tr.cur { background: var(--surface-3); box-shadow: inset 2px 0 0 #2f6fed; }
+  .hint-keys { font-size: 12px; color: var(--muted); margin-top: 8px; }
   .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .filters .input, .filters select { min-width: 0; }
   .flag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
@@ -4510,6 +4529,7 @@ guardCabinet();
           <div class="panel-head-body">
             <div class="panel-title">Прогоны</div>
             <div class="panel-sub" id="scanState">Скан не запущен</div>
+            <div class="scan-bar" id="scanBar" hidden><i></i></div>
           </div>
           <div class="panel-tools">
             <button class="btn btn-sm btn-quiet" id="runsReload">Обновить</button>
@@ -4544,6 +4564,7 @@ guardCabinet();
               <option value="scored">Оценённые</option>
               <option value="new">Ждут скана</option>
               <option value="rejected">Дисквалифицированы</option>
+              <option value="error">Не удалось отсканировать</option>
               <option value="taken">Ушли в лиды</option>
               <option value="hidden">Скрытые</option>
             </select>
@@ -4569,10 +4590,18 @@ guardCabinet();
           </div>
         </div>
         <div class="panel-body">
+          <div class="bulk" id="bulkBar" hidden>
+            <span class="n" id="bulkCount">0 выбрано</span>
+            <button class="btn btn-sm btn-primary" data-bulk="promote">В лиды</button>
+            <button class="btn btn-sm" data-bulk="hide">Скрыть</button>
+            <button class="btn btn-sm btn-quiet" data-bulk="copy">Скопировать контакты</button>
+            <button class="btn btn-sm btn-quiet" data-bulk="clear">Снять выделение</button>
+          </div>
           <div class="tbl-x">
             <table class="hunt-tbl" id="huntTbl">
               <thead>
                 <tr>
+                  <th class="c-pick"><input type="checkbox" id="pickAll" /></th>
                   <th class="c-score">Балл</th>
                   <th>Компания</th>
                   <th>Город</th>
@@ -4584,13 +4613,14 @@ guardCabinet();
                 </tr>
               </thead>
               <tbody id="huntBody">
-                <tr><td colspan="8"><div class="sk sk-card"></div></td></tr>
+                <tr><td colspan="9"><div class="sk sk-card"></div></td></tr>
               </tbody>
             </table>
           </div>
         </div>
         <div class="panel-foot">
           Балл = 0.35 × Деньги + 0.35 × Потолок + 0.30 × Дефицит. Нажмите на строку, чтобы увидеть расчёт.
+          <div class="hint-keys">Клавиши: ↑/↓ или J/K — по списку, Enter — карточка, L — в лиды, H — скрыть, Esc — закрыть.</div>
         </div>
       </section>
 
@@ -4612,7 +4642,7 @@ guardCabinet();
   mountTopbar();
   mountLogoutButton();
 
-  var state = { items: [], counts: {}, byId: {} };
+  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1 };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -4637,6 +4667,13 @@ guardCabinet();
     if (p.is_autosite) out.push(['good', 'автосайт']);
     if (p.platform && !p.is_autosite) out.push(['', p.platform]);
     if (p.is_ad) out.push(['good', 'платит 2ГИС']);
+    if (p.mkt_stack) {
+      var paid = /rtb|calltracking/.test(p.mkt_stack);
+      out.push([paid ? 'good' : '', paid ? 'покупает трафик' : 'есть аналитика']);
+    }
+    if (p.email) out.push(['good', 'есть почта']);
+    if (p.ssl_bad) out.push(['warn', 'битый сертификат']);
+    if (p.status === 'error') out.push(['bad', 'скан не прошёл']);
     if (p.cities_count > 1) out.push(['good', 'городов ' + p.cities_count]);
     if (p.reject_reason) out.push(['bad', p.reject_reason]);
     if (p.data_quality === 'poor') out.push(['warn', 'нужна ручная проверка']);
@@ -4653,6 +4690,8 @@ guardCabinet();
       : '<div class="sub dim">сайта нет</div>';
     return '' +
       '<tr data-id="' + p.id + '">' +
+        '<td class="c-pick"><input type="checkbox" data-pick' +
+          (state.picked[p.id] ? ' checked' : '') + ' /></td>' +
         '<td class="c-score"><div class="score-num ' + scoreClass(p.score) + '">' + p.score + '</div>' +
           '<div class="' + scoreClass(p.score) + '">' + bars(p) + '</div></td>' +
         '<td class="c-name"><b>' + esc(p.name) + '</b>' + site +
@@ -4678,13 +4717,85 @@ guardCabinet();
   function renderList() {
     var body = document.getElementById('huntBody');
     if (!state.items.length) {
-      body.innerHTML = '<tr><td colspan="8"><div class="hunt-empty">' +
+      body.innerHTML = '<tr><td colspan="9"><div class="hunt-empty">' +
         'Пусто. Запустите сбор на своём компьютере или ослабьте фильтры.' +
         '</div></td></tr>';
     } else {
       body.innerHTML = state.items.map(row).join('');
     }
     document.getElementById('huntCount').textContent = state.items.length + ' на экране';
+    renderBulk();
+    markCurrent();
+  }
+
+  /* --- Массовые действия ------------------------------------------- */
+  function pickedIds() {
+    return Object.keys(state.picked).filter(function (k) { return state.picked[k]; }).map(Number);
+  }
+  function renderBulk() {
+    var ids = pickedIds();
+    var bar = document.getElementById('bulkBar');
+    bar.hidden = ids.length === 0;
+    document.getElementById('bulkCount').textContent = ids.length + ' выбрано';
+    document.getElementById('pickAll').checked =
+      state.items.length > 0 && ids.length >= state.items.length;
+  }
+  async function bulk(what) {
+    var ids = pickedIds();
+    if (!ids.length) return;
+    if (what === 'clear') { state.picked = {}; renderList(); return; }
+    if (what === 'copy') {
+      var text = ids.map(function (id) {
+        var p = state.byId[id];
+        if (!p) return '';
+        return [p.name, p.city, p.domain || 'без сайта', p.phone || '', p.email || ''].join('\t');
+      }).filter(Boolean).join('\n');
+      copyText(text, ids.length + ' строк в буфере');
+      return;
+    }
+    if (what === 'hide' && !confirm('Скрыть выбранных: ' + ids.length + '?')) return;
+    if (what === 'promote' && !confirm('Отправить в лиды: ' + ids.length + '?')) return;
+    var done = 0, failed = 0;
+    for (var i = 0; i < ids.length; i++) {
+      try {
+        if (what === 'promote') {
+          await req('/hunt/prospects/' + ids[i] + '/promote', { method: 'POST', body: JSON.stringify({}) });
+        } else {
+          await req('/hunt/prospects/' + ids[i] + '/status', { method: 'POST', body: JSON.stringify({ status: 'hidden' }) });
+        }
+        done++;
+      } catch (e) { failed++; }
+      wire.set(true, 'Обработано ' + done + ' из ' + ids.length);
+    }
+    state.picked = {};
+    wire.set(failed === 0, 'Готово: ' + done + (failed ? (', ошибок ' + failed) : ''));
+    await load();
+  }
+
+  function copyText(text, okMsg) {
+    try {
+      navigator.clipboard.writeText(text).then(
+        function () { wire.set(true, okMsg); },
+        function () { wire.set(false, 'Буфер недоступен, скопируйте вручную'); }
+      );
+    } catch (e) { wire.set(false, 'Буфер недоступен'); }
+  }
+
+  /* --- Клавиатура: список на три тысячи строк мышкой не разобрать --- */
+  function markCurrent() {
+    var rows = document.querySelectorAll('#huntBody tr[data-id]');
+    for (var i = 0; i < rows.length; i++) rows[i].classList.toggle('cur', i === state.cur);
+  }
+  function moveCur(step) {
+    if (!state.items.length) return;
+    state.cur = Math.max(0, Math.min(state.items.length - 1, state.cur + step));
+    markCurrent();
+    var el = document.querySelectorAll('#huntBody tr[data-id]')[state.cur];
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+  function curId() {
+    var p = state.items[state.cur];
+    return p ? p.id : 0;
   }
 
   function renderMetrics() {
@@ -4702,10 +4813,17 @@ guardCabinet();
 
   function renderScanState(s) {
     var el = document.getElementById('scanState');
+    var bar = document.getElementById('scanBar');
     if (s && s.running) {
-      el.textContent = 'Идёт скан: ' + s.done + ' из ' + s.total;
+      var total = s.total || 0;
+      var done = s.done || 0;
+      var pct = total ? Math.round(done * 100 / total) : 0;
+      el.textContent = 'Идёт скан: ' + done + ' из ' + total + ' (' + pct + '%)';
+      bar.hidden = false;
+      bar.firstElementChild.style.width = pct + '%';
     } else {
       el.textContent = 'Скан не запущен';
+      bar.hidden = true;
     }
   }
 
@@ -4720,6 +4838,27 @@ guardCabinet();
   function meter(cls, title, value) {
     return '<div class="meter ' + cls + '"><div class="lbl"><span>' + title + '</span><b>' + value + '</b></div>' +
       '<div class="bar"><i style="width:' + Math.max(0, Math.min(100, value)) + '%"></i></div></div>';
+  }
+
+  /* Заготовка холодного письма из уже посчитанных цифр: главный аргумент
+     всегда один и тот же — страницы есть, а в поиске их нет. */
+  function pitch(p) {
+    var lines = ['Здравствуйте! Смотрел ваш сайт ' + (p.domain || '') + '.'];
+    if (p.pages_total && p.pages_indexed >= 0) {
+      lines.push('У вас ' + num(p.pages_total) + ' страниц, в поиске Яндекса — ' +
+        num(p.pages_indexed) + '. Остальные не приводят ни одного посетителя.');
+    } else if (!p.domain) {
+      lines.push('Сайта у вас нет, а по вашей нише люди ищут в поиске каждый день.');
+    }
+    if (p.catalog_items >= 100) {
+      lines.push('По каталогу на ' + num(p.catalog_items) +
+        ' позиций можно собрать отдельные посадочные страницы под конкретные запросы.');
+    }
+    if (p.pseo_base) {
+      lines.push('Наша оценка потолка — около ' + num(p.pseo_base) + ' осмысленных страниц.');
+    }
+    lines.push('Готов бесплатно показать расчёт по вашему сайту. Верстио.');
+    return lines.join('\n\n');
   }
 
   function openDrawer(id) {
@@ -4740,7 +4879,12 @@ guardCabinet();
         ' · разделов: ' + (p.sections || 0) + ' · потолок: ' + num(p.pseo_base) +
       '</div>' +
       (p.scan_error ? '<div class="muted" style="color:#9b2c2c">Ошибка скана: ' + esc(p.scan_error) + '</div>' : '') +
+      (p.email ? '<div class="muted">Почта: ' + esc(p.email) + '</div>' : '') +
+      (p.mkt_stack ? '<div class="muted">Маркетинг на сайте: ' + esc(p.mkt_stack) + '</div>' : '') +
+      '<h4 style="margin:16px 0 4px;font-size:13px">Заготовка письма</h4>' +
+      '<div class="muted" style="white-space:pre-wrap">' + esc(pitch(p)) + '</div>' +
       '<div class="drawer-foot">' +
+        '<button class="btn btn-sm" data-d="pitch">Скопировать письмо</button>' +
         (p.lead_id ? '' : '<button class="btn btn-sm btn-primary" data-d="promote">В лиды</button>') +
         '<button class="btn btn-sm" data-d="rescan">Пересканировать</button>' +
         (p.domain ? '<a class="btn btn-sm btn-quiet" target="_blank" rel="noopener" href="//' + esc(p.domain) + '">Открыть сайт</a>' : '') +
@@ -4781,6 +4925,7 @@ guardCabinet();
         items = items.filter(function (x) { return (x.reviews || 0) > 0; });
       }
       state.items = items;
+      state.cur = state.items.length ? Math.min(state.cur, state.items.length - 1) : -1;
       state.counts = data.counts || {};
       state.byId = {};
       items.forEach(function (x) { state.byId[x.id] = x; });
@@ -4794,7 +4939,7 @@ guardCabinet();
         ? 'На сервере ещё нет модуля разведки — обновите бэкенд'
         : ('Ошибка: ' + (e.message || e)));
       document.getElementById('huntBody').innerHTML =
-        '<tr><td colspan="8"><div class="hunt-empty">Не удалось загрузить список</div></td></tr>';
+        '<tr><td colspan="9"><div class="hunt-empty">Не удалось загрузить список</div></td></tr>';
     }
   }
 
@@ -4857,9 +5002,28 @@ guardCabinet();
     var tr = ev.target.closest('tr[data-id]');
     if (!tr) return;
     var id = Number(tr.dataset.id);
+    if (ev.target.matches('[data-pick]')) {
+      state.picked[id] = ev.target.checked;
+      renderBulk();
+      return;
+    }
     var btn = ev.target.closest('[data-act]');
     if (btn) { ev.stopPropagation(); act(id, btn.dataset.act); return; }
-    if (!ev.target.closest('a')) openDrawer(id);
+    if (!ev.target.closest('a')) {
+      state.cur = state.items.findIndex(function (x) { return x.id === id; });
+      markCurrent();
+      openDrawer(id);
+    }
+  });
+
+  document.getElementById('pickAll').addEventListener('change', function (ev) {
+    state.items.forEach(function (x) { state.picked[x.id] = ev.target.checked; });
+    renderList();
+  });
+
+  document.getElementById('bulkBar').addEventListener('click', function (ev) {
+    var btn = ev.target.closest('[data-bulk]');
+    if (btn) bulk(btn.dataset.bulk);
   });
 
   document.getElementById('drawer').addEventListener('click', function (ev) {
@@ -4867,11 +5031,33 @@ guardCabinet();
     if (!btn) return;
     var id = Number(document.getElementById('drawer').dataset.id);
     if (btn.dataset.d === 'close') { closeDrawer(); return; }
+    if (btn.dataset.d === 'pitch') {
+      var p = state.byId[id];
+      if (p) copyText(pitch(p), 'Письмо в буфере');
+      return;
+    }
     closeDrawer();
     act(id, btn.dataset.d);
   });
   document.getElementById('scrim').addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeDrawer(); return; }
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    if (e.key === 'ArrowDown' || e.key === 'j') { e.preventDefault(); moveCur(1); }
+    else if (e.key === 'ArrowUp' || e.key === 'k') { e.preventDefault(); moveCur(-1); }
+    else if (e.key === 'Enter') { if (curId()) openDrawer(curId()); }
+    else if (e.key === 'l' || e.key === 'L') { if (curId()) act(curId(), 'promote'); }
+    else if (e.key === 'h' || e.key === 'H') { if (curId()) act(curId(), 'hide'); }
+    else if (e.key === ' ') {
+      if (!curId()) return;
+      e.preventDefault();
+      state.picked[curId()] = !state.picked[curId()];
+      renderList();
+    }
+  });
 
   document.getElementById('fApply').addEventListener('click', load);
   document.getElementById('fQ').addEventListener('keydown', function (e) { if (e.key === 'Enter') load(); });
