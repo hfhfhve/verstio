@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 2bce46fe5c059d0594d11714c101a36597668e80
-# built:  2026-09-20 08:01 UTC
+# commit: a9223882bb02e190091b7d7b2d4d5634e7dafc30
+# built:  2026-09-20 09:09 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,7 +10,7 @@ index.html  (1019 строк)
 offer.html  (103 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2174 строк)
+app/app.js  (2177 строк)
 app/index.html  (452 строк)
 app/leads.html  (756 строк)
 app/login.html  (150 строк)
@@ -2164,6 +2164,7 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 
 
 
+
 /* ==========================================================================
    SEO-Фабрика — ядро фронтенда
 
@@ -4245,6 +4246,7 @@ const TOPBAR_NAV = [
   { key: 'projects', href: 'index.html',    icon: 'pages',  label: 'Проекты' },
   { key: 'leads',    href: 'leads.html',    icon: 'target', label: 'Лиды и разведка' },
   { key: 'playbook', href: 'playbook.html', icon: 'file',   label: 'Плейбук' },
+  { key: 'hunt',     href: 'hunt.html',     icon: 'compass', label: 'Разведка' },
   { key: 'settings', href: 'settings.html', icon: 'gear',   label: 'Настройки' },
 ];
 
