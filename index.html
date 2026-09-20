@@ -1,20 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112838505', 'ym');
-
-    ym(112838505, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/112838505" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Verstio — программный SEO с измеримым качеством каждой страницы</title>
@@ -1027,5 +1013,41 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   });
 })();
 </script>
+
+<!-- Ненавязчивое уведомление о cookie и аналитике -->
+<div class="ck" id="ckBar" hidden>
+  <span>Мы используем cookie и Яндекс Метрику, чтобы понимать, как читают сайт.
+    <a href="/privacy.html">Подробнее</a></span>
+  <button type="button" id="ckOk">Понятно</button>
+</div>
+<style>
+  .ck{position:fixed;right:16px;bottom:16px;z-index:80;max-width:420px;display:flex;
+      gap:12px;align-items:center;padding:12px 14px;border-radius:12px;
+      background:rgba(20,20,20,.94);color:#f2f0ec;border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:13.5px;line-height:1.45;
+      opacity:0;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
+  .ck.show{opacity:1;transform:none}
+  .ck a{color:#9ec1ff}
+  .ck button{flex:none;padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);
+      background:transparent;color:inherit;font-size:13px;cursor:pointer}
+  .ck button:hover{background:rgba(255,255,255,.08)}
+  @media (max-width:560px){.ck{left:12px;right:12px;bottom:12px;max-width:none}}
+</style>
+<script>
+  (function(){
+    var b=document.getElementById('ckBar');
+    if(!b) return;
+    try{ if(localStorage.getItem('ck_ok')==='1') return; }catch(e){}
+    b.hidden=false;
+    requestAnimationFrame(function(){ b.classList.add('show'); });
+    var ok=document.getElementById('ckOk');
+    ok.addEventListener('click',function(){
+      try{ localStorage.setItem('ck_ok','1'); }catch(e){}
+      b.classList.remove('show');
+      setTimeout(function(){ b.hidden=true; },250);
+    });
+  })();
+</script>
 </body>
 </html>
+
