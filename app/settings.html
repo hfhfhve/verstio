@@ -1115,6 +1115,13 @@ async function saveAll(btn) {
     cheap_max_tokens: { value: num('#cheapTokens', 1000, 200000, 8000) },
     brief_concurrency: { value: num('#briefConc', 1, 32, 12) },
     gen_timeout_sec: { value: num('#genTimeout', 30, 900, 300) },
+    // Промпты сохраняются и этой кнопкой тоже. Раньше нижняя полоса
+    // писала «Всё сохранено», а текст промпта в базу не уходил —
+    // ровно то, из-за чего правки промптов молча пропадали.
+    passport_system_prompt: { value: $('#passportPrompt').value },
+    strong_system_prompt: { value: $('#strongPrompt').value },
+    cheap_system_prompt: { value: $('#cheapPrompt').value },
+    outreach_system_prompt: { value: $('#outreachPrompt').value },
   };
   if (sm) payload.strong_model = { value: sm, provider: provOf(sm) };
   if (cm) payload.cheap_model = { value: cm, provider: provOf(cm) };
