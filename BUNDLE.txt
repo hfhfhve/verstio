@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: d98d2e438ce2341747645c5f3a30c2a46da82bed
-# built:  2026-09-21 18:23 UTC
+# commit: 8bcd719d3d1431677add70bb0a2698e4de068b8c
+# built:  2026-09-21 18:40 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -13,7 +13,7 @@ app/404.html  (28 строк)
 app/app.js  (2183 строк)
 app/hunt.html  (680 строк)
 app/index.html  (452 строк)
-app/leads.html  (915 строк)
+app/leads.html  (920 строк)
 app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
@@ -6418,7 +6418,7 @@ function renderLeads() {
   }
 
   const rows = LEADS.map(l => {
-    const scan = l.site ? SCANS[l.site] : null;
+    const scan = l.site ? (SCANS[normDomain(l.site)] || SCANS[l.site]) : null;
     const row = EDITING.has(l.id) ? editRow(l) : viewRow(l, scan);
     return row + (OPEN_DRAFT === l.id ? draftRow(l) : '');
   }).join('');
@@ -6676,6 +6676,7 @@ async function loadLeads() {
       limit: 200,
     });
     LEADS = (res && res.items) ? res.items : [];
+    await loadScans();
     await loadOffers();
   } catch (e) {
     $('#leadsBox').innerHTML = '<div class="lead-empty">Не смог загрузить список.</div>';
@@ -6685,9 +6686,14 @@ async function loadLeads() {
   renderLeads();
 }
 
+/* Сканы тянем ровно по доменам текущих лидов. «Последние 30» промахивались:
+   разведка сканирует сотни доменов, и нужный в выборку не попадал. */
 async function loadScans() {
   try {
-    const res = await api.lastScans();
+    const domains = LEADS.map(l => normDomain(l.site || '')).filter(Boolean);
+    const res = domains.length
+      ? await req('/scans?domains=' + encodeURIComponent([...new Set(domains)].join(',')))
+      : await api.lastScans();
     (res && res.items ? res.items : []).forEach(s => { SCANS[s.domain] = s; });
   } catch (e) { /* разведка необязательна — список важнее */ }
 }
@@ -6769,8 +6775,7 @@ document.addEventListener('keydown', e => {
 });
 
 (async function start() {
-  await loadScans();
-  await loadLeads();
+  await loadLeads();   // сканы и пометки об оффере грузятся внутри
 })();
 
 })();
