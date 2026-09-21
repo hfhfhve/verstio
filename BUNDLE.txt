@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 9c5a1f3928ef69565e05b9d9dcd527280196e281
-# built:  2026-09-21 16:23 UTC
+# commit: 7c4363c66cfc6051d523eddbfa0fc2baf609d365
+# built:  2026-09-21 16:59 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -18,7 +18,7 @@ app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (1429 строк)
+app/settings.html  (1436 строк)
 app/site.html  (800 строк)
 app/style.css  (3955 строк)
 
@@ -13194,6 +13194,13 @@ async function saveAll(btn) {
     cheap_max_tokens: { value: num('#cheapTokens', 1000, 200000, 8000) },
     brief_concurrency: { value: num('#briefConc', 1, 32, 12) },
     gen_timeout_sec: { value: num('#genTimeout', 30, 900, 300) },
+    // Промпты сохраняются и этой кнопкой тоже. Раньше нижняя полоса
+    // писала «Всё сохранено», а текст промпта в базу не уходил —
+    // ровно то, из-за чего правки промптов молча пропадали.
+    passport_system_prompt: { value: $('#passportPrompt').value },
+    strong_system_prompt: { value: $('#strongPrompt').value },
+    cheap_system_prompt: { value: $('#cheapPrompt').value },
+    outreach_system_prompt: { value: $('#outreachPrompt').value },
   };
   if (sm) payload.strong_model = { value: sm, provider: provOf(sm) };
   if (cm) payload.cheap_model = { value: cm, provider: provOf(cm) };
