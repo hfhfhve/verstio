@@ -281,6 +281,7 @@ const ORDER = ['new', 'in_progress', 'waiting', 'done', 'spam'];
 let LEADS = [];
 let SCANS = {};   // домен -> последняя разведка
 let OFFERS = {};  // id лида -> {status, sent_at} последнего письма
+let PSCANS = {};  // id лида -> цифры из разведки, если домен сам не считали
 let OPEN_DRAFT = null;  // у какого лида открыта панель письма
 let DRAFT = null;       // сам черновик, который сейчас на экране
 let DRAFT_BUSY = false;
@@ -552,7 +553,7 @@ function renderLeads() {
   }
 
   const rows = LEADS.map(l => {
-    const scan = l.site ? (SCANS[normDomain(l.site)] || SCANS[l.site]) : null;
+    const scan = (l.site ? (SCANS[normDomain(l.site)] || SCANS[l.site]) : null) || PSCANS[l.id] || null;
     const row = EDITING.has(l.id) ? editRow(l) : viewRow(l, scan);
     return row + (OPEN_DRAFT === l.id ? draftRow(l) : '');
   }).join('');
@@ -825,6 +826,10 @@ async function loadLeads() {
 async function loadScans() {
   try {
     const domains = LEADS.map(l => normDomain(l.site || '')).filter(Boolean);
+    try {
+      const pr = await req('/hunt/leads/scans');
+      PSCANS = (pr && pr.items) ? pr.items : {};
+    } catch (e) { /* разведка могла и не запускаться */ }
     const res = domains.length
       ? await req('/scans?domains=' + encodeURIComponent([...new Set(domains)].join(',')))
       : await api.lastScans();
