@@ -1,5 +1,6 @@
 
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -65,7 +66,7 @@
 
       <section class="hero-x">
         <div class="eyebrow"><i></i> Рабочее место</div>
-        <h1>Привет! С чего начнём сегодня?</h1>
+        <h1>Рабочее место</h1>
         <p>
           Сайты и проекты живут здесь: таблица данных → каркас страницы → генерация →
           проверка качества → публикация. А кому это продать — в разделе «Лиды и разведка».
@@ -105,7 +106,6 @@
         </a>
       </div>
 
-      <div class="metrics" id="homeMetrics"></div>
 
       <!-- форма создания -->
       <section class="panel accent" id="newProjPanel" hidden>
@@ -231,10 +231,8 @@ async function load() {
         `<div class="empty-act"><a class="btn btn-primary" href="settings.html">Проверить адрес</a>` +
         `<button class="btn" onclick="location.reload()">Повторить</button></div>` +
       `</div>`;
-    $('#homeMetrics').innerHTML = '';
     return;
   }
-  renderMetrics();
   await loadSites();
   render();
 }
@@ -288,17 +286,6 @@ async function createSite(btn) {
   });
 }
 
-function renderMetrics() {
-  const n = PROJECTS.length;
-  const live = PROJECTS.filter(p => p.status === 'generating').length;
-  const done = PROJECTS.filter(p => p.status === 'done').length;
-  const err  = PROJECTS.filter(p => p.status === 'error').length;
-  $('#homeMetrics').innerHTML =
-    `<div class="metric"><div class="metric-k">Проектов</div><div class="metric-v">${fmtNum(n)}</div></div>` +
-    `<div class="metric ${live ? 'accent' : ''}"><div class="metric-k">Генерируются</div><div class="metric-v">${live}</div></div>` +
-    `<div class="metric ok"><div class="metric-k">Завершены</div><div class="metric-v">${done}</div></div>` +
-    `<div class="metric ${err ? 'bad' : ''}"><div class="metric-k">С ошибками</div><div class="metric-v">${err}</div></div>`;
-}
 
 /** Карточка одного проекта. Вынесена, чтобы рисовать её и в группах. */
 function projectCard(p) {
