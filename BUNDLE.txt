@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 60069445351e3a541a5bbf0c18b0c9bd29ab5f87
-# built:  2026-09-20 21:40 UTC
+# commit: 4f02f187bc7a26813666c7fc80a32b9b33e740b3
+# built:  2026-09-21 15:59 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -11,7 +11,7 @@ offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2183 строк)
-app/hunt.html  (706 строк)
+app/hunt.html  (796 строк)
 app/index.html  (452 строк)
 app/leads.html  (794 строк)
 app/login.html  (150 строк)
@@ -4724,6 +4724,7 @@ guardCabinet();
   app/hunt.html
 ════════════════════════════════════════════════════════
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -4783,6 +4784,19 @@ guardCabinet();
   .act-row { display: flex; gap: 6px; flex-wrap: wrap; opacity: 1; }
 
   .hunt-empty { padding: 32px 12px; text-align: center; color: var(--muted); }
+
+  /* Письмо в карточке кандидата. Текст пишет модель по цифрам скана,
+     отправляет человек руками из своей почты — кнопки «отправить» здесь нет. */
+  .draft-box { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .draft-h { margin: 0 0 8px; font-size: 13px; }
+  .draft-box .input, .draft-box .textarea { width: 100%; margin-bottom: 8px; font-size: 13px; }
+  .draft-box .textarea { line-height: 1.5; resize: vertical; }
+  .draft-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .draft-bad {
+    border: 1px solid #f0c4c4; background: #fdeeee; color: #9b2c2c;
+    border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-bottom: 8px;
+  }
+  .draft-meta { font-size: 11px; }
 
   /* Массовая обработка: три тысячи строк мышкой по одной не разобрать. */
   .c-pick { width: 34px; }
@@ -4982,7 +4996,7 @@ guardCabinet();
   mountTopbar();
   mountLogoutButton();
 
-  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1 };
+  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1, draft: null };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -5180,25 +5194,87 @@ guardCabinet();
       '<div class="bar"><i style="width:' + Math.max(0, Math.min(100, value)) + '%"></i></div></div>';
   }
 
-  /* Заготовка холодного письма из уже посчитанных цифр: главный аргумент
-     всегда один и тот же — страницы есть, а в поиске их нет. */
-  function pitch(p) {
-    var lines = ['Здравствуйте! Смотрел ваш сайт ' + (p.domain || '') + '.'];
-    if (p.pages_total && p.pages_indexed >= 0) {
-      lines.push('У вас ' + num(p.pages_total) + ' страниц, в поиске Яндекса — ' +
-        num(p.pages_indexed) + '. Остальные не приводят ни одного посетителя.');
-    } else if (!p.domain) {
-      lines.push('Сайта у вас нет, а по вашей нише люди ищут в поиске каждый день.');
+  /* --- Письмо кандидату -------------------------------------------
+     Текст собирает бэкенд: факт-карта из скана -> дешёвая модель ->
+     проверка чисел кодом. Здесь только показать, дать поправить словами
+     и скопировать. Ничего не отправляется: письмо уходит из личной почты. */
+  var DRAFT_STATUS = {
+    draft: 'черновик', manual: 'нужна ручная правка',
+    sent: 'отправлено', replied: 'ответили', dropped: 'выброшен',
+  };
+
+  function renderDraft(d, busy) {
+    var box = document.getElementById('draftBox');
+    if (!box) return;
+    var head = '<h4 class="draft-h">Письмо</h4>';
+    if (busy) { box.innerHTML = head + '<div class="muted">Модель пишет…</div>'; return; }
+    if (!d) {
+      box.innerHTML = head + '<div class="muted" style="margin-bottom:8px">Черновика ещё нет.</div>' +
+        '<button class="btn btn-sm btn-primary" data-d="draft-new">Написать письмо</button>';
+      return;
     }
-    if (p.catalog_items >= 100) {
-      lines.push('По каталогу на ' + num(p.catalog_items) +
-        ' позиций можно собрать отдельные посадочные страницы под конкретные запросы.');
+    box.innerHTML = head +
+      (d.issues && d.issues.length
+        ? '<div class="draft-bad">Проверка не прошла: ' + esc(d.issues.join('; ')) + '</div>' : '') +
+      '<input class="input" id="draftSubj" value="' + esc(d.subject) + '" />' +
+      '<textarea class="textarea" id="draftBody" rows="12">' + esc(d.body) + '</textarea>' +
+      '<div class="draft-row">' +
+        '<button class="btn btn-sm btn-primary" data-d="draft-copy">Скопировать</button>' +
+        '<button class="btn btn-sm" data-d="draft-save">Сохранить правку</button>' +
+        '<button class="btn btn-sm" data-d="draft-sent">Отправлено</button>' +
+        '<button class="btn btn-sm btn-quiet" data-d="draft-replied">Ответили</button>' +
+      '</div>' +
+      '<input class="input" id="draftFix" placeholder="Что поправить: короче, мягче, убери про каталог" />' +
+      '<div class="draft-row">' +
+        '<button class="btn btn-sm" data-d="draft-fix">Переписать с правкой</button>' +
+        '<button class="btn btn-sm btn-quiet" data-d="draft-new">С нуля</button>' +
+      '</div>' +
+      '<div class="muted draft-meta">' + esc(d.variant || '') + ' · ' +
+        esc(DRAFT_STATUS[d.status] || d.status) + (d.model ? ' · ' + esc(d.model) : '') + '</div>';
+  }
+
+  function draftFields() {
+    var sj = document.getElementById('draftSubj');
+    var bd = document.getElementById('draftBody');
+    return { subject: sj ? sj.value : '', body: bd ? bd.value : '' };
+  }
+
+  async function loadDrafts(id) {
+    try {
+      var r = await req('/hunt/prospects/' + id + '/drafts');
+      state.draft = (r.items || [])[0] || null;
+    } catch (e) { state.draft = null; }
+    renderDraft(state.draft);
+  }
+
+  async function genDraft(id, instruction, fresh) {
+    renderDraft(null, true);
+    try {
+      var r = await req('/hunt/prospects/' + id + '/draft', {
+        method: 'POST',
+        body: JSON.stringify({ instruction: instruction || '', fresh: !!fresh }),
+      });
+      state.draft = r.draft;
+      renderDraft(state.draft);
+      wire.set(true, (state.draft.issues || []).length ? 'Готово, но есть замечания' : 'Черновик готов');
+    } catch (e) {
+      renderDraft(state.draft);
+      wire.set(false, 'Ошибка: ' + (e.message || e));
     }
-    if (p.pseo_base) {
-      lines.push('Наша оценка потолка — около ' + num(p.pseo_base) + ' осмысленных страниц.');
+  }
+
+  async function patchDraft(patch, okMsg) {
+    if (!state.draft) return;
+    try {
+      var r = await req('/hunt/drafts/' + state.draft.id, {
+        method: 'POST', body: JSON.stringify(patch),
+      });
+      state.draft = r.draft;
+      renderDraft(state.draft);
+      wire.set(true, okMsg);
+    } catch (e) {
+      wire.set(false, 'Ошибка: ' + (e.message || e));
     }
-    lines.push('Готов бесплатно показать расчёт по вашему сайту. Верстио.');
-    return lines.join('\n\n');
   }
 
   function openDrawer(id) {
@@ -5221,10 +5297,8 @@ guardCabinet();
       (p.scan_error ? '<div class="muted" style="color:#9b2c2c">Ошибка скана: ' + esc(p.scan_error) + '</div>' : '') +
       (p.email ? '<div class="muted">Почта: ' + esc(p.email) + '</div>' : '') +
       (p.mkt_stack ? '<div class="muted">Маркетинг на сайте: ' + esc(p.mkt_stack) + '</div>' : '') +
-      '<h4 style="margin:16px 0 4px;font-size:13px">Заготовка письма</h4>' +
-      '<div class="muted" style="white-space:pre-wrap">' + esc(pitch(p)) + '</div>' +
+      '<div id="draftBox" class="draft-box"></div>' +
       '<div class="drawer-foot">' +
-        '<button class="btn btn-sm" data-d="pitch">Скопировать письмо</button>' +
         (p.lead_id ? '' : '<button class="btn btn-sm btn-primary" data-d="promote">В лиды</button>') +
         '<button class="btn btn-sm" data-d="rescan">Пересканировать</button>' +
         (p.domain ? '<a class="btn btn-sm btn-quiet" target="_blank" rel="noopener" href="//' + esc(p.domain) + '">Открыть сайт</a>' : '') +
@@ -5233,6 +5307,9 @@ guardCabinet();
     document.getElementById('drawer').dataset.id = id;
     document.getElementById('drawer').classList.add('open');
     document.getElementById('scrim').classList.add('open');
+    state.draft = null;
+    renderDraft(null);
+    loadDrafts(id);
   }
   function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
@@ -5371,9 +5448,22 @@ guardCabinet();
     if (!btn) return;
     var id = Number(document.getElementById('drawer').dataset.id);
     if (btn.dataset.d === 'close') { closeDrawer(); return; }
-    if (btn.dataset.d === 'pitch') {
-      var p = state.byId[id];
-      if (p) copyText(pitch(p), 'Письмо в буфере');
+    var what = btn.dataset.d;
+    if (what.indexOf('draft-') === 0) {
+      var f = draftFields();
+      if (what === 'draft-new') genDraft(id, '', true);
+      else if (what === 'draft-fix') {
+        var fix = document.getElementById('draftFix');
+        genDraft(id, fix ? fix.value : '', false);
+      } else if (what === 'draft-copy') {
+        copyText((f.subject ? f.subject + '\n\n' : '') + f.body, 'Письмо в буфере');
+      } else if (what === 'draft-save') {
+        patchDraft(f, 'Сохранено');
+      } else if (what === 'draft-sent') {
+        patchDraft({ subject: f.subject, body: f.body, status: 'sent' }, 'Отмечено: отправлено');
+      } else if (what === 'draft-replied') {
+        patchDraft({ status: 'replied' }, 'Отмечено: ответили');
+      }
       return;
     }
     closeDrawer();
