@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 4f02f187bc7a26813666c7fc80a32b9b33e740b3
-# built:  2026-09-21 15:59 UTC
+# commit: 9c5a1f3928ef69565e05b9d9dcd527280196e281
+# built:  2026-09-21 16:23 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -18,7 +18,7 @@ app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (1403 строк)
+app/settings.html  (1429 строк)
 app/site.html  (800 строк)
 app/style.css  (3955 строк)
 
@@ -12078,6 +12078,7 @@ Disallow: /
 ════════════════════════════════════════════════════════
 
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -12351,6 +12352,15 @@ Disallow: /
                   <span class="field-label">3. Дешёвая модель — заполнитель страниц <b id="cheapPromptLen" class="raw-badge">0 симв.</b></span>
                   <textarea class="textarea code" id="cheapPrompt" rows="11" spellcheck="false"></textarea>
                   <span class="field-hint">Здесь важны только правила JSON и длины полей.</span>
+                </label>
+                <label class="field" style="margin-top:16px">
+                  <span class="field-label">4. Дешёвая модель — холодное письмо <b id="outreachPromptLen" class="raw-badge">0 симв.</b></span>
+                  <textarea class="textarea code" id="outreachPrompt" rows="14" spellcheck="false"></textarea>
+                  <span class="field-hint">
+                    Письма в разделе «Разведка». Пусто — работает встроенный текст.
+                    Числа всё равно проверяются кодом по факт-карте, что бы здесь ни было написано.
+                    <button class="btn btn-sm btn-quiet" type="button" id="outreachPromptReset">Вставить встроенный</button>
+                  </span>
                 </label>
                 <div id="promptsNote"></div>
               </div>
@@ -12803,7 +12813,8 @@ function markClean() {
 }
 function watchDirty() {
   ['#strongModel','#cheapModel','#strongTokens','#cheapTokens','#briefConc','#genTimeout',
-   '#uniqRange','#minLen','#stopWords','#passportPrompt','#strongPrompt','#cheapPrompt']
+   '#uniqRange','#minLen','#stopWords','#passportPrompt','#strongPrompt','#cheapPrompt',
+   '#outreachPrompt']
     .forEach(id => { const el = $(id); if (el) el.addEventListener('input', markDirty); });
 }
 window.addEventListener('beforeunload', e => {
@@ -12877,6 +12888,7 @@ async function load() {
   $('#passportPrompt').value = promptText(val('passport_system_prompt'));
   $('#strongPrompt').value = promptText(val('strong_system_prompt'));
   $('#cheapPrompt').value = promptText(val('cheap_system_prompt'));
+  $('#outreachPrompt').value = promptText(val('outreach_system_prompt'));
   paintPromptLens();
 
   loadYandex();
@@ -12908,6 +12920,7 @@ function paintPromptLens() {
   put('#passportPromptLen', '#passportPrompt');
   put('#strongPromptLen', '#strongPrompt');
   put('#cheapPromptLen', '#cheapPrompt');
+  put('#outreachPromptLen', '#outreachPrompt');
 }
 
 async function savePrompts(btn) {
@@ -12915,6 +12928,7 @@ async function savePrompts(btn) {
     passport_system_prompt: { value: $('#passportPrompt').value },
     strong_system_prompt: { value: $('#strongPrompt').value },
     cheap_system_prompt: { value: $('#cheapPrompt').value },
+    outreach_system_prompt: { value: $('#outreachPrompt').value },
   };
   await withBusy(btn, async () => {
     try {
@@ -13426,9 +13440,21 @@ function wire() {
   ['#serpFolder', '#serpKey'].forEach(id => { const el = $(id); if (el) el.oninput = () => paintSerpPill(); });
 
   $('#uniqRange').oninput = () => { $('#uniqOut').textContent = Number($('#uniqRange').value).toFixed(2); };
-  ['#passportPrompt', '#strongPrompt', '#cheapPrompt'].forEach(id => {
+  ['#passportPrompt', '#strongPrompt', '#cheapPrompt', '#outreachPrompt'].forEach(id => {
     const el = $(id); if (el) el.addEventListener('input', paintPromptLens);
   });
+
+  /* Встроенный текст промпта письма живёт в бэкенде: копия во фронтенде
+     через месяц разошлась бы с рабочей версией. */
+  const outReset = $('#outreachPromptReset');
+  if (outReset) outReset.onclick = async () => {
+    try {
+      const r = await req('/hunt/outreach/prompt');
+      $('#outreachPrompt').value = r.default || '';
+      paintPromptLens();
+      markDirty();
+    } catch (e) { wire.set(false, 'Не удалось получить встроенный промпт'); }
+  };
 
   $('#modelsReload').onclick = async () => {
     const b = $('#modelsReload');
