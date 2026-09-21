@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: 5538c26fca51af9c12f7543429ec2190ed7d134f
+# commit: d98d2e438ce2341747645c5f3a30c2a46da82bed
 # built:  2026-09-21 18:23 UTC
 
 ## Состав
@@ -11,7 +11,7 @@ offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2183 строк)
-app/hunt.html  (796 строк)
+app/hunt.html  (680 строк)
 app/index.html  (452 строк)
 app/leads.html  (915 строк)
 app/login.html  (150 строк)
@@ -4785,18 +4785,6 @@ guardCabinet();
 
   .hunt-empty { padding: 32px 12px; text-align: center; color: var(--muted); }
 
-  /* Письмо в карточке кандидата. Текст пишет модель по цифрам скана,
-     отправляет человек руками из своей почты — кнопки «отправить» здесь нет. */
-  .draft-box { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
-  .draft-h { margin: 0 0 8px; font-size: 13px; }
-  .draft-box .input, .draft-box .textarea { width: 100%; margin-bottom: 8px; font-size: 13px; }
-  .draft-box .textarea { line-height: 1.5; resize: vertical; }
-  .draft-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-  .draft-bad {
-    border: 1px solid #f0c4c4; background: #fdeeee; color: #9b2c2c;
-    border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-bottom: 8px;
-  }
-  .draft-meta { font-size: 11px; }
 
   /* Массовая обработка: три тысячи строк мышкой по одной не разобрать. */
   .c-pick { width: 34px; }
@@ -4996,7 +4984,7 @@ guardCabinet();
   mountTopbar();
   mountLogoutButton();
 
-  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1, draft: null };
+  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1 };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -5194,89 +5182,6 @@ guardCabinet();
       '<div class="bar"><i style="width:' + Math.max(0, Math.min(100, value)) + '%"></i></div></div>';
   }
 
-  /* --- Письмо кандидату -------------------------------------------
-     Текст собирает бэкенд: факт-карта из скана -> дешёвая модель ->
-     проверка чисел кодом. Здесь только показать, дать поправить словами
-     и скопировать. Ничего не отправляется: письмо уходит из личной почты. */
-  var DRAFT_STATUS = {
-    draft: 'черновик', manual: 'нужна ручная правка',
-    sent: 'отправлено', replied: 'ответили', dropped: 'выброшен',
-  };
-
-  function renderDraft(d, busy) {
-    var box = document.getElementById('draftBox');
-    if (!box) return;
-    var head = '<h4 class="draft-h">Письмо</h4>';
-    if (busy) { box.innerHTML = head + '<div class="muted">Модель пишет…</div>'; return; }
-    if (!d) {
-      box.innerHTML = head + '<div class="muted" style="margin-bottom:8px">Черновика ещё нет.</div>' +
-        '<button class="btn btn-sm btn-primary" data-d="draft-new">Написать письмо</button>';
-      return;
-    }
-    box.innerHTML = head +
-      (d.issues && d.issues.length
-        ? '<div class="draft-bad">Проверка не прошла: ' + esc(d.issues.join('; ')) + '</div>' : '') +
-      '<input class="input" id="draftSubj" value="' + esc(d.subject) + '" />' +
-      '<textarea class="textarea" id="draftBody" rows="12">' + esc(d.body) + '</textarea>' +
-      '<div class="draft-row">' +
-        '<button class="btn btn-sm btn-primary" data-d="draft-copy">Скопировать</button>' +
-        '<button class="btn btn-sm" data-d="draft-save">Сохранить правку</button>' +
-        '<button class="btn btn-sm" data-d="draft-sent">Отправлено</button>' +
-        '<button class="btn btn-sm btn-quiet" data-d="draft-replied">Ответили</button>' +
-      '</div>' +
-      '<input class="input" id="draftFix" placeholder="Что поправить: короче, мягче, убери про каталог" />' +
-      '<div class="draft-row">' +
-        '<button class="btn btn-sm" data-d="draft-fix">Переписать с правкой</button>' +
-        '<button class="btn btn-sm btn-quiet" data-d="draft-new">С нуля</button>' +
-      '</div>' +
-      '<div class="muted draft-meta">' + esc(d.variant || '') + ' · ' +
-        esc(DRAFT_STATUS[d.status] || d.status) + (d.model ? ' · ' + esc(d.model) : '') + '</div>';
-  }
-
-  function draftFields() {
-    var sj = document.getElementById('draftSubj');
-    var bd = document.getElementById('draftBody');
-    return { subject: sj ? sj.value : '', body: bd ? bd.value : '' };
-  }
-
-  async function loadDrafts(id) {
-    try {
-      var r = await req('/hunt/prospects/' + id + '/drafts');
-      state.draft = (r.items || [])[0] || null;
-    } catch (e) { state.draft = null; }
-    renderDraft(state.draft);
-  }
-
-  async function genDraft(id, instruction, fresh) {
-    renderDraft(null, true);
-    try {
-      var r = await req('/hunt/prospects/' + id + '/draft', {
-        method: 'POST',
-        body: JSON.stringify({ instruction: instruction || '', fresh: !!fresh }),
-      });
-      state.draft = r.draft;
-      renderDraft(state.draft);
-      wire.set(true, (state.draft.issues || []).length ? 'Готово, но есть замечания' : 'Черновик готов');
-    } catch (e) {
-      renderDraft(state.draft);
-      wire.set(false, 'Ошибка: ' + (e.message || e));
-    }
-  }
-
-  async function patchDraft(patch, okMsg) {
-    if (!state.draft) return;
-    try {
-      var r = await req('/hunt/drafts/' + state.draft.id, {
-        method: 'POST', body: JSON.stringify(patch),
-      });
-      state.draft = r.draft;
-      renderDraft(state.draft);
-      wire.set(true, okMsg);
-    } catch (e) {
-      wire.set(false, 'Ошибка: ' + (e.message || e));
-    }
-  }
-
   function openDrawer(id) {
     var p = state.byId[id];
     if (!p) return;
@@ -5297,7 +5202,6 @@ guardCabinet();
       (p.scan_error ? '<div class="muted" style="color:#9b2c2c">Ошибка скана: ' + esc(p.scan_error) + '</div>' : '') +
       (p.email ? '<div class="muted">Почта: ' + esc(p.email) + '</div>' : '') +
       (p.mkt_stack ? '<div class="muted">Маркетинг на сайте: ' + esc(p.mkt_stack) + '</div>' : '') +
-      '<div id="draftBox" class="draft-box"></div>' +
       '<div class="drawer-foot">' +
         (p.lead_id ? '' : '<button class="btn btn-sm btn-primary" data-d="promote">В лиды</button>') +
         '<button class="btn btn-sm" data-d="rescan">Пересканировать</button>' +
@@ -5307,9 +5211,7 @@ guardCabinet();
     document.getElementById('drawer').dataset.id = id;
     document.getElementById('drawer').classList.add('open');
     document.getElementById('scrim').classList.add('open');
-    state.draft = null;
-    renderDraft(null);
-    loadDrafts(id);
+
   }
   function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
@@ -5448,24 +5350,6 @@ guardCabinet();
     if (!btn) return;
     var id = Number(document.getElementById('drawer').dataset.id);
     if (btn.dataset.d === 'close') { closeDrawer(); return; }
-    var what = btn.dataset.d;
-    if (what.indexOf('draft-') === 0) {
-      var f = draftFields();
-      if (what === 'draft-new') genDraft(id, '', true);
-      else if (what === 'draft-fix') {
-        var fix = document.getElementById('draftFix');
-        genDraft(id, fix ? fix.value : '', false);
-      } else if (what === 'draft-copy') {
-        copyText((f.subject ? f.subject + '\n\n' : '') + f.body, 'Письмо в буфере');
-      } else if (what === 'draft-save') {
-        patchDraft(f, 'Сохранено');
-      } else if (what === 'draft-sent') {
-        patchDraft({ subject: f.subject, body: f.body, status: 'sent' }, 'Отмечено: отправлено');
-      } else if (what === 'draft-replied') {
-        patchDraft({ status: 'replied' }, 'Отмечено: ответили');
-      }
-      return;
-    }
     closeDrawer();
     act(id, btn.dataset.d);
   });
