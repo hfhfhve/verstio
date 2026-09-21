@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 7c4363c66cfc6051d523eddbfa0fc2baf609d365
-# built:  2026-09-21 16:59 UTC
+# commit: 5538c26fca51af9c12f7543429ec2190ed7d134f
+# built:  2026-09-21 18:23 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -13,7 +13,7 @@ app/404.html  (28 строк)
 app/app.js  (2183 строк)
 app/hunt.html  (796 строк)
 app/index.html  (452 строк)
-app/leads.html  (794 строк)
+app/leads.html  (915 строк)
 app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (4491 строк)
@@ -5981,6 +5981,7 @@ load();
 ════════════════════════════════════════════════════════
 
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -6039,6 +6040,20 @@ load();
   }
   .lead-tbl tr:hover td.td-act { background: var(--surface-2, #1a1f26); }
   .lead-tbl tr.is-editing td.td-act { background: var(--surface-2, #1a1f26); }
+
+  /* Письмо прямо в строке лида: бегать за текстом на другой экран не нужно. */
+  .draft-cell { background: var(--surface-2, #1a1f26); padding: 12px 14px !important; }
+  .draft-cell .input, .draft-cell .textarea { width: 100%; margin-bottom: 8px; font-size: 12.5px; }
+  .draft-cell .textarea { line-height: 1.5; resize: vertical; }
+  .draft-tools { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .draft-bad {
+    border: 1px solid rgba(180,70,70,.5); border-radius: 8px; padding: 7px 9px;
+    font-size: 11.5px; margin-bottom: 8px; opacity: .9;
+  }
+  .offer-pill {
+    display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 999px;
+    font-size: 10px; border: 1px solid rgba(60,160,110,.5); opacity: .85;
+  }
   .lead-inp {
     width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px;
     padding: 3px 5px; color: inherit; font: inherit;
@@ -6247,6 +6262,10 @@ const ORDER = ['new', 'in_progress', 'waiting', 'done', 'spam'];
 
 let LEADS = [];
 let SCANS = {};   // домен -> последняя разведка
+let OFFERS = {};  // id лида -> {status, sent_at} последнего письма
+let OPEN_DRAFT = null;  // у какого лида открыта панель письма
+let DRAFT = null;       // сам черновик, который сейчас на экране
+let DRAFT_BUSY = false;
 
 function hydrateIcons(root) {
   const r = root || document;
@@ -6457,6 +6476,8 @@ function viewRow(l, scan) {
     <td class="c-name">
       <div class="cell-wrap"><b>${escHtml(l.name || 'Без названия')}</b></div>
       <div class="muted cell-wrap" style="font-size:10.5px">${escHtml(l.source || '')} · ${escHtml(fmtDate(l.created_at))}</div>
+      ${OFFERS[l.id] && OFFERS[l.id].sent_at
+        ? `<div class="offer-pill">оффер ${escHtml(fmtDate(OFFERS[l.id].sent_at))}</div>` : ''}
     </td>
     <td class="c-cont"><div class="cell-wrap">${contact}</div></td>
     <td class="c-site"><div class="cell-wrap">${siteCell}</div></td>
@@ -6473,6 +6494,7 @@ function viewRow(l, scan) {
     <td class="td-act">
       <div class="row-tools">
         <button class="icon-btn bordered" data-act="scan" title="Посчитать домен">${ico('radar', 14)}</button>
+        <button class="btn btn-sm" data-act="draft" type="button" title="Письмо этому лиду">Письмо</button>
         <button class="btn btn-sm" data-act="edit" type="button" title="Редактировать">Ред.</button>
       </div>
     </td>
@@ -6513,7 +6535,8 @@ function renderLeads() {
 
   const rows = LEADS.map(l => {
     const scan = l.site ? SCANS[l.site] : null;
-    return EDITING.has(l.id) ? editRow(l) : viewRow(l, scan);
+    const row = EDITING.has(l.id) ? editRow(l) : viewRow(l, scan);
+    return row + (OPEN_DRAFT === l.id ? draftRow(l) : '');
   }).join('');
 
   box.innerHTML =
@@ -6530,6 +6553,87 @@ function renderLeads() {
   bindRows();
 }
 
+/* ------------------------------------------------------------------ ПИСЬМО
+   Текст пишет бэкенд по цифрам скана, отправляет человек сам из своей почты.
+   Поэтому здесь нет ни кнопки «отправить», ни статусов переписки: только
+   написать, поправить словами и забрать текст. «Скопировать» заодно
+   помечает лид как «оффер отправлен» — отдельная кнопка для этого лишняя. */
+
+function draftRow(l) {
+  let inner;
+  if (DRAFT_BUSY) {
+    inner = '<div class="muted">Пишу письмо…</div>';
+  } else if (!DRAFT) {
+    inner = `<div class="muted" style="margin-bottom:8px">Письма по этому лиду ещё нет.</div>
+      <button class="btn btn-sm btn-primary" data-d="new" type="button">Написать письмо</button>
+      <button class="btn btn-sm btn-quiet" data-d="close" type="button">Закрыть</button>`;
+  } else {
+    inner = `
+      ${(DRAFT.issues || []).length
+        ? `<div class="draft-bad">Проверка не прошла: ${escHtml(DRAFT.issues.join('; '))}</div>` : ''}
+      <input class="input" id="dSubj" value="${escAttr(DRAFT.subject || '')}" />
+      <textarea class="textarea" id="dBody" rows="14">${escHtml(DRAFT.body || '')}</textarea>
+      <input class="input" id="dFix" placeholder="что поправить: короче, мягче, убрать пример запроса" />
+      <div class="draft-tools">
+        <button class="btn btn-sm btn-primary" data-d="copy" type="button">Скопировать</button>
+        <button class="btn btn-sm" data-d="fix" type="button">Переписать с правкой</button>
+        <button class="btn btn-sm btn-quiet" data-d="new" type="button">С нуля</button>
+        <button class="btn btn-sm btn-quiet" data-d="close" type="button">Закрыть</button>
+        <span class="muted" style="font-size:11px">${escHtml(DRAFT.variant || '')}</span>
+      </div>`;
+  }
+  return `<tr class="draft-tr" data-draft="${l.id}"><td class="draft-cell" colspan="9">${inner}</td></tr>`;
+}
+
+async function openDraft(id) {
+  if (OPEN_DRAFT === id) { OPEN_DRAFT = null; DRAFT = null; renderLeads(); return; }
+  OPEN_DRAFT = id; DRAFT = null; DRAFT_BUSY = true; renderLeads();
+  try {
+    const res = await req('/hunt/leads/' + id + '/drafts');
+    DRAFT = (res.items || [])[0] || null;
+  } catch (e) { DRAFT = null; }
+  DRAFT_BUSY = false; renderLeads();
+}
+
+async function genDraft(id, instruction, fresh) {
+  DRAFT_BUSY = true; renderLeads();
+  try {
+    const res = await req('/hunt/leads/' + id + '/draft', {
+      method: 'POST',
+      body: JSON.stringify({ instruction: instruction || '', fresh: !!fresh }),
+    });
+    DRAFT = res.draft;
+    toast.ok((DRAFT.issues || []).length ? 'Готово, но есть замечания' : 'Письмо готово');
+  } catch (e) { toast.err('Не получилось написать', e); }
+  DRAFT_BUSY = false; renderLeads();
+}
+
+/* Копируем то, что на экране, и сразу помечаем лид: письмо ушло. */
+async function copyDraft(id) {
+  const subj = ($('#dSubj') || {}).value || '';
+  const body = ($('#dBody') || {}).value || '';
+  try { await navigator.clipboard.writeText((subj ? subj + '\n\n' : '') + body); }
+  catch (e) { toast.warn('Буфер недоступен, скопируйте вручную'); }
+  if (!DRAFT) return;
+  try {
+    const res = await req('/hunt/drafts/' + DRAFT.id, {
+      method: 'POST',
+      body: JSON.stringify({ subject: subj, body: body, status: 'sent' }),
+    });
+    DRAFT = res.draft;
+    OFFERS[id] = { status: DRAFT.status, sent_at: DRAFT.sent_at };
+    renderLeads();
+    toast.ok('Письмо в буфере', 'лид помечен: оффер отправлен');
+  } catch (e) { toast.err('Пометка не сохранилась', e); }
+}
+
+async function loadOffers() {
+  try {
+    const res = await req('/hunt/leads/drafts');
+    OFFERS = (res && res.items) ? res.items : {};
+  } catch (e) { /* без пометок список всё равно работает */ }
+}
+
 /* Текстовое поле растёт под содержимое: заметку на три строки больше
    не приходится угадывать по обрезанному куску. */
 function autoGrow(el) {
@@ -6539,6 +6643,19 @@ function autoGrow(el) {
 }
 
 function bindRows() {
+  document.querySelectorAll('.lead-tbl tr[data-draft]').forEach(tr => {
+    const id = Number(tr.getAttribute('data-draft'));
+    tr.querySelectorAll('[data-d]').forEach(btn => {
+      btn.onclick = () => {
+        const what = btn.getAttribute('data-d');
+        if (what === 'close') { OPEN_DRAFT = null; DRAFT = null; renderLeads(); }
+        else if (what === 'new') genDraft(id, '', true);
+        else if (what === 'fix') genDraft(id, ($('#dFix') || {}).value || '', false);
+        else if (what === 'copy') copyDraft(id);
+      };
+    });
+  });
+
   document.querySelectorAll('.lead-tbl tr[data-id]').forEach(tr => {
     const id = Number(tr.getAttribute('data-id'));
     const lead = LEADS.find(l => l.id === id);
@@ -6583,6 +6700,9 @@ function bindRows() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         runScan($('#scRun'));
       };
+
+      const draftBtn = tr.querySelector('[data-act="draft"]');
+      if (draftBtn) draftBtn.onclick = () => openDraft(id);
 
       const edit = tr.querySelector('[data-act="edit"]');
       if (edit) edit.onclick = () => { EDITING.add(id); renderLeads(); };
@@ -6672,6 +6792,7 @@ async function loadLeads() {
       limit: 200,
     });
     LEADS = (res && res.items) ? res.items : [];
+    await loadOffers();
   } catch (e) {
     $('#leadsBox').innerHTML = '<div class="lead-empty">Не смог загрузить список.</div>';
     toast.err('Не загрузились лиды', e);
