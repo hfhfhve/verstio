@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 5140457c7637a5fe03ab7e0abe87128995e26111
-# built:  2026-09-21 20:59 UTC
+# commit: ab92b3130427da50e1074ec4f0e11e713892e8f1
+# built:  2026-09-22 10:31 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,7 +10,7 @@ index.html  (1234 строк)
 offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2183 строк)
+app/app.js  (2197 строк)
 app/hunt.html  (680 строк)
 app/index.html  (439 строк)
 app/leads.html  (925 строк)
@@ -2908,6 +2908,20 @@ const api = {
   getDesign:    (id)    => req(`/projects/${id}/design`),
   saveDesign:   (id, d) => req(`/projects/${id}/design`, { method: 'PUT', body: JSON.stringify(d) }),
   repaintDesign:(id)    => req(`/projects/${id}/design/apply`, { method: 'POST' }),
+
+  /* ---- ФАВИКОН — одна картинка на весь домен ----
+     Набор принадлежит сайту и наследуется всеми его проектами;
+     scope: 'project' сохраняет исключение только для этого проекта. */
+  getFavicon:    (id)        => req(`/projects/${id}/favicon`),
+  uploadFavicon: (id, fd, q) => req(`/projects/${id}/favicon${qs(q || {})}`, {
+                                  method: 'POST', body: fd, headers: {} }),
+  applyFavicon:  (id)        => req(`/projects/${id}/favicon/apply`, { method: 'POST' }),
+  deleteFavicon: (id, scope) => req(`/projects/${id}/favicon${qs({ scope: scope || 'project' })}`, {
+                                  method: 'DELETE' }),
+  faviconFileUrl:(id, name)  => auth.signUrl(
+                                  `${API_BASE.replace(/\/+$/, '')}/projects/${id}/favicon/files/${encodeURIComponent(name)}`),
+  faviconZipUrl: (id)        => auth.signUrl(
+                                  `${API_BASE.replace(/\/+$/, '')}/projects/${id}/favicon/zip`),
 
   /* ---- ЛИДЫ И РАЗВЕДКА ДОМЕНОВ (экран leads.html) ----
      listLeads/getLead/updateLead живут в api.py (router_leads),
