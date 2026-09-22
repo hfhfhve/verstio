@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: da94928cbe4ef37d8ab07458a2f9d4798492a558
+# commit: a1736eb1a2b303820fce5697cc6e97b146a158d3
 # built:  2026-09-22 17:26 UTC
 
 ## Состав
@@ -18,7 +18,7 @@ app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (5205 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (1436 строк)
+app/settings.html  (1402 строк)
 app/site.html  (800 строк)
 app/style.css  (3955 строк)
 
@@ -12922,10 +12922,6 @@ Disallow: /
       <div class="set2">
 
         <aside class="set2-side">
-          <div class="set2-search">
-            <input class="input input-sm" id="navSearch" type="search" placeholder="Найти раздел…" autocomplete="off">
-          </div>
-
           <nav class="set2-nav" id="setNav">
             <div class="set2-group">
               <div class="set2-glabel">Генерация</div>
@@ -13133,24 +13129,6 @@ Disallow: /
                       <span class="field-hint">Ниже этого — брак без разговоров.</span>
                     </label>
                   </div>
-                  <label class="field" style="margin-top:14px">
-                    <span class="field-label">Стоп-слова — по одному на строку</span>
-                    <textarea class="textarea" id="stopWords" rows="4"></textarea>
-                    <span class="field-hint">Снижает балл, а не блокирует страницу.</span>
-                  </label>
-                </div>
-              </section>
-
-              <section class="panel">
-                <div class="panel-head">
-                  <div class="panel-head-body">
-                    <div class="panel-title">Факты и смысловая уникальность</div>
-                    <div class="panel-sub">Уровень 5.2 — ещё не включён</div>
-                  </div>
-                  <div class="panel-tools"><span class="pill soon">Заглушка</span></div>
-                </div>
-                <div class="panel-body">
-                  <div class="stub"><div class="stub-text">Доля фактов из строки — порог 0.60; доля подтверждённых чисел — порог 0.55; эмбеддинги — позже.</div></div>
                 </div>
               </section>
             </div>
@@ -13446,15 +13424,6 @@ function initNav() {
   $$('.set2-item').forEach(a => a.onclick = e => { e.preventDefault(); showSec(a.dataset.sec); });
   window.addEventListener('hashchange', () => showSec((location.hash || '').slice(1), false));
   showSec((location.hash || '').slice(1), false);
-
-  const s = $('#navSearch');
-  if (s) s.oninput = () => {
-    const q = (s.value || '').trim().toLowerCase();
-    $$('.set2-item').forEach(a => {
-      const hay = (a.textContent + ' ' + (a.dataset.words || '')).toLowerCase();
-      a.classList.toggle('is-hidden', !!q && !hay.includes(q));
-    });
-  };
 }
 
 function paintDots() {
@@ -13552,7 +13521,7 @@ function markClean() {
 }
 function watchDirty() {
   ['#strongModel','#cheapModel','#strongTokens','#cheapTokens','#briefConc','#genTimeout',
-   '#uniqRange','#minLen','#stopWords','#passportPrompt','#strongPrompt','#cheapPrompt',
+   '#uniqRange','#minLen','#passportPrompt','#strongPrompt','#cheapPrompt',
    '#outreachPrompt']
     .forEach(id => { const el = $(id); if (el) el.addEventListener('input', markDirty); });
 }
@@ -13616,8 +13585,6 @@ async function load() {
   $('#uniqRange').value = u;
   $('#uniqOut').textContent = u.toFixed(2);
   $('#minLen').value = Number(val('min_text_length')) || 1800;
-  const sw = val('stop_words');
-  $('#stopWords').value = Array.isArray(sw) ? sw.join('\n') : (sw || '');
 
   $('#strongTokens').value = Number(val('strong_max_tokens')) || 16000;
   $('#cheapTokens').value = Number(val('cheap_max_tokens')) || 8000;
@@ -13795,7 +13762,7 @@ async function loadEndpoints() {
   const box = $('#epList');
   if (!box) return;
   try {
-    const res = await api.getEndpoints();
+    const res = await api.listCustomEndpoints();
     const list = Array.isArray(res) ? res : (res.endpoints || []);
     if (!list.length) {
       box.innerHTML = `<div class="empty" style="padding:14px 0;">` +
@@ -13819,7 +13786,7 @@ async function loadEndpoints() {
 
     box.querySelectorAll('[data-ep-test]').forEach(b => b.onclick = () => withBusy(b, async () => {
       try {
-        const r = await api.testEndpoint({ id: b.dataset.epTest });
+        const r = await api.testCustomEndpoint(b.dataset.epTest);
         toast.ok('Точка ответила', (r && r.models_count) ? ('моделей: ' + r.models_count) : '');
       } catch (e) { toast.err('Точка не ответила', e); }
     }));
@@ -13833,7 +13800,7 @@ async function loadEndpoints() {
       if (!ok) return;
       await withBusy(b, async () => {
         try {
-          await api.deleteEndpoint(b.dataset.epDel);
+          await api.deleteCustomEndpoint(b.dataset.epDel);
           toast.ok('Удалено');
           loadEndpoints();
           loadModels();
@@ -13855,7 +13822,7 @@ async function testEp(btn) {
   if (!payload.base_url) { toast.bad('Нужен Base URL'); return; }
   await withBusy(btn, async () => {
     try {
-      const r = await api.testEndpoint(payload);
+      const r = await api.testCustomApi(payload.base_url, payload.api_key);
       $('#epTestResult').innerHTML =
         `<div class="note ok"><span class="note-ico">${ico('ok', 17)}</span>` +
         `<div class="note-body"><b>Сервер ответил.</b> ` +
@@ -13877,7 +13844,7 @@ async function addEp(btn) {
   if (!payload.name || !payload.base_url) { toast.bad('Нужны название и Base URL'); return; }
   await withBusy(btn, async () => {
     try {
-      await api.addEndpoint(payload);
+      await api.addCustomEndpoint(payload);
       $('#epName').value = ''; $('#epUrl').value = ''; $('#epKey').value = '';
       $('#epTestResult').innerHTML = '';
       toast.ok('Точка добавлена');
@@ -13928,7 +13895,6 @@ async function saveAll(btn) {
   const payload = {
     uniqueness_threshold: { value: Number($('#uniqRange').value) },
     min_text_length: { value: num('#minLen', 300, 20000, 1800) },
-    stop_words: { value: $('#stopWords').value.split('\n').map(s => s.trim()).filter(Boolean) },
     strong_max_tokens: { value: num('#strongTokens', 1000, 200000, 16000) },
     cheap_max_tokens: { value: num('#cheapTokens', 1000, 200000, 8000) },
     brief_concurrency: { value: num('#briefConc', 1, 32, 12) },
