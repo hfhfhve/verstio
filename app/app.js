@@ -384,6 +384,15 @@ const api = {
   faviconZipUrl: (id)        => auth.signUrl(
                                   `${API_BASE.replace(/\/+$/, '')}/projects/${id}/favicon/zip`),
 
+  /* ---- ПРЕВЬЮ ДЛЯ КЛИЕНТА — черновик на закрытом поддомене ----
+     Публикация копирует готовые страницы в MEDIA_ROOT/preview/project-<id>/
+     и отдаёт их под паролем с noindex. Боевой сайт не затрагивается. */
+  getPreview:       (id) => req(`/projects/${id}/preview`),
+  publishPreview:   (id) => req(`/projects/${id}/preview/publish`, { method: 'POST' }),
+  extendPreview:    (id) => req(`/projects/${id}/preview/extend`, { method: 'POST' }),
+  resetPreviewPass: (id) => req(`/projects/${id}/preview/password`, { method: 'POST' }),
+  deletePreview:    (id) => req(`/projects/${id}/preview`, { method: 'DELETE' }),
+
   /* ---- ЛИДЫ И РАЗВЕДКА ДОМЕНОВ (экран leads.html) ----
      listLeads/getLead/updateLead живут в api.py (router_leads),
      остальное — в leadscan.py (router_leadscan). */
