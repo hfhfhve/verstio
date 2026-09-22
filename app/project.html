@@ -39,6 +39,41 @@
   border-top:1px solid var(--line,#e3e6ea)}
 .mpick-state{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;margin-top:7px;opacity:.7}
 .mpick-state.is-manual{color:var(--accent,#2783de);opacity:1;font-weight:600}
+
+/* ---- Превью для клиента ---- */
+.pv-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:34px 20px 30px}
+.pv-hero-ico{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;
+  background:var(--accent-soft,#e8f1fc);color:var(--accent,#2783de)}
+.pv-hero-n{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.pv-hero-t{font-size:13.5px;opacity:.65;max-width:440px;line-height:1.55}
+.pv-access{display:flex;flex-direction:column;gap:10px}
+.pv-line{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line,#e3e6ea);
+  border-radius:10px;background:var(--hover,#f7f8fa)}
+.pv-line-label{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.55;min-width:62px;flex:none}
+.pv-line-val{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv-line-val.is-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.02em}
+.pv-mini{flex:none;width:30px;height:30px;border-radius:8px;border:1px solid var(--line,#e3e6ea);
+  background:var(--panel,#fff);display:grid;place-items:center;cursor:pointer;opacity:.7;transition:.12s}
+.pv-mini:hover{opacity:1;color:var(--accent,#2783de);border-color:var(--accent,#2783de)}
+.pv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:2px}
+.pv-stat{border:1px solid var(--line,#e3e6ea);border-radius:10px;padding:12px 12px 11px;background:var(--panel,#fff)}
+.pv-stat-n{font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.pv-stat-t{font-size:11.5px;opacity:.55;margin-top:3px}
+.pv-stale{display:flex;align-items:flex-start;gap:9px;padding:11px 12px;border-radius:10px;margin-top:12px;
+  font-size:13px;line-height:1.5;background:var(--warn-soft,#fff5e5);color:var(--warn-ink,#8a5a00)}
+.pv-views{display:flex;flex-direction:column;gap:7px}
+.pv-view-row{display:flex;align-items:center;gap:10px;font-size:13px}
+.pv-view-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv-view-bar{flex:none;width:96px;height:6px;border-radius:99px;background:var(--hover,#eef0f3);overflow:hidden}
+.pv-view-bar>i{display:block;height:100%;border-radius:99px;background:var(--accent,#2783de)}
+.pv-view-n{flex:none;width:34px;text-align:right;font-variant-numeric:tabular-nums;opacity:.65}
+.pv-note{font-size:13px;line-height:1.55;opacity:.6;padding:6px 0}
+.pv-steps{counter-reset:pv;display:flex;flex-direction:column;gap:11px;margin:0;padding:0;list-style:none}
+.pv-steps>li{position:relative;padding-left:30px;font-size:13.5px;line-height:1.55}
+.pv-steps>li::before{counter-increment:pv;content:counter(pv);position:absolute;left:0;top:1px;width:20px;height:20px;
+  border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;
+  background:var(--accent-soft,#e8f1fc);color:var(--accent,#2783de)}
+@media (max-width:900px){.pv-stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body class="is-app">
@@ -145,6 +180,11 @@
           <button class="nav-item" data-view="favicon" data-hotkey="f">
             <span class="nav-ico" data-ico="spark"></span>
             <span class="nav-label">Фавикон</span>
+          </button>
+
+          <button class="nav-item" data-view="preview" data-hotkey="p">
+            <span class="nav-ico" data-ico="eye"></span>
+            <span class="nav-label">Превью для клиента</span>
           </button>
         </div>
       </div>
@@ -1695,12 +1735,148 @@
           </div>
         </section>
 
+        <section class="view" id="view-preview">
+          <div class="view-head">
+            <div class="view-head-body">
+              <div class="view-eyebrow"><i class="dot"></i>Черновик сайта</div>
+              <h1>Превью для клиента</h1>
+              <p class="view-sub">Готовые страницы показываются на закрытом поддомене под паролем. Поисковики туда не попадают, а ссылку можно отозвать в один клик.</p>
+            </div>
+          </div>
+
+          <div id="pvEmpty" hidden>
+            <div class="grid grid-2">
+              <div class="panel accent">
+                <div class="panel-body">
+                  <div class="pv-hero">
+                    <span class="pv-hero-ico" data-ico="eye"></span>
+                    <div class="pv-hero-n" id="pvReadyCount">0</div>
+                    <div class="pv-hero-t" id="pvEmptyHint">Страниц готово к показу. Нажмите кнопку — мы соберём черновик сайта, выдадим адрес и пароль.</div>
+                    <div class="btn-row mt-3">
+                      <button class="btn btn-primary btn-lg" id="pvPublishBtn"><span data-ico-sm="eye"></span> Опубликовать превью</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Что увидит клиент</div>
+                    <div class="panel-sub">Точно такой же сайт, как в архиве выгрузки — без пометок и врезок.</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div class="checks-list">
+                    <div class="check-row ok"><span class="check-mark" data-ico-sm="check"></span><span class="check-name">Страницы целиком</span><span class="check-val">вёрстка, картинки, фавикон</span></div>
+                    <div class="check-row ok"><span class="check-mark" data-ico-sm="check"></span><span class="check-name">Оглавление по кластерам</span><span class="check-val">с поиском по страницам</span></div>
+                    <div class="check-row ok"><span class="check-mark" data-ico-sm="check"></span><span class="check-name">Перелинковка</span><span class="check-val">работает внутри превью</span></div>
+                    <div class="check-row ok"><span class="check-mark" data-ico-sm="lock"></span><span class="check-name">Вход по паролю</span><span class="check-val">без пароля — ничего не видно</span></div>
+                    <div class="check-row ok"><span class="check-mark" data-ico-sm="shield"></span><span class="check-name">Закрыто от поисковиков</span><span class="check-val">noindex и robots.txt</span></div>
+                  </div>
+                  <div class="muted mt-3">Превью никак не связано с боевым сайтом: публикация и выгрузка продолжают работать как раньше.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="pvLive" hidden>
+            <div class="grid grid-2">
+              <div class="panel accent">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Доступ для клиента <span class="pill live" id="pvPill">активно</span></div>
+                    <div class="panel-sub" id="pvSub">Отправьте клиенту адрес и пароль — больше ничего не нужно.</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div class="pv-access">
+                    <div class="pv-line">
+                      <span class="pv-line-label">Ссылка</span>
+                      <span class="pv-line-val is-mono" id="pvUrl">—</span>
+                      <button class="pv-mini" id="pvCopyUrlBtn" title="Скопировать ссылку"><span data-ico-sm="copy"></span></button>
+                    </div>
+                    <div class="pv-line">
+                      <span class="pv-line-label">Пароль</span>
+                      <span class="pv-line-val is-mono" id="pvPass">••••••••••</span>
+                      <button class="pv-mini" id="pvEyeBtn" title="Показать пароль"><span data-ico-sm="eye"></span></button>
+                      <button class="pv-mini" id="pvCopyPassBtn" title="Скопировать пароль"><span data-ico-sm="copy"></span></button>
+                    </div>
+                  </div>
+
+                  <div class="btn-row mt-3">
+                    <button class="btn btn-primary" id="pvCopyBtn"><span data-ico-sm="copy"></span> Скопировать доступ</button>
+                    <button class="btn btn-dark" id="pvOpenBtn"><span data-ico-sm="link"></span> Открыть превью</button>
+                  </div>
+
+                  <div id="pvStale" class="pv-stale" hidden></div>
+
+                  <div class="btn-row mt-3">
+                    <button class="btn" id="pvRebuildBtn"><span data-ico-sm="refresh"></span> Пересобрать</button>
+                    <button class="btn" id="pvExtendBtn"><span data-ico-sm="clock"></span> Продлить</button>
+                    <button class="btn" id="pvPassBtn"><span data-ico-sm="key"></span> Новый пароль</button>
+                    <button class="btn" id="pvDeleteBtn"><span data-ico-sm="trash"></span> Закрыть доступ</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Что опубликовано</div>
+                    <div class="panel-sub">Состояние черновика на момент последней сборки.</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div class="pv-stats">
+                    <div class="pv-stat"><div class="pv-stat-n" id="pvStatPages">0</div><div class="pv-stat-t">страниц</div></div>
+                    <div class="pv-stat"><div class="pv-stat-n" id="pvStatSize">—</div><div class="pv-stat-t">размер</div></div>
+                    <div class="pv-stat"><div class="pv-stat-n" id="pvStatBuilt">—</div><div class="pv-stat-t">собрано</div></div>
+                    <div class="pv-stat"><div class="pv-stat-n" id="pvStatLeft">—</div><div class="pv-stat-t">до закрытия</div></div>
+                  </div>
+                  <div class="muted mt-3">После догенерации или правок нажмите «Пересобрать» — адрес и пароль останутся прежними.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-2">
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Кто смотрел</div>
+                    <div class="panel-sub">Счётчик открытий страниц после ввода пароля.</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div id="pvViews"></div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-body">
+                    <div class="panel-title">Как это работает</div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <ol class="pv-steps">
+                    <li>Мы копируем готовые страницы на отдельный поддомен — боевой сайт не затрагивается.</li>
+                    <li>Клиент открывает ссылку, вводит пароль и попадает на оглавление со всеми страницами.</li>
+                    <li>Доступ запоминается в браузере на 30 дней; новый пароль отключает всех, кто уже вошёл.</li>
+                    <li id="pvTtlHint">По истечении срока черновик удаляется с сервера автоматически.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
 </div>
 
-<script src="app.js?v=53"></script>
+<script src="app.js?v=54"></script>
 <script src="topbar.js?v=1"></script>
 
 
@@ -1727,6 +1903,7 @@ const VIEWS = {
   rules:    'Настройки проекта',
   export:   'Выгрузка',
   favicon:  'Фавикон',
+  preview:  'Превью для клиента',
 };
 
 const S = {
@@ -2095,6 +2272,7 @@ function go(view) {
   if (view === 'rules') { fillRules(); initDesign(); initProjectSite(); }
   if (view === 'export') renderExport();
   if (view === 'favicon') initFavicon();
+  if (view === 'preview') initPreview();
   if (view === 'wiring') renderWiring();
   if (view === 'linking') initLinking();
   if (view === 'feedback') initGsc();
@@ -4690,6 +4868,261 @@ async function deleteFaviconSet(btn) {
 }
 
 /* ======================================================================
+   ПРЕВЬЮ ДЛЯ КЛИЕНТА
+   Черновик сайта на закрытом поддомене: вход по паролю,
+   noindex, ограниченный срок жизни. Боевой сайт не затрагивается.
+   ====================================================================== */
+
+let PV_STATE = null;
+let PV_BOUND = false;
+let PV_SHOW_PASS = false;
+
+async function initPreview() {
+  if (!PV_BOUND) {
+    PV_BOUND = true;
+    $('#pvPublishBtn').onclick  = e => pvPublish(e.currentTarget, false);
+    $('#pvRebuildBtn').onclick  = e => pvPublish(e.currentTarget, true);
+    $('#pvExtendBtn').onclick   = e => pvExtend(e.currentTarget);
+    $('#pvPassBtn').onclick     = e => pvNewPass(e.currentTarget);
+    $('#pvDeleteBtn').onclick   = e => pvRemove(e.currentTarget);
+    $('#pvCopyBtn').onclick     = () => pvCopyAccess();
+    $('#pvCopyUrlBtn').onclick  = () => { const u = pvLink(); u ? copyText(u, 'Ссылка') : toast.warn('Ссылки пока нет'); };
+    $('#pvCopyPassBtn').onclick = () => {
+      const p = (PV_STATE || {}).password || '';
+      p ? copyText(p, 'Пароль') : toast.warn('Пароль недоступен');
+    };
+    $('#pvEyeBtn').onclick      = () => { PV_SHOW_PASS = !PV_SHOW_PASS; renderPreview(); };
+    $('#pvOpenBtn').onclick     = () => {
+      const u = pvLink();
+      if (!u) { toast.warn('Ссылки пока нет'); return; }
+      window.open(u, '_blank', 'noopener');
+    };
+  }
+  await loadPreview();
+}
+
+async function loadPreview() {
+  try {
+    PV_STATE = await api.getPreview(PID);
+  } catch (e) {
+    PV_STATE = null;
+    toast.err('Не удалось прочитать состояние превью', e);
+  }
+  renderPreview();
+}
+
+/* Адрес оглавления. Берём готовый с сервера, иначе собираем из поддомена. */
+function pvLink() {
+  const st = PV_STATE || {};
+  if (st.index_url) return st.index_url;
+  if (st.url) return st.url;
+  if (!st.sub) return '';
+  return 'https://' + st.sub + '.' + (st.base_domain || 'preview.verstio.ru') + '/_preview/';
+}
+
+function pvDaysLeft() {
+  const st = PV_STATE || {};
+  if (typeof st.days_left === 'number') return st.days_left;
+  if (!st.expires_at) return null;
+  const t = new Date(st.expires_at).getTime();
+  if (isNaN(t)) return null;
+  return Math.ceil((t - Date.now()) / 86400000);
+}
+
+function pvWhen(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) +
+         ', ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+function pvDays(n) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return 'дней';
+  if (b > 1 && b < 5) return 'дня';
+  if (b === 1) return 'день';
+  return 'дней';
+}
+
+function pvReadyPages() {
+  return (S.pages || []).filter(p => p.status === 'ready').length;
+}
+
+function renderPreview() {
+  const st = PV_STATE || {};
+  const live = !!(st.enabled && (st.sub || st.index_url || st.url));
+  const ready = pvReadyPages();
+
+  $('#pvEmpty').hidden = live;
+  $('#pvLive').hidden = !live;
+
+  if (!live) {
+    setText('#pvReadyCount', fmtNum(ready));
+    const hint = $('#pvEmptyHint');
+    const btn = $('#pvPublishBtn');
+    if (ready > 0) {
+      hint.textContent = 'страниц готово к показу. Нажмите кнопку — мы соберём черновик сайта и выдадим адрес с паролем.';
+      btn.disabled = false;
+    } else {
+      hint.textContent = 'готовых страниц. Сначала сгенерируйте хотя бы одну страницу — показывать клиенту нечего.';
+      btn.disabled = true;
+    }
+    return;
+  }
+
+  /* ---- доступ ---- */
+  const url = pvLink();
+  const pass = st.password || '';
+  setText('#pvUrl', url.replace(/^https?:\/\//, '').replace(/\/$/, '') || '—');
+  $('#pvUrl').title = url;
+  setText('#pvPass', pass ? (PV_SHOW_PASS ? pass : '•'.repeat(pass.length)) : '—');
+  const eye = $('#pvEyeBtn');
+  if (eye) eye.title = PV_SHOW_PASS ? 'Скрыть пароль' : 'Показать пароль';
+
+  /* ---- срок жизни ---- */
+  const left = pvDaysLeft();
+  const pill = $('#pvPill');
+  if (left === null) { pill.className = 'pill live'; pill.textContent = 'активно'; }
+  else if (left <= 0) { pill.className = 'pill bad'; pill.textContent = 'срок истёк'; }
+  else if (left <= 7) { pill.className = 'pill warn'; pill.textContent = 'осталось ' + left + ' ' + pvDays(left); }
+  else { pill.className = 'pill live'; pill.textContent = 'активно'; }
+
+  setText('#pvSub', st.sub
+    ? 'Поддомен ' + st.sub + ' — отправьте клиенту ссылку и пароль, больше ничего не нужно.'
+    : 'Отправьте клиенту ссылку и пароль.');
+
+  /* ---- что опубликовано ---- */
+  const shown = typeof st.pages === 'number' ? st.pages : (st.pages_count || 0);
+  setText('#pvStatPages', fmtNum(shown));
+  setText('#pvStatSize', st.size_bytes || st.size ? fmtSize(st.size_bytes || st.size) : '—');
+  setText('#pvStatBuilt', pvWhen(st.built_at || st.published_at));
+  setText('#pvStatLeft', left === null ? '—' : (left <= 0 ? 'истёк' : left + ' ' + pvDays(left)));
+
+  /* ---- черновик отстаёт от проекта ---- */
+  const stale = $('#pvStale');
+  const diff = ready - shown;
+  if (st.stale || diff > 0) {
+    stale.hidden = false;
+    stale.innerHTML = '<span data-ico-sm="alert"></span><span>' + (diff > 0
+      ? 'В проекте новых страниц: ' + fmtNum(diff) + '. Клиент их пока не видит — нажмите «Пересобрать».'
+      : 'Страницы менялись после последней сборки. Нажмите «Пересобрать», чтобы клиент увидел свежую версию.') + '</span>';
+    hydrateIcons(stale);
+  } else {
+    stale.hidden = true;
+    stale.innerHTML = '';
+  }
+
+  /* ---- срок и подсказка ---- */
+  const ttl = st.ttl_days || 90;
+  setText('#pvTtlHint', 'Ссылка живёт ' + ttl + ' ' + pvDays(ttl) + ' с момента публикации' +
+    (st.expires_at ? ' — до ' + pvWhen(st.expires_at) : '') +
+    '. Потом черновик удаляется с сервера автоматически; кнопка «Продлить» отсчитывает срок заново.');
+
+  renderPreviewViews();
+}
+
+function renderPreviewViews() {
+  const box = $('#pvViews');
+  if (!box) return;
+  const v = (PV_STATE || {}).views || {};
+  const total = v.count || 0;
+
+  if (!total) {
+    box.innerHTML = '<div class="pv-note">Пока никто не заходил. Как только клиент откроет ссылку, здесь появятся просмотры по страницам.</div>';
+    return;
+  }
+
+  const rows = Object.entries(v.pages || {})
+    .map(([slug, n]) => [slug, Number(n) || 0])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12);
+  const max = rows.length ? rows[0][1] : 1;
+
+  let html = '<div class="checks-list">' +
+    '<div class="check-row"><span class="check-name">Всего открытий</span><span class="check-val">' + fmtNum(total) + '</span></div>' +
+    '<div class="check-row"><span class="check-name">Первый визит</span><span class="check-val">' + escHtml(pvWhen(v.first)) + '</span></div>' +
+    '<div class="check-row"><span class="check-name">Последний визит</span><span class="check-val">' + escHtml(pvWhen(v.last)) + '</span></div>' +
+    '</div>';
+
+  if (rows.length) {
+    html += '<div class="pv-views mt-3">' + rows.map(([slug, n]) =>
+      '<div class="pv-view-row">' +
+        '<span class="pv-view-name" title="' + escAttr(slug) + '">' + escHtml(slug === '_index' ? 'Оглавление' : slug) + '</span>' +
+        '<span class="pv-view-bar"><i style="width:' + Math.max(6, Math.round(n / max * 100)) + '%"></i></span>' +
+        '<span class="pv-view-n">' + fmtNum(n) + '</span>' +
+      '</div>').join('') + '</div>';
+  }
+
+  box.innerHTML = html;
+}
+
+async function pvPublish(btn, again) {
+  if (!again && pvReadyPages() === 0) { toast.warn('Нет готовых страниц'); return; }
+  await withBusy(btn, async () => {
+    try {
+      PV_STATE = await api.publishPreview(PID);
+      PV_SHOW_PASS = false;
+      renderPreview();
+      toast.ok(again ? 'Превью пересобрано' : 'Превью опубликовано',
+               again ? 'Адрес и пароль остались прежними' : 'Осталось отправить клиенту ссылку и пароль');
+    } catch (e) { toast.err('Не удалось собрать превью', e); }
+  });
+}
+
+async function pvExtend(btn) {
+  await withBusy(btn, async () => {
+    try {
+      PV_STATE = await api.extendPreview(PID);
+      renderPreview();
+      const left = pvDaysLeft();
+      toast.ok('Срок продлён', left === null ? '' : 'Ещё ' + left + ' ' + pvDays(left));
+    } catch (e) { toast.err('Не удалось продлить', e); }
+  });
+}
+
+async function pvNewPass(btn) {
+  if (!confirm('Выдать новый пароль? Старый перестанет работать, и все, кто уже вошёл, увидят форму входа.')) return;
+  await withBusy(btn, async () => {
+    try {
+      PV_STATE = await api.resetPreviewPass(PID);
+      PV_SHOW_PASS = true;
+      renderPreview();
+      toast.ok('Пароль обновлён', 'Не забудьте отправить его клиенту');
+    } catch (e) { toast.err('Не удалось сменить пароль', e); }
+  });
+}
+
+async function pvRemove(btn) {
+  if (!confirm('Закрыть доступ? Ссылка перестанет открываться, файлы черновика удалятся. Страницы проекта останутся на месте.')) return;
+  await withBusy(btn, async () => {
+    try {
+      PV_STATE = await api.deletePreview(PID);
+      PV_SHOW_PASS = false;
+      renderPreview();
+      toast.ok('Доступ закрыт');
+    } catch (e) { toast.err('Не удалось закрыть доступ', e); }
+  });
+}
+
+/* Одной кнопкой — готовое сообщение клиенту. */
+function pvCopyAccess() {
+  const st = PV_STATE || {};
+  const url = pvLink();
+  if (!url) { toast.warn('Сначала опубликуйте превью'); return; }
+  const name = (S.project && S.project.name) ? S.project.name : 'проект';
+  const left = pvDaysLeft();
+  const lines = [
+    'Черновик сайта: ' + name,
+    'Ссылка: ' + url,
+  ];
+  if (st.password) lines.push('Пароль: ' + st.password);
+  if (left !== null && left > 0) lines.push('Ссылка действует ещё ' + left + ' ' + pvDays(left) + '.');
+  lines.push('Страницы закрыты от поисковиков — это просмотр до публикации.');
+  copyText(lines.join('\n'), 'Доступ');
+}
+
+/* ======================================================================
    КОМАНДНАЯ ПАЛИТРА И СТАРТ
    ====================================================================== */
 
@@ -4705,6 +5138,7 @@ function registerCommands() {
     { group: 'Действия', label: 'Выгрузить архив', icon: 'download', run: () => doExport() },
     { group: 'Действия', label: 'Обновить все данные', icon: 'refresh', hint: 'R', run: () => reloadAll() },
     { group: 'Действия', label: 'Фавикон сайта', icon: 'spark', hint: 'F', run: () => go('favicon') },
+    { group: 'Действия', label: 'Превью для клиента', icon: 'eye', hint: 'P', run: () => go('preview') },
     { group: 'Прочее', label: 'К списку проектов', icon: 'home', run: () => location.href = 'index.html' },
     { group: 'Прочее', label: 'Переключить тему', icon: 'moon', hint: 'T', run: () => toggleTheme() },
   ]));
