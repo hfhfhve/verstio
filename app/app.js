@@ -370,6 +370,20 @@ const api = {
   saveDesign:   (id, d) => req(`/projects/${id}/design`, { method: 'PUT', body: JSON.stringify(d) }),
   repaintDesign:(id)    => req(`/projects/${id}/design/apply`, { method: 'POST' }),
 
+  /* ---- ФАВИКОН — одна картинка на весь домен ----
+     Набор принадлежит сайту и наследуется всеми его проектами;
+     scope: 'project' сохраняет исключение только для этого проекта. */
+  getFavicon:    (id)        => req(`/projects/${id}/favicon`),
+  uploadFavicon: (id, fd, q) => req(`/projects/${id}/favicon${qs(q || {})}`, {
+                                  method: 'POST', body: fd, headers: {} }),
+  applyFavicon:  (id)        => req(`/projects/${id}/favicon/apply`, { method: 'POST' }),
+  deleteFavicon: (id, scope) => req(`/projects/${id}/favicon${qs({ scope: scope || 'project' })}`, {
+                                  method: 'DELETE' }),
+  faviconFileUrl:(id, name)  => auth.signUrl(
+                                  `${API_BASE.replace(/\/+$/, '')}/projects/${id}/favicon/files/${encodeURIComponent(name)}`),
+  faviconZipUrl: (id)        => auth.signUrl(
+                                  `${API_BASE.replace(/\/+$/, '')}/projects/${id}/favicon/zip`),
+
   /* ---- ЛИДЫ И РАЗВЕДКА ДОМЕНОВ (экран leads.html) ----
      listLeads/getLead/updateLead живут в api.py (router_leads),
      остальное — в leadscan.py (router_leadscan). */
