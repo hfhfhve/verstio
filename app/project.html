@@ -141,6 +141,11 @@
             <span class="nav-ico" data-ico="radar"></span>
             <span class="nav-label">Результаты в поиске</span>
           </button>
+
+          <button class="nav-item" data-view="favicon" data-hotkey="f">
+            <span class="nav-ico" data-ico="spark"></span>
+            <span class="nav-label">Фавикон</span>
+          </button>
         </div>
       </div>
 
@@ -1623,12 +1628,79 @@
           </div>
         </section>
 
+        <section class="view" id="view-favicon">
+          <div class="view-head">
+            <div class="view-head-body">
+              <div class="view-eyebrow"><i class="dot"></i>Иконка сайта</div>
+              <h1>Фавикон</h1>
+              <p class="view-sub">Одна картинка — полный набор иконок для вкладки, iOS, Android и Windows. Набор принадлежит домену и врезается во все готовые страницы.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Исходная картинка</div>
+                  <div class="panel-sub">Квадрат от 512×512, PNG с прозрачным фоном. Неквадрат обрежется по центру.</div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="dropzone" id="favDrop" tabindex="0" role="button" aria-label="Выбрать картинку">
+                  <span class="dropzone-ico" data-ico="upload"></span>
+                  <span class="dropzone-title">Перетащите картинку сюда или <u>выберите на диске</u></span>
+                  <span class="dropzone-hint">PNG, JPEG, WebP, GIF, BMP · до 8 МБ</span>
+                  <input type="file" id="favFiles" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp">
+                </div>
+                <div class="dropfiles" id="favPicked"></div>
+
+                <div class="form-grid mt-3">
+                  <label class="field"><span class="field-label">Куда сохранить</span>
+                    <select class="input" id="favScope">
+                      <option value="site">Весь домен (все проекты сайта)</option>
+                      <option value="project">Только этот проект</option>
+                    </select>
+                  </label>
+                  <label class="field"><span class="field-label">Фон под иконкой iOS</span><input class="input" id="favBg" placeholder="#ffffff"></label>
+                  <label class="field"><span class="field-label">Цвет темы браузера</span><input class="input" id="favTheme" placeholder="как фон"></label>
+                  <label class="field"><span class="field-label">Название в манифесте</span><input class="input" id="favName" placeholder="Название сайта"></label>
+                  <label class="field"><span class="field-label">Короткое название</span><input class="input" id="favShort" placeholder="До 12 символов"></label>
+                </div>
+
+                <div class="btn-row mt-3">
+                  <button class="btn btn-primary" id="favUploadBtn"><span data-ico-sm="spark"></span> Собрать набор</button>
+                </div>
+                <div class="muted mt-2" id="favWarn" hidden></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-head-body">
+                  <div class="panel-title">Текущая иконка <span class="pill neutral" id="favScopePill">нет</span></div>
+                  <div class="panel-sub" id="favHead">Набор ещё не собран.</div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div id="favPreview"></div>
+                <div class="muted mt-2" id="favState">—</div>
+                <div class="btn-row mt-3">
+                  <button class="btn btn-dark" id="favApplyBtn"><span data-ico-sm="redo"></span> Врезать в готовые страницы</button>
+                  <button class="btn" id="favZipBtn"><span data-ico-sm="download"></span> Скачать набор</button>
+                  <button class="btn" id="favDeleteBtn"><span data-ico-sm="x"></span> Удалить</button>
+                </div>
+                <div class="muted mt-3">Файлы попадают в архив выгрузки, в корень сайта. Для WordPress иконка ставится командой verstio-wp.py с ключом --favicon-auto (нужен администратор).</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
 </div>
 
-<script src="app.js?v=52"></script>
+<script src="app.js?v=53"></script>
 <script src="topbar.js?v=1"></script>
 
 
@@ -1654,6 +1726,7 @@ const VIEWS = {
   feedback: 'Результаты в поиске',
   rules:    'Настройки проекта',
   export:   'Выгрузка',
+  favicon:  'Фавикон',
 };
 
 const S = {
@@ -2021,6 +2094,7 @@ function go(view) {
   if (view === 'waves') renderWaves();
   if (view === 'rules') { fillRules(); initDesign(); initProjectSite(); }
   if (view === 'export') renderExport();
+  if (view === 'favicon') initFavicon();
   if (view === 'wiring') renderWiring();
   if (view === 'linking') initLinking();
   if (view === 'feedback') initGsc();
@@ -4458,6 +4532,164 @@ async function deleteProject() {
 }
 
 /* ======================================================================
+   ФАВИКОН
+   Набор принадлежит домену (Site) и наследуется всеми его проектами.
+   У проекта может быть своё исключение — оно главнее.
+   ====================================================================== */
+
+let FAV_DROP = null;
+let FAV_BOUND = false;
+let FAV_STATE = null;
+
+const FAV_MIME = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/bmp'];
+const FAV_EXT = /\.(png|jpe?g|webp|gif|bmp)$/i;
+const FAV_MAX_MB = 8;
+
+function pickFavicon(files) {
+  const ok = [], bad = [];
+  files.forEach(f => {
+    if (/\.svg$/i.test(f.name) || f.type === 'image/svg+xml') {
+      bad.push(f.name + ' — SVG не подходит, нужен растр');
+    } else if (!FAV_EXT.test(f.name) || (f.type && !FAV_MIME.includes(f.type))) {
+      bad.push(f.name + ' — не картинка');
+    } else if (f.size > FAV_MAX_MB * 1024 * 1024) {
+      bad.push(f.name + ' — больше ' + FAV_MAX_MB + ' МБ');
+    } else {
+      ok.push(f);
+    }
+  });
+  // Иконка одна: лишние файлы сразу отбрасываем, чтобы не гадать.
+  if (ok.length > 1) {
+    ok.slice(1).forEach(f => bad.push(f.name + ' — нужна только одна картинка'));
+  }
+  return { ok: ok.slice(0, 1), bad };
+}
+
+async function initFavicon() {
+  if (!FAV_BOUND) {
+    FAV_BOUND = true;
+    FAV_DROP = initDropzone({
+      zone: '#favDrop', input: '#favFiles', list: '#favPicked', pick: pickFavicon,
+    });
+    $('#favUploadBtn').onclick = e => uploadFaviconFile(e.currentTarget);
+    $('#favApplyBtn').onclick = e => applyFaviconToPages(e.currentTarget);
+    $('#favDeleteBtn').onclick = e => deleteFaviconSet(e.currentTarget);
+    $('#favZipBtn').onclick = () => {
+      if (!FAV_STATE || !FAV_STATE.effective) { toast.warn('Сначала соберите набор'); return; }
+      location.href = api.faviconZipUrl(PID);
+    };
+  }
+  await loadFavicon();
+}
+
+async function loadFavicon() {
+  try {
+    FAV_STATE = await api.getFavicon(PID);
+  } catch (e) {
+    FAV_STATE = null;
+    toast.err('Не удалось прочитать фавикон', e);
+  }
+  renderFavicon();
+}
+
+function renderFavicon() {
+  const st = FAV_STATE || {};
+  const cfg = st.effective || null;
+  const pill = $('#favScopePill');
+  const head = $('#favHead');
+  const warn = $('#favWarn');
+  const state = $('#favState');
+  const prev = $('#favPreview');
+  const scopeSel = $('#favScope');
+
+  // Без привязки к сайту доменный вариант невозможен.
+  if (scopeSel) {
+    const siteOpt = scopeSel.querySelector('option[value="site"]');
+    if (siteOpt) siteOpt.disabled = !st.site;
+    if (!st.site) scopeSel.value = 'project';
+  }
+
+  if (pill) pill.textContent = cfg ? (st.scope === 'site' ? 'домен' : 'проект') : 'нет';
+
+  if (head) {
+    head.textContent = !cfg
+      ? 'Набор ещё не собран.'
+      : (st.scope === 'site'
+        ? 'Иконка домена ' + ((st.site && st.site.domain) || '') + ' · общая для ' + (st.projects_affected || 1) + ' проектов'
+        : 'Собственная иконка этого проекта');
+  }
+
+  if (prev) {
+    prev.innerHTML = !cfg
+      ? '<div class="muted">Загрузите картинку слева.</div>'
+      : ['favicon-32x32.png', 'favicon-48x48.png', 'apple-touch-icon.png', 'android-chrome-192x192.png']
+        .filter(n => (cfg.files || []).indexOf(n) >= 0)
+        .map(n => '<img src="' + escAttr(api.faviconFileUrl(PID, n)) + '" alt="' + escAttr(n) + '" title="' + escAttr(n) + '" style="width:48px;height:48px;margin-right:10px;border-radius:8px;border:1px solid rgba(0,0,0,.08)">')
+        .join('');
+  }
+
+  if (state) {
+    state.textContent = !cfg ? '—'
+      : 'Файлов в наборе: ' + (cfg.files || []).length
+        + ' · источник ' + ((cfg.source && cfg.source.width) || '?') + '×' + ((cfg.source && cfg.source.height) || '?')
+        + ' · страниц под этой иконкой: ' + (st.pages_total || 0);
+  }
+
+  if (warn) {
+    const small = !!(cfg && cfg.small_source);
+    warn.hidden = !small;
+    if (small) warn.textContent = 'Исходник меньше 512×512: крупные иконки будут мылить — лучше перезалить картинку побольше.';
+  }
+}
+
+async function uploadFaviconFile(btn) {
+  const files = FAV_DROP ? FAV_DROP.files() : [];
+  if (!files.length) { toast.warn('Сначала выберите картинку'); return; }
+  await withBusy(btn, async () => {
+    try {
+      const fd = new FormData();
+      fd.append('file', files[0]);
+      await api.uploadFavicon(PID, fd, {
+        scope: $('#favScope').value || 'site',
+        bg: ($('#favBg').value || '').trim(),
+        theme_color: ($('#favTheme').value || '').trim(),
+        name: ($('#favName').value || '').trim(),
+        short_name: ($('#favShort').value || '').trim(),
+      });
+      FAV_DROP.clear();
+      await loadFavicon();
+      toast.ok('Набор собран', 'Теперь врежьте его в готовые страницы');
+    } catch (e) { toast.err('Не удалось собрать набор', e); }
+  });
+}
+
+async function applyFaviconToPages(btn) {
+  if (!FAV_STATE || !FAV_STATE.effective) { toast.warn('Сначала соберите набор'); return; }
+  await withBusy(btn, async () => {
+    try {
+      const res = await api.applyFavicon(PID);
+      FAV_STATE = res;
+      renderFavicon();
+      toast.ok('Готово', 'Обновлено страниц: ' + (res.updated_pages || 0));
+    } catch (e) { toast.err('Не удалось врезать', e); }
+  });
+}
+
+async function deleteFaviconSet(btn) {
+  const st = FAV_STATE || {};
+  const scope = st.project_own ? 'project' : (st.scope === 'site' ? 'site' : 'project');
+  const where = scope === 'site' ? 'у всего домена' : 'у этого проекта';
+  if (!confirm('Удалить набор иконок ' + where + '? Страницы останутся как есть, пока не нажмёте «Врезать».')) return;
+  await withBusy(btn, async () => {
+    try {
+      FAV_STATE = await api.deleteFavicon(PID, scope);
+      renderFavicon();
+      toast.ok('Набор удалён');
+    } catch (e) { toast.err('Не удалось удалить', e); }
+  });
+}
+
+/* ======================================================================
    КОМАНДНАЯ ПАЛИТРА И СТАРТ
    ====================================================================== */
 
@@ -4472,6 +4704,7 @@ function registerCommands() {
     { group: 'Действия', label: 'Пересчитать уникальность', icon: 'radar', run: () => { go('gate'); recompute($('#recomputeBtn')); } },
     { group: 'Действия', label: 'Выгрузить архив', icon: 'download', run: () => doExport() },
     { group: 'Действия', label: 'Обновить все данные', icon: 'refresh', hint: 'R', run: () => reloadAll() },
+    { group: 'Действия', label: 'Фавикон сайта', icon: 'spark', hint: 'F', run: () => go('favicon') },
     { group: 'Прочее', label: 'К списку проектов', icon: 'home', run: () => location.href = 'index.html' },
     { group: 'Прочее', label: 'Переключить тему', icon: 'moon', hint: 'T', run: () => toggleTheme() },
   ]));
