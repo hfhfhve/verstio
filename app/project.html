@@ -1482,7 +1482,6 @@
                 <select class="select input-sm" id="prjSiteSel" style="min-width:260px">
                   <option value="">— без сайта —</option>
                 </select>
-                <button class="btn btn-primary" id="prjSiteSave">Сохранить</button>
                 <button class="btn" id="prjSiteNew">Создать сайт по домену проекта</button>
                 <a class="btn" id="prjSiteOpen" href="#" hidden><span data-ico-sm="radar"></span> Открыть сайт</a>
               </div>
@@ -1493,15 +1492,15 @@
             </div>
           </div>
 
-          <div class="grid grid-2">
-            <div class="panel">
-              <div class="panel-head">
-                <div class="panel-head-body">
-                  <div class="panel-title">Модели</div>
-                  <div class="panel-sub">Сильная рисует каркас один раз, дешёвая заполняет каждую строку</div>
-                </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Модели</div>
+                <div class="panel-sub">Сильная рисует каркас один раз, дешёвая заполняет каждую строку</div>
               </div>
-              <div class="panel-body">
+            </div>
+            <div class="panel-body">
+              <div class="form-grid">
                 <label class="field">
                   <span class="field-label">Сильная модель — каркас и диалог</span>
                   <div class="mpick" data-mpick="projStrongModel">
@@ -1510,7 +1509,7 @@
                     <button class="btn btn-sm mpick-open" type="button">Из списка</button>
                   </div>
                 </label>
-                <label class="field mt-2">
+                <label class="field">
                   <span class="field-label">Дешёвая модель — заполнение полей</span>
                   <div class="mpick" data-mpick="projCheapModel">
                     <input class="input mpick-input" id="projCheapModel" autocomplete="off" spellcheck="false"
@@ -1521,15 +1520,17 @@
                 </label>
               </div>
             </div>
+          </div>
 
-            <div class="panel">
-              <div class="panel-head">
-                <div class="panel-head-body">
-                  <div class="panel-title">Пороги гейта</div>
-                  <div class="panel-sub">Уровни 5.3 и 5.4</div>
-                </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Пороги гейта</div>
+                <div class="panel-sub">Страница ниже порога не попадает в выгрузку</div>
               </div>
-              <div class="panel-body">
+            </div>
+            <div class="panel-body">
+              <div class="form-grid">
                 <label class="field">
                   <span class="field-label">Порог уникальности</span>
                   <div class="range-row">
@@ -1538,9 +1539,10 @@
                   </div>
                   <span class="field-hint">Страница бракуется, если уникальность ниже этого значения.</span>
                 </label>
-                <label class="field mt-2">
+                <label class="field">
                   <span class="field-label">Минимальная длина текста, символов</span>
                   <input class="input" id="minLen" type="number" min="300" step="100">
+                  <span class="field-hint">Ниже этого — брак без разговоров.</span>
                 </label>
               </div>
             </div>
@@ -1585,7 +1587,7 @@
                 placeholder="уникальный&#10;лучший в мире&#10;как известно"></textarea>
             </div>
             <div class="panel-foot">
-              <button class="btn btn-primary" id="saveRulesBtn"><span data-ico-sm="check"></span> Сохранить правила</button>
+              <span class="muted">Сохраняются общей кнопкой внизу экрана</span>
               <span class="grow"></span>
               <a class="link-btn" href="settings.html">Глобальные настройки и провайдеры</a>
             </div>
@@ -1601,6 +1603,13 @@
             <div class="panel-body">
               <div class="weights" id="weightsStub"></div>
             </div>
+          </div>
+
+          <div class="savebar" id="rulesSaveBar"
+               style="position:sticky;bottom:18px;z-index:6;display:flex;align-items:center;gap:12px;padding:12px 18px;margin:22px 0;">
+            <span id="rulesSaveText" class="muted">Всё сохранено</span>
+            <span class="grow"></span>
+            <button class="btn btn-primary btn-lg" id="rulesSaveAll"><span data-ico-sm="check"></span> Сохранить настройки</button>
           </div>
 
           <div class="panel" style="border-color:var(--bad-line);">
@@ -2485,14 +2494,17 @@ function bindStatic() {
   });
 
   /* --- сайт проекта --- */
-  $('#prjSiteSave').onclick = e => saveProjectSite(e.currentTarget, { site_id: $('#prjSiteSel').value });
   $('#prjSiteNew').onclick = e => saveProjectSite(e.currentTarget, {
     create: true, domain: (S.project && S.project.domain) || '' });
 
   /* --- правила --- */
-  $('#saveRulesBtn').onclick = e => saveRules(e.currentTarget);
+  $('#rulesSaveAll').onclick = e => saveRules(e.currentTarget);
+  rulesWatchDirty();
   if ($('#repaintDesignBtn')) $('#repaintDesignBtn').onclick = e => repaintDesign(e.currentTarget);
-  $('#uniqRange').oninput = e => $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
+  $('#uniqRange').oninput = e => {
+    $('#uniqOut').textContent = Number(e.target.value).toFixed(2);
+    rulesDirty(true);
+  };
   $('#deleteProjectBtn').onclick = () => deleteProject();
   $('#exportBtn').onclick = () => doExport();
   $('#exportSitemapBtn').onclick = () => doExportSitemap();
@@ -4636,7 +4648,11 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.mpick')) mpickAll().forEach(b => b.classList.remove('is-open'));
 });
 
+let RULES_DIRTY = false;
+
 function fillRules() {
+  rulesWatchDirty();
+  rulesDirty(false);
   const fill = (sel, cur) => {
     const el = $(sel);
     if (!el) return;
@@ -4674,6 +4690,26 @@ function fillRules() {
       `Веса пока зашиты в бэкенде. Блок 8 будет пересчитывать их по данным Search Console.</div>`);
 }
 
+/* Одна кнопка на весь экран: раньше сайт и правила сохранялись отдельно
+   и половина правок терялась при уходе со страницы. */
+function rulesDirty(on) {
+  const t = $('#rulesSaveText');
+  if (!t) return;
+  RULES_DIRTY = !!on;
+  t.innerHTML = on ? '<b>Есть несохранённые изменения</b>' : 'Всё сохранено';
+}
+
+function rulesWatchDirty() {
+  ['#prjSiteSel', '#projStrongModel', '#projCheapModel', '#minLen', '#stopWords']
+    .forEach(sel => {
+      const el = $(sel);
+      if (!el || el.dataset.dirtyBound) return;
+      el.dataset.dirtyBound = '1';
+      el.addEventListener('input', () => rulesDirty(true));
+      el.addEventListener('change', () => rulesDirty(true));
+    });
+}
+
 async function saveRules(btn) {
   const prov = m => m && m.startsWith('custom/') ? 'custom' : 'openrouter';
   const sm = (($('#projStrongModel') || {}).value || '').trim();
@@ -4686,11 +4722,21 @@ async function saveRules(btn) {
   if (sm) payload.strong_model = { value: sm, provider: prov(sm) };
   if (cm) payload.cheap_model = { value: cm, provider: prov(cm) };
 
+  const sel = $('#prjSiteSel');
+  const curSite = String((S.project && S.project.settings && S.project.settings.site_id) || '');
+  const nextSite = sel ? String(sel.value || '') : curSite;
+
   await withBusy(btn, async () => {
     try {
+      if (sel && nextSite !== curSite) {
+        await api.bindProjectSite(PID, { site_id: nextSite });
+        GSC.data = null;
+      }
       await api.updateProject(PID, { settings: payload });
-      S.project.settings = Object.assign({}, S.project.settings || {}, payload);
-      toast.ok('Правила сохранены');
+      S.project = await api.getProject(PID);
+      toast.ok('Настройки сохранены');
+      rulesDirty(false);
+      initProjectSite();
       renderProgress();
     } catch (e) { toast.err('Не удалось сохранить', e); }
   });
