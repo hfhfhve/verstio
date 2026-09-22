@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -41,6 +39,9 @@
 .mpick-state.is-manual{color:var(--accent,#2783de);opacity:1;font-weight:600}
 
 /* ---- Превью для клиента ---- */
+/* Мостик к токенам темы: --panel/--hover в style.css не существуют,
+   из-за них блоки уезжали в белый фон со светлым текстом. */
+:root{--panel:var(--surface-2);--hover:var(--surface-2)}
 .pv-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:34px 20px 30px}
 .pv-hero-ico{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;
   background:var(--accent-soft,#e8f1fc);color:var(--accent,#2783de)}
@@ -975,7 +976,7 @@
             <div class="view-head-body">
               <div class="view-eyebrow"><i class="dot"></i>Шаг 6 · готовые страницы</div>
               <h1>Страницы</h1>
-              <p class="view-sub">Откройте страницу, скачайте HTML или отправьте её на повторную генерацию.</p>
+              <p class="view-sub">Отк��ойте страницу, скачайте HTML или отправьте её на повторную генерацию.</p>
             </div>
           </div>
 
@@ -1023,7 +1024,7 @@
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ════════════════════════════════════════════════════════��═
              ЭКРАН 7 — ОБВЯЗКА (БЛОК 6) — ЗАГЛУШКА
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-wiring">
@@ -2308,7 +2309,7 @@ function bindStatic() {
     },
     sheet: {
       title: 'Связь с Google Sheets',
-      text: 'Вставьте ссылку на лист, открытый по ссылке.',
+      text: '��ставьте ссылку на лист, открытый по ссылке.',
       list: ['Строки тянутся напрямую, без ключей Google',
              'Повторная загрузка обновляет факты у своих строк'],
     },
@@ -2514,7 +2515,7 @@ function reloadAll() {
 
 function stubDrawer(title, rows) {
   drawer.open({
-    eyebrow: 'Заглушка — бэкенд ещё не подключён',
+    eyebrow: 'Заглу��ка — бэкенд ещё не подключён',
     title: title,
     body:
       `<div class="note info" style="margin:0 0 16px;">` +
