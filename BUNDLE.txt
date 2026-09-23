@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: ca32f89d300fd2f2a24d5a3ebcdb010e5a2d48f4
-# built:  2026-09-23 19:12 UTC
+# commit: 2fe271d8f7b2c94815015acd0618f9dfcc7b0cf2
+# built:  2026-09-23 19:57 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -11,7 +11,7 @@ offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
 app/app.js  (2329 строк)
-app/hunt.html  (680 строк)
+app/hunt.html  (748 строк)
 app/index.html  (439 строк)
 app/leads.html  (925 строк)
 app/login.html  (150 строк)
@@ -4871,6 +4871,7 @@ guardCabinet();
 ════════════════════════════════════════════════════════
 
 
+
 <!doctype html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -5105,6 +5106,9 @@ guardCabinet();
               </tbody>
             </table>
           </div>
+          <div style="padding:10px 0 2px; text-align:center">
+            <button class="btn btn-sm btn-quiet" id="moreBtn" hidden>Показать ещё 100</button>
+          </div>
         </div>
         <div class="panel-foot">
           Балл = 0.35 × Деньги + 0.35 × Потолок + 0.30 × Дефицит. Нажмите на строку, чтобы увидеть расчёт.
@@ -5130,7 +5134,9 @@ guardCabinet();
   mountTopbar();
   mountLogoutButton();
 
-  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1 };
+  var state = { items: [], counts: {}, byId: {}, picked: {}, cur: -1, offset: 0, hasMore: false, pulseKey: '' };
+  var PAGE = 100;
+  var pulseTimer = null;
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -5211,7 +5217,9 @@ guardCabinet();
     } else {
       body.innerHTML = state.items.map(row).join('');
     }
-    document.getElementById('huntCount').textContent = state.items.length + ' на экране';
+    document.getElementById('huntCount').textContent = state.items.length + ' на экране' +
+      (state.hasMore ? ' (есть ещё)' : '');
+    document.getElementById('moreBtn').hidden = !state.hasMore;
     renderBulk();
     markCurrent();
   }
@@ -5328,9 +5336,18 @@ guardCabinet();
       '<div class="bar"><i style="width:' + Math.max(0, Math.min(100, value)) + '%"></i></div></div>';
   }
 
-  function openDrawer(id) {
+  async function openDrawer(id) {
     var p = state.byId[id];
     if (!p) return;
+    // Подробности (расчёт балла, ошибки скана) в списке не приходят —
+    // берём их одним запросом только для открытой карточки.
+    if (!p.score_detail) {
+      try {
+        var full = await req('/hunt/prospects/' + id);
+        p = Object.assign({}, p, full);
+        state.byId[id] = p;
+      } catch (e) { /* покажем то, что есть */ }
+    }
     var d = p.score_detail || {};
     document.getElementById('drawer').innerHTML = '' +
       '<h3>' + esc(p.name) + '</h3>' +
@@ -5367,7 +5384,7 @@ guardCabinet();
   /* --- Данные ------------------------------------------------------ */
   function filters() {
     var p = {
-      limit: 300,
+      limit: PAGE,
       min_score: document.getElementById('fScore').value,
       status: document.getElementById('fStatus').value,
       quality: document.getElementById('fQuality').value,
@@ -5379,26 +5396,37 @@ guardCabinet();
     return p;
   }
 
-  async function load() {
+  function localFilter(items) {
+    if (document.getElementById('fNoSite').checked) {
+      items = items.filter(function (x) { return !x.domain; });
+    }
+    if (document.getElementById('fReviews').checked) {
+      items = items.filter(function (x) { return (x.reviews || 0) > 0; });
+    }
+    return items;
+  }
+
+  /* Список — тяжёлый запрос. Тянем его только по действию пользователя
+     или когда пульс сказал, что цифры изменились. */
+  async function load(append) {
     try {
-      var data = await req('/hunt/prospects' + qs(filters()));
-      var items = data.items || [];
-      if (document.getElementById('fNoSite').checked) {
-        items = items.filter(function (x) { return !x.domain; });
-      }
-      if (document.getElementById('fReviews').checked) {
-        items = items.filter(function (x) { return (x.reviews || 0) > 0; });
-      }
-      state.items = items;
+      var f = filters();
+      f.offset = append ? state.offset : 0;
+      var data = await req('/hunt/prospects' + qs(f));
+      var items = localFilter(data.items || []);
+      state.items = append ? state.items.concat(items) : items;
+      state.offset = (data.offset || 0) + (data.items || []).length;
+      state.hasMore = !!data.has_more;
       state.cur = state.items.length ? Math.min(state.cur, state.items.length - 1) : -1;
       state.counts = data.counts || {};
       state.byId = {};
-      items.forEach(function (x) { state.byId[x.id] = x; });
+      state.items.forEach(function (x) { state.byId[x.id] = x; });
+      state.pulseKey = pulseKey(data.scan, data.counts);
       renderList();
       renderMetrics();
       renderScanState(data.scan);
+      startPulse(data.scan);
       wire.set(true, 'Список обновлён');
-      if (data.scan && data.scan.running) setTimeout(load, 5000);
     } catch (e) {
       wire.set(false, e.missingEndpoint
         ? 'На сервере ещё нет модуля разведки — обновите бэкенд'
@@ -5406,6 +5434,40 @@ guardCabinet();
       document.getElementById('huntBody').innerHTML =
         '<tr><td colspan="9"><div class="hunt-empty">Не удалось загрузить список</div></td></tr>';
     }
+  }
+
+  function pulseKey(scan, counts) {
+    var c = counts || {};
+    return [scan && scan.running ? 1 : 0, scan ? scan.done : 0, scan ? scan.total : 0,
+            c.new || 0, c.scored || 0, c.rejected || 0, c.taken || 0].join('|');
+  }
+
+  /* Пульс: пара сотен байт раз в 5 секунд. Прогресс-бар живой, а список
+     перезагружается только когда реально прибавилось отсканированных. */
+  async function pulse() {
+    pulseTimer = null;
+    var s;
+    try { s = await req('/hunt/scan/status'); } catch (e) { return; }
+    state.counts = s.counts || state.counts;
+    renderMetrics();
+    renderScanState(s);
+    var key = pulseKey(s, s.counts);
+    if (key !== state.pulseKey) {
+      state.pulseKey = key;
+      state.lastSync = state.lastSync || 0;
+      var now = Date.now();
+      if (!s.running || now - state.lastSync > 60000) {
+        state.lastSync = now;
+        await load();
+        return;
+      }
+    }
+    startPulse(s);
+  }
+
+  function startPulse(scan) {
+    if (pulseTimer) { clearTimeout(pulseTimer); pulseTimer = null; }
+    if (scan && scan.running) pulseTimer = setTimeout(pulse, 5000);
   }
 
   async function loadRuns() {
@@ -5519,10 +5581,11 @@ guardCabinet();
     }
   });
 
-  document.getElementById('fApply').addEventListener('click', load);
+  document.getElementById('moreBtn').addEventListener('click', function () { load(true); });
+  document.getElementById('fApply').addEventListener('click', function () { load(); });
   document.getElementById('fQ').addEventListener('keydown', function (e) { if (e.key === 'Enter') load(); });
   ['fCity', 'fNiche', 'fScore', 'fStatus', 'fQuality', 'fNoSite', 'fReviews'].forEach(function (id) {
-    document.getElementById(id).addEventListener('change', load);
+    document.getElementById(id).addEventListener('change', function () { load(); });
   });
   document.getElementById('runsReload').addEventListener('click', function () { loadRuns(); load(); });
 
@@ -5540,6 +5603,11 @@ guardCabinet();
       wire.set(true, 'Пересчитано: ' + r.updated);
       load();
     } catch (e) { wire.set(false, 'Ошибка: ' + (e.message || e)); }
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { if (pulseTimer) { clearTimeout(pulseTimer); pulseTimer = null; } }
+    else pulse();
   });
 
   loadDicts();
