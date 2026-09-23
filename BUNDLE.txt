@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: a69ccfba93476a9047e87c78fe84c792635680cd
-# built:  2026-09-23 11:23 UTC
+# commit: da50a23dd72102eaae168b1be6be54939860c90a
+# built:  2026-09-23 19:11 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -16,7 +16,7 @@ app/index.html  (439 строк)
 app/leads.html  (925 строк)
 app/login.html  (150 строк)
 app/playbook.html  (637 строк)
-app/project.html  (5208 строк)
+app/project.html  (5298 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1402 строк)
 app/site.html  (800 строк)
@@ -7708,6 +7708,7 @@ setState('Хранится в этом браузере · делайте экс
   app/project.html
 ════════════════════════════════════════════════════════
 
+
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
@@ -8333,11 +8334,31 @@ setState('Хранится в этом браузере · делайте экс
           <div class="panel" id="aiDecisionPanel">
             <div class="panel-head">
               <div class="panel-head-body">
-                <div class="panel-title">Рекомендация ИИ</div>
-                <div class="panel-sub">Тип отвечает за структуру страницы. Стратегия — за полезность и причину существования страницы.</div>
+                <div class="panel-title">Решение по проекту</div>
+                <div class="panel-sub">Тип страницы выбирается. Источники уникальности не выбираются — они выводятся из ваших данных.</div>
               </div>
             </div>
             <div class="panel-body" id="aiRecommendation"></div>
+          </div>
+
+          <div class="panel" id="sourcesPanel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Источники уникальности</div>
+                <div class="panel-sub">За счёт чего страница отличается от всего, что уже есть в выдаче. Считается по колонкам таблицы, вручную не выбирается.</div>
+              </div>
+            </div>
+            <div class="panel-body" id="sourcesBox"></div>
+          </div>
+
+          <div class="panel" id="blocksPanel">
+            <div class="panel-head">
+              <div class="panel-head-body">
+                <div class="panel-title">Обязательные блоки страницы</div>
+                <div class="panel-sub">Собираются из типа и подтверждённых источников. Блоки с пометкой «проверяется» валят страницу, если их нет.</div>
+              </div>
+            </div>
+            <div class="panel-body" id="blocksBox"></div>
           </div>
 
           <div class="grid grid-2">
@@ -8348,10 +8369,13 @@ setState('Хранится в этом браузере · делайте экс
           <details class="panel choice-details">
             <summary class="panel-head"><span><b>Изменить рекомендацию вручную</b><small>Необязательно. Откройте только если решение ИИ не подходит.</small></span><span data-ico-sm="chevron"></span></summary>
             <div class="panel-body">
-              <div class="field-label">Тип страницы — структура и порядок блоков</div>
+              <div class="field-label">Тип страницы — что человек хочет сделать</div>
               <div class="pick grid-3 mt-2" id="typePick"></div>
-              <div class="field-label mt-3">Стратегия ценности — чем страница полезнее обычного ответа</div>
-              <div class="pick grid-3 mt-2" id="stratPick"></div>
+              <div class="field-label mt-3">Опыт клиента — практика и ограничения</div>
+              <div class="muted" style="margin:4px 0 8px;">Единственный источник ценности, которого нет в таблице. Берётся из брифа с клиентом, не придумывается. От 80 символов.</div>
+              <textarea class="textarea" id="expertiseInput" rows="4"
+                placeholder="Например: до −25 °C монтаж не делаем; на объектах с узким подъездом нужен манипулятор до 5 т; срок в сезон вырастает вдвое."></textarea>
+              <div class="mt-2"><button class="btn" id="expertiseSave">Сохранить опыт клиента</button></div>
             </div>
           </details>
 
@@ -10757,21 +10781,13 @@ function buildLibraries() {
       `</span>` +
     `</label>`).join('');
 
-  $('#stratPick').innerHTML = LIB_STRATEGIES.map(s =>
-    `<label class="pick-card">` +
-      `<input type="radio" name="pstrat" value="${s.id}">` +
-      `<span class="pick-ico">${ico(s.icon, 17)}</span>` +
-      `<span class="pick-body">` +
-        `<span class="pick-title">${escHtml(s.name)}</span>` +
-        `<span class="pick-desc">${escHtml(s.gives)}</span>` +
-        `<span class="pick-need">нужно: ${escHtml(s.needs)}</span>` +
-      `</span>` +
-    `</label>`).join('');
-
-
-  $$('#typePick input, #stratPick input').forEach(inp => {
+  $$('#typePick input').forEach(inp => {
     inp.onchange = () => savePassportPick();
   });
+
+  const exp = $('#expertiseSave');
+  if (exp) exp.onclick = (e) => saveExpertise(e.currentTarget);
+
   renderPassport();
 }
 
@@ -10819,17 +10835,10 @@ async function runAnalyze(btn) {
 
 async function savePassportPick() {
   const t = $('#typePick input:checked');
-  const s = $('#stratPick input:checked');
-  const body = {};
-  if (t) body.page_type = t.value;
-  if (s) body.strategy = s.value;
-  if (!t && !s) return;
-  // пока база не подтвердила — подсветки нет, только «сохраняю…»
-  $$('#typePick .pick-card, #stratPick .pick-card').forEach(c => c.classList.remove('is-on'));
-  [t, s].forEach(inp => {
-    if (!inp) return;
-    const need = inp.closest('.pick-card').querySelector('.pick-need');
-    if (!need) return;
+  if (!t) return;
+  $$('#typePick .pick-card').forEach(c => c.classList.remove('is-on'));
+  const need = t.closest('.pick-card').querySelector('.pick-need');
+  if (need) {
     let mark = need.querySelector('.pick-db');
     if (!mark) {
       mark = document.createElement('span');
@@ -10838,17 +10847,33 @@ async function savePassportPick() {
     }
     mark.className = 'pill pick-db';
     mark.textContent = 'сохраняю…';
-  });
-
+  }
   try {
-    await api.savePassport(PID, body);
-    S.passport = await api.getPassport(PID);   // читаем значение обратно из базы
+    S.passport = await api.savePassport(PID, { page_type: t.value });
     renderPassport();
-    toast.ok('Записано в базу', 'Подсветка стоит только на том, что реально сохранилось.');
+    const g = (S.passport || {}).gate || {};
+    if (g.verdict === 'stop') toast.warn('Тип сохранён, но генерация закрыта', g.reason || '');
+    else toast.ok('Записано в базу', 'Блоки страницы пересобраны под этот тип.');
   } catch (e) {
     renderPassport();
     toast.err('Не сохранилось', e);
   }
+}
+
+/** Опыт клиента — пятый источник ценности, единственный вводимый руками. */
+async function saveExpertise(btn) {
+  const box = $('#expertiseInput');
+  if (!box) return;
+  await withBusy(btn, async () => {
+    try {
+      S.passport = await api.savePassport(PID, { expertise: box.value });
+      renderPassport();
+      const on = (S.passport.sources || []).includes('expertise');
+      toast.ok('Сохранено', on
+        ? 'Опыт клиента засчитан как источник ценности.'
+        : 'Коротко: до 80 символов это не источник, а ремарка.');
+    } catch (e) { toast.err('Не сохранилось', e); }
+  });
 }
 
 function renderPassport() {
@@ -10876,6 +10901,14 @@ function renderPassport() {
             `<b>${escHtml(v[1])}</b> ${escHtml(p.reason || '')}` +
             (must ? `<div style="margin-top:8px;"><b>Обязательно на каждой странице:</b><ul>${must}</ul></div>` : '') +
             (avoid ? `<div style="margin-top:6px;"><b>Не писать:</b><ul>${avoid}</ul></div>` : '') +
+            ((p.gate && (p.gate.blockers || []).length)
+              ? `<div style="margin-top:8px;"><b>Почему генерация закрыта:</b><ul>` +
+                p.gate.blockers.map(x => `<li>${escHtml(x)}</li>`).join('') + `</ul></div>`
+              : '') +
+            ((p.gate && (p.gate.warnings || []).length)
+              ? `<div style="margin-top:6px;"><b>Учесть до запуска:</b><ul>` +
+                p.gate.warnings.map(x => `<li>${escHtml(x)}</li>`).join('') + `</ul></div>`
+              : '') +
             (p.llm_failed
               ? `<div class="pill warn" style="margin-top:8px;">Модель не ответила — вердикт собран расчётом</div>`
               : '') +
@@ -10891,16 +10924,64 @@ function renderPassport() {
   const rec = $('#aiRecommendation');
   if (rec) {
     if (!p.analyzed) {
-      rec.innerHTML = `<div class="empty compact"><div class="empty-title">Сначала запустите анализ</div><div class="empty-text">ИИ выберет структуру и стратегию по вашим колонкам и примерам строк.</div></div>`;
+      rec.innerHTML = `<div class="empty compact"><div class="empty-title">Сначала запустите анализ</div><div class="empty-text">Система разберёт колонки, определит источники уникальности и предложит тип страницы.</div></div>`;
     } else {
       const type = LIB_PAGE_TYPES.find(x => x.id === p.page_type) || {};
-      const strat = LIB_STRATEGIES.find(x => x.id === p.strategy) || {};
+      const src = (p.sources || []).map(id =>
+        (LIB_VALUE_SOURCES.find(x => x.id === id) || {}).name || id);
       rec.innerHTML = `<div class="ai-rec-grid">` +
-        `<div class="ai-rec"><span class="ai-rec-k">Структура страницы</span><b>${escHtml(type.name || p.page_type || '—')}</b><p>${escHtml(type.design || '')}</p></div>` +
-        `<div class="ai-rec"><span class="ai-rec-k">Стратегия ценности</span><b>${escHtml(strat.name || p.strategy || '—')}</b><p>${escHtml(strat.gives || '')}</p></div>` +
-        `</div>` + (p.layout_reason ? `<div class="note info mt-2"><div class="note-body"><b>Почему:</b> ${escHtml(p.layout_reason)}</div></div>` : '');
+        `<div class="ai-rec"><span class="ai-rec-k">Тип страницы</span><b>${escHtml(type.name || p.page_type || '—')}</b><p>${escHtml(type.design || '')}</p></div>` +
+        `<div class="ai-rec"><span class="ai-rec-k">Источники уникальности</span><b>${escHtml(src.join(', ') || 'нет ни одного')}</b><p>${escHtml(src.length ? 'Выведено из колонок таблицы, не из мнения модели.' : 'Без источника страницы делать нельзя.')}</p></div>` +
+        `</div>` + ((p.type_reason || p.layout_reason) ? `<div class="note info mt-2"><div class="note-body"><b>Почему этот тип:</b> ${escHtml(p.type_reason || p.layout_reason)}</div></div>` : '');
     }
   }
+
+  /* --- Источники: и подтверждённые, и недостающие. Второе важнее:
+         это готовый текст запроса клиенту. --- */
+  const sbox = $('#sourcesBox');
+  if (sbox) {
+    const have = p.sources_detail || [];
+    const miss = p.sources_missing || [];
+    if (!have.length && !miss.length) {
+      sbox.innerHTML = `<div class="muted" style="padding:10px 0;">Загрузите таблицу на вкладке «Данные».</div>`;
+    } else {
+      sbox.innerHTML =
+        have.map(x =>
+          `<div class="note ok"><span class="note-ico" data-ico="ok"></span><div class="note-body">` +
+            `<b>${escHtml(x.name)}</b> — ${escHtml(x.gives)}` +
+            (x.evidence && x.evidence.length
+              ? `<div class="muted" style="margin-top:4px;">Подтверждают колонки: ${escHtml(x.evidence.join(', '))}</div>` : '') +
+          `</div></div>`).join('') +
+        miss.map(x =>
+          `<div class="note"><span class="note-ico" data-ico="info"></span><div class="note-body">` +
+            `<b>${escHtml(x.name)}</b> — нет. ${escHtml(x.why)}` +
+          `</div></div>`).join('');
+      hydrateIcons(sbox);
+    }
+  }
+
+  /* --- Блоки: что обязано быть на каждой странице. --- */
+  const bbox = $('#blocksBox');
+  if (bbox) {
+    const blocks = p.blocks || [];
+    bbox.innerHTML = blocks.length
+      ? `<table class="tbl"><thead><tr><th>Блок</th><th>Источник</th><th>Контроль</th></tr></thead><tbody>` +
+        blocks.map(b => {
+          const srcName = b.source
+            ? ((LIB_VALUE_SOURCES.find(x => x.id === b.source) || {}).name || b.source)
+            : 'тип страницы';
+          return `<tr><td><b>${escHtml(b.name)}</b><div class="muted">${escHtml(b.prompt || '')}</div></td>` +
+                 `<td>${escHtml(srcName)}</td>` +
+                 `<td>${b.required
+                    ? '<span class="pill ok">проверяется</span>'
+                    : '<span class="pill">рекомендуется</span>'}</td></tr>`;
+        }).join('') + `</tbody></table>` +
+        `<div class="muted" style="margin-top:8px;">Блоки с пометкой «проверяется» проверяются на каждой готовой странице: значение должно быть взято из данных строки. Не нашли — страница не проходит.</div>`
+      : `<div class="muted" style="padding:10px 0;">Блоков нет: сначала нужен хотя бы один источник уникальности.</div>`;
+  }
+
+  const expBox = $('#expertiseInput');
+  if (expBox && document.activeElement !== expBox) expBox.value = p.expertise || '';
 
   const varied = st.varied_columns;
   $('#q1Box').innerHTML = (varied == null)
@@ -10971,25 +11052,34 @@ function renderPassport() {
 /** Подсветка выбора ставится СТРОГО по тому, что вернула база. */
 function paintPassportPicks() {
   const p = S.passport || {};
-  $$('#typePick .pick-card, #stratPick .pick-card').forEach(card => {
+  const allowed = new Set((p.types_detail || [])
+    .filter(t => !(p.sources || []).length
+      || (t.requires_any || []).some(r => (p.sources || []).includes(r)))
+    .map(t => t.id));
+  $$('#typePick .pick-card').forEach(card => {
     const inp = card.querySelector('input');
     const need = card.querySelector('.pick-need');
     if (!inp || !need) return;
-    const saved = inp.name === 'ptype' ? (p.page_type || '') : (p.strategy || '');
-    const on = !!saved && inp.value === saved;
+    const on = !!p.page_type && inp.value === p.page_type;
     inp.checked = on;
     inp.disabled = !p.analyzed;
     card.classList.toggle('is-on', on);
+    // Тип, который данные не выдерживают, не прячем: владелец должен
+    // видеть, что он существует и чего для него не хватает.
+    card.classList.toggle('is-dim', p.analyzed && !allowed.has(inp.value));
     let mark = need.querySelector('.pick-db');
+    if (!mark) {
+      mark = document.createElement('span');
+      mark.className = 'pill pick-db';
+      need.insertAdjacentElement('afterbegin', mark);
+    }
     if (on) {
-      if (!mark) {
-        mark = document.createElement('span');
-        mark.className = 'pill ok pick-db';
-        need.insertAdjacentElement('afterbegin', mark);
-      }
       mark.className = 'pill ok pick-db';
-      mark.textContent = p.source === 'manual' ? 'выбрано вручную' : 'рекомендовано ИИ';
-    } else if (mark) {
+      mark.textContent = p.source === 'manual' ? 'выбрано вручную' : 'предложено ИИ';
+    } else if (p.analyzed && !allowed.has(inp.value)) {
+      mark.className = 'pill warn pick-db';
+      mark.textContent = 'данных не хватает';
+    } else {
       mark.remove();
     }
   });
@@ -12230,8 +12320,8 @@ function renderDesign() {
   const lay = layouts.find(l => l.id === d.layout_effective);
   const hint = $('#layoutHint');
   if (hint) hint.textContent = lay
-    ? 'Сейчас: «' + lay.name + '». Порядок блоков выбран сильной моделью в паспорте по карте колонок.'
-    : 'Макет берётся из типа страницы в паспорте.';
+    ? 'Сейчас: «' + lay.name + '». Порядок блоков задан типом страницы из паспорта.'
+    : 'Макет — следствие типа страницы в паспорте, отдельно его выбирать не нужно.';
 
   const pill = $('#designPill');
   if (pill) {
