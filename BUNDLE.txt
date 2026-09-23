@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: adb4510c8dfb547ad830a04fc48b2d3b16647b55
+# commit: ca32f89d300fd2f2a24d5a3ebcdb010e5a2d48f4
 # built:  2026-09-23 19:12 UTC
 
 ## Состав
@@ -20,7 +20,7 @@ app/project.html  (5298 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1402 строк)
 app/site.html  (800 строк)
-app/style.css  (4088 строк)
+app/style.css  (4095 строк)
 
 ════════════════════════════════════════════════════════
   CNAME
@@ -15243,6 +15243,7 @@ boot();
 ════════════════════════════════════════════════════════
 
 
+
 /* ==========================================================================
    SEO-Фабрика — дизайн-система «Atelier»
    Полностью новая. Ничего от предыдущей версии не переиспользовано.
@@ -19329,3 +19330,9 @@ body.chat-full-open::after {
 .icon-btn svg { transition: transform 220ms var(--ease-out, ease-out); }
 .icon-btn:hover svg { transform: scale(1.1); }
 .icon-btn[data-ico="refresh"]:hover svg { transform: rotate(60deg); }
+
+
+/* Тип страницы, который текущие данные не выдерживают. Не прячем:
+   владелец должен видеть, что тип есть и чего для него не хватает. */
+.pick-card.is-dim { opacity: .55; }
+.pick-card.is-dim .pick-title { text-decoration: line-through; }
