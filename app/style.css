@@ -1,4 +1,5 @@
 
+
 /* ==========================================================================
    SEO-Фабрика — дизайн-система «Atelier»
    Полностью новая. Ничего от предыдущей версии не переиспользовано.
@@ -4085,3 +4086,9 @@ body.chat-full-open::after {
 .icon-btn svg { transition: transform 220ms var(--ease-out, ease-out); }
 .icon-btn:hover svg { transform: scale(1.1); }
 .icon-btn[data-ico="refresh"]:hover svg { transform: rotate(60deg); }
+
+
+/* Тип страницы, который текущие данные не выдерживают. Не прячем:
+   владелец должен видеть, что тип есть и чего для него не хватает. */
+.pick-card.is-dim { opacity: .55; }
+.pick-card.is-dim .pick-title { text-decoration: line-through; }
