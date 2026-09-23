@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: c8dfe57512eab29d49a332a1e10b46846dd5f16c
-# built:  2026-09-23 11:22 UTC
+# commit: c5bd7f9be11043223d5aa9f45d0c97b635b4158d
+# built:  2026-09-23 11:23 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -10,7 +10,7 @@ index.html  (1234 строк)
 offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
-app/app.js  (2206 строк)
+app/app.js  (2316 строк)
 app/hunt.html  (680 строк)
 app/index.html  (439 строк)
 app/leads.html  (925 строк)
@@ -2667,11 +2667,60 @@ function qs(params) {
   return parts.length ? '?' + parts.join('&') : '';
 }
 
+/* Сетевая активность: полоска сверху экрана и «крутилки» кнопок ждут
+   реального окончания запросов, а не таймера. Фоновые опросы (quiet) не считаются. */
+const net = {
+  n: 0,
+  idleWaiters: [],
+  bar: null,
+  ensureBar() {
+    if (this.bar || !document.body) return this.bar;
+    this.bar = document.createElement('div');
+    this.bar.className = 'net-bar';
+    this.bar.innerHTML = '<i></i>';
+    document.body.appendChild(this.bar);
+    return this.bar;
+  },
+  start() {
+    this.n++;
+    // полоска появляется, только если запрос дольше 200 мс — без мигания
+    clearTimeout(this.tm);
+    this.tm = setTimeout(() => {
+      const b = this.n && this.ensureBar();
+      if (b) { b.classList.remove('is-done'); b.classList.add('is-on'); }
+    }, 200);
+  },
+  end() {
+    this.n = Math.max(0, this.n - 1);
+    if (this.n) return;
+    const b = this.bar;
+    if (b) {
+      b.classList.add('is-done');
+      setTimeout(() => { if (!this.n) b.classList.remove('is-on', 'is-done'); }, 380);
+    }
+    const w = this.idleWaiters.splice(0);
+    w.forEach(fn => { try { fn(); } catch (e) {} });
+  },
+  /** Промис, который разрешится, когда все запросы закончатся. */
+  idle() { return this.n ? new Promise(r => this.idleWaiters.push(r)) : Promise.resolve(); },
+};
+
+/* Фоновые опросы (статус ответа чата, прогресс генерации) не должны
+   дёргать полоску каждые 3 секунды. */
+const NET_QUIET = [/\/chat\/\d+\/message\//, /\/projects\/\d+\/tasks$/, /\/health/, /\/auth\/me/];
+
 async function req(path, opts = {}) {
+  const quiet = opts.quiet || NET_QUIET.some(r => r.test(path));
+  if (!quiet) net.start();
+  try { return await reqRaw(path, opts); }
+  finally { if (!quiet) net.end(); }
+}
+
+async function reqRaw(path, opts = {}) {
   const url = API_BASE.replace(/\/+$/, '') + path;
   const token = auth.token();
   // noAuthRedirect — для самих эндпоинтов входа: их 401 обрабатывает форма.
-  const { noAuthRedirect, headers: extraHeaders, ...fetchOpts } = opts;
+  const { noAuthRedirect, quiet: _q, headers: extraHeaders, ...fetchOpts } = opts;
   // FormData сам выставляет Content-Type с boundary — свой заголовок ставить нельзя.
   const isForm = typeof FormData !== 'undefined' && fetchOpts.body instanceof FormData;
   const headers = {
@@ -2788,7 +2837,8 @@ const api = {
   /* ---- Чат ---- */
   chatHistory:      (id)      => req(`/chat/${id}/history`),
   chatSend:         (id, m)   => req(`/chat/${id}`, { method: 'POST', body: JSON.stringify({ message: m }) }),
-  chatExtractFrame: (id)      => req(`/chat/${id}/frame`, { method: 'POST' }),
+  // mid — id конкретного ответа; без него берётся последний ответ с каркасом.
+  chatExtractFrame: (id, mid) => req(`/chat/${id}/frame` + qs({ message_id: mid }), { method: 'POST' }),
   chatMessage:      (id, mid) => req(`/chat/${id}/message/${mid}`),
 
   /* ---- Настройки ---- */
@@ -2999,6 +3049,8 @@ const ICONS = {
   clock:    'M12 22a10 10 0 100-20 10 10 0 000 20zM12 6v6l4 2',
   list:     'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
   refresh:  'M23 4v6h-6M1 20v-6h6M20.5 9A9 9 0 005.6 5.6L1 10m22 4l-4.6 4.4A9 9 0 013.5 15',
+  expand:   'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
+  shrink:   'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7',
 };
 
 /**
@@ -3850,14 +3902,25 @@ const cmdk = (() => {
    11. МЕЛКИЕ ПОМОЩНИКИ
    -------------------------------------------------------------------------- */
 
-/** Блокирует кнопку со спиннером на время асинхронного действия. */
-async function withBusy(btn, fn) {
+/** Блокирует кнопку со спиннером на время асинхронного действия.
+ *  Иконка-кнопка (или keepIcon) не прячется — крутится сама иконка.
+ *  Анимация держится минимум 450 мс, иначе на быстрых ответах её не видно. */
+async function withBusy(btn, fn, opt = {}) {
   if (!btn) return fn();
   const wasDisabled = btn.disabled;
-  btn.classList.add('is-busy');
+  const iconMode = opt.keepIcon || btn.classList.contains('icon-btn');
+  const cls = iconMode ? 'is-spin' : 'is-busy';
+  const t0 = Date.now();
+  btn.classList.add(cls);
   btn.disabled = true;
   try { return await fn(); }
-  finally { btn.classList.remove('is-busy'); btn.disabled = wasDisabled; }
+  finally {
+    const left = 450 - (Date.now() - t0);
+    if (left > 0) await new Promise(r => setTimeout(r, left));
+    btn.classList.remove(cls);
+    btn.disabled = wasDisabled;
+    if (!iconMode) { btn.classList.add('is-done'); setTimeout(() => btn.classList.remove('is-done'), 500); }
+  }
 }
 
 /** Скелетон таблицы на время загрузки. */
@@ -4390,7 +4453,7 @@ function initTableUpload() {
       const ok = await confirmDialog({
         title: 'Заменить все строки?',
         text: 'Текущие строки удалятся вместе с их задачами и страницами.',
-        confirm: 'Зам��нить',
+        confirm: 'Заменить',
         danger: true,
       });
       if (!ok) return;
@@ -4742,6 +4805,53 @@ function guardCabinet() {
 }
 
 guardCabinet();
+
+/* --------------------------------------------------------------------------
+   ОТКЛИК НА НАЖАТИЯ — работает на всех страницах кабинета
+   1) «волна» от точки нажатия на любой кнопке;
+   2) иконки «обновить / пересчитать» крутятся, пока идут запросы.
+   -------------------------------------------------------------------------- */
+(function mountClickFx() {
+  const BTN = '.btn, .icon-btn, .seg button, .nav-item, .set2-item, [role="button"]';
+  const SPIN_ICONS = ['refresh', 'redo'];
+
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest(BTN);
+    if (!b || b.disabled) return;
+    const r = b.getBoundingClientRect();
+    const size = Math.max(r.width, r.height) * 2;
+    // обёртка с overflow:hidden — саму кнопку не обрезаем (бейджи, фокус)
+    const holder = document.createElement('span');
+    holder.className = 'fx-ripple-box';
+    const w = document.createElement('span');
+    w.className = 'fx-ripple';
+    w.style.width = w.style.height = size + 'px';
+    w.style.left = (e.clientX - r.left - size / 2) + 'px';
+    w.style.top = (e.clientY - r.top - size / 2) + 'px';
+    if (getComputedStyle(b).position === 'static') b.style.position = 'relative';
+    holder.appendChild(w);
+    b.appendChild(holder);
+    w.addEventListener('animationend', () => holder.remove());
+    setTimeout(() => holder.remove(), 900);
+  }, { passive: true });
+
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button, a, [role="button"]');
+    if (!b || b.classList.contains('is-spin') || b.classList.contains('is-busy')) return;
+    const icoEl = b.querySelector('[data-ico], [data-ico-sm]');
+    const name = icoEl && (icoEl.dataset.ico || icoEl.dataset.icoSm);
+    if (!SPIN_ICONS.includes(name)) return;
+    // ждём, пока обработчик успеет отправить запросы, потом — пока они идут
+    b.classList.add('is-spin');
+    const t0 = Date.now();
+    setTimeout(async () => {
+      await net.idle();
+      const left = 700 - (Date.now() - t0);
+      if (left > 0) await new Promise(r => setTimeout(r, left));
+      b.classList.remove('is-spin');
+    }, 60);
+  });
+})();
 
 ════════════════════════════════════════════════════════
   app/hunt.html
