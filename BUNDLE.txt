@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: a1736eb1a2b303820fce5697cc6e97b146a158d3
-# built:  2026-09-22 17:26 UTC
+# commit: c8dfe57512eab29d49a332a1e10b46846dd5f16c
+# built:  2026-09-23 11:22 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -16,7 +16,7 @@ app/index.html  (439 строк)
 app/leads.html  (925 строк)
 app/login.html  (150 строк)
 app/playbook.html  (637 строк)
-app/project.html  (5205 строк)
+app/project.html  (5208 строк)
 app/robots.txt  (5 строк)
 app/settings.html  (1402 строк)
 app/site.html  (800 строк)
@@ -7615,7 +7615,7 @@ setState('Хранится в этом браузере · делайте экс
     document.documentElement.setAttribute('data-fx', f === 'off' ? 'off' : 'on');
   } catch (e) {}
 </script>
-<link rel="stylesheet" href="style.css?v=52">
+<link rel="stylesheet" href="style.css?v=60">
 <style>
 /* Выбор модели: список + ручной ввод */
 .mpick{position:relative;display:flex;gap:8px;align-items:stretch}
@@ -8259,9 +8259,6 @@ setState('Хранится в этом браузере · делайте экс
             <div class="view-head-body">
               <div class="view-eyebrow"><i class="dot"></i>Шаг 3 · шаблон страницы</div>
               <h1>Каркас</h1>
-              <p class="view-sub">
-                Создайте один шаблон, проверьте его и утвердите перед запуском.
-              </p>
             </div>
             <div class="view-actions">
               <span id="frameStatePill"></span>
@@ -8275,13 +8272,14 @@ setState('Хранится в этом браузере · делайте экс
 
           <!-- режим: диалог -->
           <div id="fmode-chat">
-            <div class="panel">
+            <div class="panel frame-chat-panel" id="frameChatPanel">
               <div class="panel-head">
                 <div class="panel-head-body">
                   <div class="panel-title">Создание каркаса с ИИ</div>
                   <div class="panel-sub">Опишите пожелания или сразу попросите ИИ собрать готовый каркас.</div>
                 </div>
                 <div class="panel-tools">
+                  <button class="icon-btn" id="chatFull" title="На весь экран · Esc — выйти" data-ico="expand"></button>
                   <button class="icon-btn" id="chatReload" title="Обновить историю" data-ico="refresh"></button>
                 </div>
               </div>
@@ -8302,8 +8300,9 @@ setState('Хранится в этом браузере · делайте экс
                   <span data-ico-sm="layout"></span> Сгенерировать каркас
                 </button>
                 <button class="btn btn-ok" id="extractFrameBtn">
-                  <span data-ico-sm="download"></span> Извлечь каркас из ответа
+                  <span data-ico-sm="download"></span> Взять последний каркас
                 </button>
+                <span class="muted frame-chat-hint">Или нажмите «Взять этот каркас» под любым ответом</span>
               </div>
             </div>
           </div>
@@ -8383,7 +8382,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 4 — ГЕНЕРАЦИЯ (БЛОКИ 3 и 4)
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-generate">
@@ -8508,7 +8507,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ШАГ 5 — КОНТРОЛЬ КАЧЕСТВА
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-gate">
@@ -8568,7 +8567,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 6 — СТРАНИЦЫ
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-pages">
@@ -8576,7 +8575,7 @@ setState('Хранится в этом браузере · делайте экс
             <div class="view-head-body">
               <div class="view-eyebrow"><i class="dot"></i>Шаг 6 · готовые страницы</div>
               <h1>Страницы</h1>
-              <p class="view-sub">Отк��ойте страницу, скачайте HTML или отправьте её на повторную генерацию.</p>
+              <p class="view-sub">Откройте страницу, скачайте HTML или отправьте её на повторную генерацию.</p>
             </div>
           </div>
 
@@ -8624,7 +8623,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ════════════════════════════════════════════════════════��═
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 7 — ОБВЯЗКА (БЛОК 6) — ЗАГЛУШКА
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-wiring">
@@ -8734,10 +8733,10 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 8 — ПУБЛИКАЦИЯ ВОЛНАМИ (БЛОК 7) — ЗАГЛУШКА
              ══════════════════════════════════════════════════════════ -->
-        <!-- ════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН — ПЕРЕЛИНКОВКА (рабочий, не заглушка)
              ════════════════════════════════════════════ -->
         <section class="view" id="view-linking">
@@ -8981,7 +8980,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 9 — РЕЗУЛЬТАТЫ В ПОИСКЕ (срез проекта внутри сайта)
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-feedback">
@@ -9055,7 +9054,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 10 — ПРАВИЛА ПРОЕКТА
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-rules">
@@ -9178,24 +9177,6 @@ setState('Хранится в этом браузере · делайте экс
           <div class="panel">
             <div class="panel-head">
               <div class="panel-head-body">
-                <div class="panel-title">Стоп-слова</div>
-                <div class="panel-sub">Слова, которых не должно быть в тексте. Одно слово — одна строка</div>
-              </div>
-            </div>
-            <div class="panel-body">
-              <textarea class="textarea" id="stopWords" style="min-height:120px;"
-                placeholder="уникальный&#10;лучший в мире&#10;как известно"></textarea>
-            </div>
-            <div class="panel-foot">
-              <span class="muted">Сохраняются общей кнопкой внизу экрана</span>
-              <span class="grow"></span>
-              <a class="link-btn" href="settings.html">Глобальные настройки и провайдеры</a>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-head">
-              <div class="panel-head-body">
                 <div class="panel-title">Веса измерений гейта <span class="pill soon">заглушка</span></div>
                 <div class="panel-sub">Сейчас веса зашиты в код. После блока 8 их будет менять сама система</div>
               </div>
@@ -9225,7 +9206,7 @@ setState('Хранится в этом браузере · делайте экс
           </div>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════
              ЭКРАН 11 — ВЫГРУЗКА
              ══════════════════════════════════════════════════════════ -->
         <section class="view" id="view-export">
@@ -9486,7 +9467,7 @@ setState('Хранится в этом браузере · делайте экс
   </div>
 </div>
 
-<script src="app.js?v=54"></script>
+<script src="app.js?v=60"></script>
 <script src="topbar.js?v=1"></script>
 
 
@@ -9918,7 +9899,7 @@ function bindStatic() {
     },
     sheet: {
       title: 'Связь с Google Sheets',
-      text: '��ставьте ссылку на лист, открытый по ссылке.',
+      text: 'Вставьте ссылку на лист, открытый по ссылке.',
       list: ['Строки тянутся напрямую, без ключей Google',
              'Повторная загрузка обновляет факты у своих строк'],
     },
@@ -10001,7 +9982,16 @@ function bindStatic() {
     ['chat', 'edit'].forEach(m => $('#fmode-' + m).hidden = m !== b.dataset.fmode);
   });
   $('#chatSend').onclick = () => sendChat();
-  $('#chatReload').onclick = () => loadChat();
+  $('#chatReload').onclick = e => withBusy(e.currentTarget, () => loadChat(), { keepIcon: true });
+  $('#chatFull').onclick = () => toggleChatFull();
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $('#frameChatPanel').classList.contains('is-full')) toggleChatFull(false);
+  });
+  /* «Взять этот каркас» — кнопка под любым ответом модели */
+  $('#chatLog').addEventListener('click', e => {
+    const b = e.target.closest('[data-take-frame]');
+    if (b) extractFrame(b, Number(b.dataset.takeFrame));
+  });
   $('#chatInput').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
   });
@@ -10015,7 +10005,7 @@ function bindStatic() {
       'Сформируй итоговый каркас страницы: HTML, SEO META, JSON SCHEMA и промпт для дешёвой модели.';
     sendChat();
   };
-  $('#extractFrameBtn').onclick = e => extractFrame(e.currentTarget);
+  $('#extractFrameBtn').onclick = e => extractFrame(e.currentTarget, null);
   $('#saveFrameBtn').onclick = e => saveFrame(e.currentTarget);
   $('#approveFrameBtn').onclick = e => approveFrame(e.currentTarget);
   $('#previewFrameBtn').onclick = e => previewFrame(e.currentTarget);
@@ -10127,7 +10117,7 @@ function reloadAll() {
 
 function stubDrawer(title, rows) {
   drawer.open({
-    eyebrow: 'Заглу��ка — бэкенд ещё не подключён',
+    eyebrow: 'Заглушка — бэкенд ещё не подключён',
     title: title,
     body:
       `<div class="note info" style="margin:0 0 16px;">` +
@@ -11058,7 +11048,7 @@ function chatBubble(m) {
   const pending = m.status === 'pending';
   const av = role === 'user' ? 'Я' : role === 'system' ? 'S' : 'AI';
   const body = pending
-    ? `<span class="typing"><i></i><i></i><i></i></span> Модель пишет ответ…`
+    ? `<span class="typing"><i></i><i></i><i></i></span><span class="typing-text">Модель пишет ответ…</span>`
     : isErr
       ? `<b>Ошибка:</b> ${escHtml(m.error || 'неизвестная причина')}`
       : escHtml(m.content || '').replace(/\n/g, '<br>');
@@ -11066,9 +11056,12 @@ function chatBubble(m) {
     ? `<div class="msg-foot">${modelTag(m)}` +
       (m.frame_problems && m.frame_problems.length
         ? `<span class="pill bad">каркас с ошибками</span>` : '') +
+      (m.frame_detected && m.id
+        ? `<button class="btn btn-sm btn-ok msg-take" data-take-frame="${m.id}">` +
+          `${ico('download', 13)} Взять этот каркас</button>` : '') +
       `</div>`
     : '';
-  return `<div class="msg ${role} ${isErr ? 'is-error' : ''}" data-mid="${m.id || ''}">` +
+  return `<div class="msg ${role} ${isErr ? 'is-error' : ''} ${pending ? 'is-pending' : ''}" data-mid="${m.id || ''}">` +
     `<div class="msg-av">${av}</div>` +
     `<div class="msg-bubble">${body}${foot}</div>` +
   `</div>`;
@@ -11120,10 +11113,22 @@ async function waitForChatAnswer(mid) {
   } finally { S.chatWait = null; }
 }
 
-async function extractFrame(btn) {
+function toggleChatFull(force) {
+  const p = $('#frameChatPanel');
+  const on = typeof force === 'boolean' ? force : !p.classList.contains('is-full');
+  p.classList.toggle('is-full', on);
+  document.body.classList.toggle('chat-full-open', on);
+  const b = $('#chatFull');
+  b.innerHTML = ico(on ? 'shrink' : 'expand', 17);
+  b.title = on ? 'Свернуть · Esc' : 'На весь экран · Esc — выйти';
+  const log = $('#chatLog');
+  log.scrollTop = log.scrollHeight;
+}
+
+async function extractFrame(btn, mid) {
   await withBusy(btn, async () => {
     try {
-      const res = await api.chatExtractFrame(PID);
+      const res = await api.chatExtractFrame(PID, mid || null);
       if (!res || res.detected === false) {
         toast.warn('Каркас не найден',
           'В ответе модели нет четырёх блоков: HTML, SEO META, JSON SCHEMA и промпт.');
@@ -11138,6 +11143,7 @@ async function extractFrame(btn) {
       $('#frameGenPrompt').value = res.generator_prompt || '';
       checkFrameLive();
 
+      toggleChatFull(false);
       $$('#frameMode button').forEach(x => x.classList.toggle('is-on', x.dataset.fmode === 'edit'));
       ['chat', 'edit'].forEach(k => $('#fmode-' + k).hidden = k !== 'edit');
 
@@ -12268,8 +12274,6 @@ function fillRules() {
   if ($('#uniqRange')) $('#uniqRange').value = u;
   setText('#uniqOut', u.toFixed(2));
   if ($('#minLen')) $('#minLen').value = Number(getSetting('min_text_length')) || 1800;
-  const sw = getSetting('stop_words');
-  if ($('#stopWords')) $('#stopWords').value = Array.isArray(sw) ? sw.join('\n') : (sw || '');
 
   const weights = [
     ['Польза для человека', 14],
@@ -12300,7 +12304,7 @@ function rulesDirty(on) {
 }
 
 function rulesWatchDirty() {
-  ['#prjSiteSel', '#projStrongModel', '#projCheapModel', '#minLen', '#stopWords']
+  ['#prjSiteSel', '#projStrongModel', '#projCheapModel', '#minLen']
     .forEach(sel => {
       const el = $(sel);
       if (!el || el.dataset.dirtyBound) return;
@@ -12317,7 +12321,6 @@ async function saveRules(btn) {
   const payload = {
     uniqueness_threshold: { value: Number(($('#uniqRange') || {}).value) || 0.88 },
     min_text_length: { value: parseInt(($('#minLen') || {}).value, 10) || 1800 },
-    stop_words: { value: (($('#stopWords') || {}).value || '').split('\n').map(s => s.trim()).filter(Boolean) },
   };
   if (sm) payload.strong_model = { value: sm, provider: prov(sm) };
   if (cm) payload.cheap_model = { value: cm, provider: prov(cm) };
