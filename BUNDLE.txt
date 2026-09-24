@@ -1,12 +1,12 @@
 # Verstio Frontend — снимок репозитория
-# commit: db4bd3fa784901d6fe74bd15ffafac0c8e782138
+# commit: 61c5aa38e2d1b189ac974cf4dbab542e80c21c65
 # built:  2026-09-24 10:25 UTC
 
 ## Состав
 CNAME  (1 строк)
 README.md  (3 строк)
 data.html  (702 строк)
-index.html  (1234 строк)
+index.html  (1235 строк)
 offer.html  (262 строк)
 privacy.html  (252 строк)
 app/404.html  (28 строк)
@@ -1770,7 +1770,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       <a href="/privacy.html">Политика конфиденциальности</a>
       <a href="/offer.html">Договор-оферта</a>
     </div>
-    <div class="foot-legal">© 2026 Verstio · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
+    <div class="foot-legal">© 2026 Verstio · Рахимзянов Тимур Альбертович · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
   </div>
 </footer>
 
@@ -1976,6 +1976,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
     });
   })();
 </script>
+<script src="/support-widget.js" defer></script>
 </body>
 </html>
 
