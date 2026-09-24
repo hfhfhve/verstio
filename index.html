@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="yandex-verification" content="80ffeb86dcb823f0" />
 <title>Verstio — массовые страницы для сайта: платите только за те, что попали в поиск</title>
 <meta name="description" content="Массовые страницы для сайта под низкочастотные запросы. Пилот на 20 страниц бесплатно, фиксированная стоимость запуска от 30 000 ₽, а сами страницы вы оплачиваете только те, что через 90 дней есть в поиске.">
 <link rel="canonical" href="https://verstio.ru/">
@@ -313,6 +312,10 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   .ptable td.num::before{content:attr(data-l) " ";color:var(--dim-l);font-weight:400;text-transform:none;letter-spacing:0}
   .rlist li{grid-template-columns:1fr}
 }
+
+.foot-nav{display:flex;flex-wrap:wrap;gap:8px 22px;width:100%;padding-top:16px;border-top:1px solid var(--line-d);font-size:14.5px}
+.foot-nav a{color:var(--dim-d);text-decoration:none}
+.foot-nav a:hover{color:#F4F1EB}
 </style>
 </head>
 <body>
@@ -321,12 +324,11 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   <div class="top-in">
     <a class="brand" href="#top">Verstio</a>
     <nav class="top-nav">
-      <a href="#pricing">Оплата</a>
-      <a href="#form">Заявка</a>
-      <a href="#what">Что это такое</a>
+      <a href="/uslugi.html">Услуги</a>
+      <a href="/ceny.html">Цены</a>
       <a href="#pipeline">Как это работает</a>
-      <a href="#proof">Как мы проверяем</a>
-      <a href="#cases">Примеры задач</a>
+      <a href="/o-nas.html">О нас</a>
+      <a href="/kontakty.html">Контакты</a>
     </nav>
     <a class="btn" href="#form">Обсудить проект</a>
   </div>
@@ -1016,15 +1018,22 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 
 <footer>
   <div class="shell foot">
-    <div><span class="brand" style="font-size:20px">Verstio</span> — программный SEO: платите за страницы, попавшие в индекс</div>
+    <div><span class="brand" style="font-size:20px">Verstio</span> · программный SEO: платите за страницы, попавшие в индекс</div>
     <div style="display:flex;gap:20px;flex-wrap:wrap">
       <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
       <a href="mailto:support@verstio.ru">support@verstio.ru</a>
       <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>
+    </div>
+    <nav class="foot-nav">
+      <a href="#top">Главная</a>
+      <a href="/uslugi.html">Услуги</a>
+      <a href="/ceny.html">Цены</a>
+      <a href="/o-nas.html">О нас</a>
+      <a href="/kontakty.html">Контакты</a>
       <a href="/privacy.html">Политика конфиденциальности</a>
       <a href="/offer.html">Договор-оферта</a>
-    </div>
-    <div class="foot-legal">© 2026 Verstio · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
+    </nav>
+    <div class="foot-legal">© 2026 Verstio · Рахимзянов Тимур Альбертович · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
   </div>
 </footer>
 
@@ -1231,5 +1240,37 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   })();
 </script>
 <script src="/support-widget.js" defer></script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://verstio.ru/#org",
+  "name": "Verstio",
+  "url": "https://verstio.ru/",
+  "description": "Программный SEO для малого и среднего бизнеса: массовые страницы под низкочастотные запросы с оплатой только за страницы, попавшие в поиск.",
+  "email": "hello@verstio.ru",
+  "founder": {"@type": "Person", "name": "Тимур Рахимзянов"},
+  "taxID": "165056174418",
+  "areaServed": "RU",
+  "contactPoint": [{
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "email": "hello@verstio.ru",
+    "availableLanguage": ["ru"]
+  }, {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "support@verstio.ru",
+    "availableLanguage": ["ru"]
+  }]
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://verstio.ru/#website",
+  "url": "https://verstio.ru/",
+  "name": "Verstio",
+  "inLanguage": "ru-RU",
+  "publisher": {"@id": "https://verstio.ru/#org"}
+}</script>
 </body>
 </html>
