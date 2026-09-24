@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 850a17f948937405de607239f2c6dfbdaea9537f
-# built:  2026-09-24 10:26 UTC
+# commit: caa6960a0f302cda1ade05da60abfba8c76920c1
+# built:  2026-09-24 10:30 UTC
 
 ## Состав
 CNAME  (1 строк)
