@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: 5bedb29c00361f363fddfaa2eb68cf88929e8c80
-# built:  2026-09-24 09:47 UTC
+# commit: db4bd3fa784901d6fe74bd15ffafac0c8e782138
+# built:  2026-09-24 10:25 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -18,7 +18,7 @@ app/login.html  (150 строк)
 app/playbook.html  (637 строк)
 app/project.html  (5298 строк)
 app/robots.txt  (5 строк)
-app/settings.html  (1402 строк)
+app/settings.html  (1414 строк)
 app/site.html  (800 строк)
 app/style.css  (4095 строк)
 
@@ -13345,7 +13345,7 @@ Disallow: /
           <section class="set2-sec" id="s-prompts">
             <div class="set2-sec-head">
               <div class="set2-sec-title">Промпты моделей</div>
-              <div class="set2-sec-sub">Системные инструкции трёх шагов конвейера.</div>
+              <div class="set2-sec-sub">Системные инструкции конвейера и чата поддержки.</div>
             </div>
             <section class="panel">
               <div class="panel-head">
@@ -13379,6 +13379,14 @@ Disallow: /
                     Письма в разделе «Разведка». Пусто — работает встроенный текст.
                     Числа всё равно проверяются кодом по факт-карте, что бы здесь ни было написано.
                     <button class="btn btn-sm btn-quiet" type="button" id="outreachPromptReset">Вставить встроенный</button>
+                  </span>
+                </label>
+                <label class="field" style="margin-top:16px">
+                  <span class="field-label">5. Чат поддержки «Алексей» — промпт и база знаний <b id="supportPromptLen" class="raw-badge">0 симв.</b></span>
+                  <textarea class="textarea code" id="supportPrompt" rows="20" spellcheck="false"></textarea>
+                  <span class="field-hint">
+                    Один текст: характер бота и все факты — цены, сроки, условия, частые вопросы.
+                    Что не написано здесь — бот сказать не должен.
                   </span>
                 </label>
                 <div id="promptsNote"></div>
@@ -13806,7 +13814,7 @@ function markClean() {
 function watchDirty() {
   ['#strongModel','#cheapModel','#strongTokens','#cheapTokens','#briefConc','#genTimeout',
    '#uniqRange','#minLen','#passportPrompt','#strongPrompt','#cheapPrompt',
-   '#outreachPrompt']
+   '#outreachPrompt','#supportPrompt']
     .forEach(id => { const el = $(id); if (el) el.addEventListener('input', markDirty); });
 }
 window.addEventListener('beforeunload', e => {
@@ -13879,6 +13887,7 @@ async function load() {
   $('#strongPrompt').value = promptText(val('strong_system_prompt'));
   $('#cheapPrompt').value = promptText(val('cheap_system_prompt'));
   $('#outreachPrompt').value = promptText(val('outreach_system_prompt'));
+  $('#supportPrompt').value = promptText(val('support_system_prompt'));
   paintPromptLens();
 
   loadYandex();
@@ -13911,6 +13920,7 @@ function paintPromptLens() {
   put('#strongPromptLen', '#strongPrompt');
   put('#cheapPromptLen', '#cheapPrompt');
   put('#outreachPromptLen', '#outreachPrompt');
+  put('#supportPromptLen', '#supportPrompt');
 }
 
 async function savePrompts(btn) {
@@ -13919,6 +13929,7 @@ async function savePrompts(btn) {
     strong_system_prompt: { value: $('#strongPrompt').value },
     cheap_system_prompt: { value: $('#cheapPrompt').value },
     outreach_system_prompt: { value: $('#outreachPrompt').value },
+    support_system_prompt: { value: $('#supportPrompt').value },
   };
   await withBusy(btn, async () => {
     try {
@@ -14190,6 +14201,7 @@ async function saveAll(btn) {
     strong_system_prompt: { value: $('#strongPrompt').value },
     cheap_system_prompt: { value: $('#cheapPrompt').value },
     outreach_system_prompt: { value: $('#outreachPrompt').value },
+    support_system_prompt: { value: $('#supportPrompt').value },
   };
   if (sm) payload.strong_model = { value: sm, provider: provOf(sm) };
   if (cm) payload.cheap_model = { value: cm, provider: provOf(cm) };
@@ -14436,7 +14448,7 @@ function wire() {
   ['#serpFolder', '#serpKey'].forEach(id => { const el = $(id); if (el) el.oninput = () => paintSerpPill(); });
 
   $('#uniqRange').oninput = () => { $('#uniqOut').textContent = Number($('#uniqRange').value).toFixed(2); };
-  ['#passportPrompt', '#strongPrompt', '#cheapPrompt', '#outreachPrompt'].forEach(id => {
+  ['#passportPrompt', '#strongPrompt', '#cheapPrompt', '#outreachPrompt', '#supportPrompt'].forEach(id => {
     const el = $(id); if (el) el.addEventListener('input', paintPromptLens);
   });
 
