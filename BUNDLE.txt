@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: caa6960a0f302cda1ade05da60abfba8c76920c1
-# built:  2026-09-24 10:30 UTC
+# commit: cd4cb90a03f331092e131c9ca99e9d4eceb9b1ef
+# built:  2026-09-24 10:39 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -9,7 +9,7 @@ data.html  (702 строк)
 index.html  (1235 строк)
 offer.html  (262 строк)
 privacy.html  (252 строк)
-support-widget.js  (367 строк)
+support-widget.js  (368 строк)
 app/404.html  (28 строк)
 app/app.js  (2329 строк)
 app/hunt.html  (748 строк)
@@ -2523,9 +2523,10 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
     avatar: '/assets/alexey.jpg',
     name: 'Алексей',
     role: 'Verstio · поддержка',
-    greeting: 'Здравствуйте. Я Алексей, консультант Verstio. Расскажите, чем занимается ваш бизнес, — прикину, сколько страниц имеет смысл делать и что это будет стоить. Пилот на 20 страниц бесплатный.',
-    chips: ['Сколько стоит?', 'Что такое пилот?', 'Какие данные нужны?', 'Это не дорвеи?'],
-    footer: 'Отвечает ИИ-консультант. Сложные вопросы передаём Тимуру.'
+    greeting: 'Здравствуйте. Я Алексей из Verstio. С чем помочь?',
+    launcher: 'Спросить Алексея',
+    chips: ['Сколько стоит?', 'Что такое пилот?', 'Какие данные нужны?', 'Вопрос по текущему проекту'],
+    footer: 'Отвечает ИИ-консультант. Сложные вопросы передаём оператору.'
   }, window.SUPPORT_WIDGET || {});
 
   var LS_KEY = 'verstio_support_v1';
@@ -2659,7 +2660,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       '</div>' +
     '</div>' +
     '<button class="vsw-launch" aria-label="Открыть чат поддержки">' +
-      '<img alt="" src="' + CFG.avatar + '"><span class="vsw-dot"></span><b>Спросить ' + CFG.name + 'а</b>' +
+      '<img alt="" src="' + CFG.avatar + '"><span class="vsw-dot"></span><b>' + CFG.launcher + '</b>' +
     '</button>';
 
   var body, input, sendBtn, chipsBox, busy = false;
@@ -2862,7 +2863,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       if (typing) clearInterval(typing);
       var msg = e && e.message === 'rate'
         ? 'Слишком много сообщений подряд. Подождите минуту или напишите в [@VerstioBot](https://t.me/VerstioBot).'
-        : 'Связь оборвалась. Попробуйте ещё раз или напишите в [@VerstioBot](https://t.me/VerstioBot) — Тимур ответит в течение рабочего дня.';
+        : 'Связь оборвалась. Попробуйте ещё раз или напишите в [@VerstioBot](https://t.me/VerstioBot) — оператор ответит в течение рабочего дня.';
       finish(bubble, acc || msg, !!acc);
     }).then(function () {
       if (!typing) { done = true; return; }
