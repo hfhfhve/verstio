@@ -21,7 +21,11 @@
   }, window.SUPPORT_WIDGET || {});
 
   var LS_KEY = 'verstio_support_v1';
-  var MAX_KEEP = 30;
+  var MAX_KEEP = 200;      // сколько сообщений храним в браузере
+  var PAGE = 10;           // сколько показываем сразу и догружаем при скролле вверх
+  var MAX_LEN = 1500;      // предел длины одного сообщения
+  var MIN_GAP = 1500;      // минимальная пауза между отправками, мс
+  var PER_MIN = 10;        // не больше стольких сообщений в минуту
 
   /* ---------------- состояние ---------------- */
   var state = load();
@@ -113,6 +117,11 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
 .vsw-send{width:40px;height:40px;border-radius:12px;border:0;background:var(--w-acc);color:#08131F;cursor:pointer;display:grid;place-items:center;flex:none;transition:opacity .15s,transform .15s}
 .vsw-send:disabled{opacity:.4;cursor:default}
 .vsw-send:not(:disabled):hover{transform:translateY(-1px)}
+.vsw-more{display:flex;justify-content:center;padding:2px 0 4px}
+.vsw-more button{background:rgba(255,255,255,.05);border:1px solid var(--w-line);color:var(--w-dim);border-radius:999px;padding:5px 14px;font-size:12.5px;cursor:pointer}
+.vsw-more button:hover{color:#fff;background:rgba(255,255,255,.09)}
+.vsw-sys{align-self:center;max-width:86%;text-align:center;font-size:12.5px;color:var(--w-dim);background:rgba(255,255,255,.04);border:1px solid var(--w-line);border-radius:10px;padding:6px 12px}
+.vsw-input textarea:disabled{opacity:.55;cursor:not-allowed}
 .vsw-note{text-align:center;font-size:11.5px;color:var(--w-dim);padding:7px 4px 2px}
 .vsw-note a{color:var(--w-dim)}
 `;
@@ -123,7 +132,8 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       close: '<path d="M5 5l10 10M15 5L5 15"/>',
       wide: '<path d="M12 4h4v4M8 16H4v-4M16 4l-5 5M4 16l5-5"/>',
       narrow: '<path d="M16 8h-4V4M4 12h4v4M12 8l4-4M8 12l-4 4"/>',
-      send: '<path d="M3 10l14-6-6 14-2-6-6-2z"/>'
+      send: '<path d="M3 10l14-6-6 14-2-6-6-2z"/>',
+      trash: '<path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10M9 9v5M11 9v5"/>'
     }[n];
     return '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
   }
@@ -137,6 +147,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
         '<img class="vsw-ava" alt="" src="' + CFG.avatar + '">' +
         '<div class="vsw-who"><div class="vsw-nm">' + CFG.name + ' <span class="vsw-dot"></span></div>' +
         '<div class="vsw-sub">' + CFG.role + '</div></div>' +
+        '<button class="vsw-ico" data-act="clear" title="Очистить переписку">' + icon('trash') + '</button>' +
         '<button class="vsw-ico" data-act="wide" title="Развернуть">' + icon('wide') + '</button>' +
         '<button class="vsw-ico" data-act="close" title="Закрыть">' + icon('close') + '</button>' +
       '</div>' +
@@ -154,7 +165,8 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       '<img alt="" src="' + CFG.avatar + '"><span class="vsw-dot"></span><b>' + CFG.launcher + '</b>' +
     '</button>';
 
-  var body, input, sendBtn, chipsBox, busy = false;
+  var body, input, sendBtn, chipsBox, moreBox, busy = false;
+  var shown = 0, lastSend = 0, sentTimes = [];
 
   function mount() {
     document.body.appendChild(root);
@@ -172,13 +184,23 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       scroll();
     };
 
+    root.querySelector('[data-act=clear]').onclick = clearHistory;
+
+    input.setAttribute('maxlength', MAX_LEN);
     input.addEventListener('input', function () {
       input.style.height = 'auto';
       input.style.height = Math.min(input.scrollHeight, 120) + 'px';
       sendBtn.disabled = busy || !input.value.trim();
     });
     input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (busy) return;          // пока Алексей отвечает — новое не отправляется
+        send();
+      }
+    });
+    body.addEventListener('scroll', function () {
+      if (body.scrollTop < 40) loadMore(false);
     });
     sendBtn.onclick = send;
     document.addEventListener('keydown', function (e) {
@@ -186,9 +208,8 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
     });
 
     if (!state.messages.length) state.messages.push({ role: 'assistant', content: CFG.greeting, t: Date.now() });
-    state.messages.forEach(function (m) { addMsg(m.role, m.content, m.t, true); });
+    renderHistory();
     renderChips();
-    scroll();
 
     // открыть чат по ссылке вида <a href="#support">
     document.addEventListener('click', function (e) {
@@ -210,7 +231,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
     CFG.chips.forEach(function (c) {
       var b = document.createElement('button');
       b.type = 'button'; b.textContent = c;
-      b.onclick = function () { input.value = c; send(); };
+      b.onclick = function () { if (busy) return; input.value = c; send(); };
       chipsBox.appendChild(b);
     });
   }
@@ -220,7 +241,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
     return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
   }
 
-  function addMsg(role, text, ts, silent) {
+  function buildRow(role, text, ts) {
     var row = document.createElement('div');
     row.className = 'vsw-row ' + (role === 'user' ? 'me' : 'bot');
     var html = '';
@@ -228,9 +249,95 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
     html += '<div class="vsw-msg">' + (text ? md(text) : '') +
             '<div class="vsw-time">' + hhmm(ts) + '</div></div>';
     row.innerHTML = html;
+    return row;
+  }
+
+  function addMsg(role, text, ts, silent) {
+    var row = buildRow(role, text, ts);
     body.appendChild(row);
+    shown++;
     if (!silent) scroll();
     return row.querySelector('.vsw-msg');
+  }
+
+  /* Системная плашка по центру (лимиты, очистка). В историю не попадает. */
+  function sysNote(text) {
+    var old = body.querySelector('.vsw-sys.temp');
+    if (old) old.remove();
+    var d = document.createElement('div');
+    d.className = 'vsw-sys temp';
+    d.textContent = text;
+    body.appendChild(d);
+    scroll();
+    setTimeout(function () { if (d.parentNode) d.remove(); }, 6000);
+  }
+
+  /* История рисуется по PAGE сообщений: долистал доверху — подгрузили ещё PAGE. */
+  function renderHistory() {
+    body.innerHTML = '';
+    shown = 0;
+    var total = state.messages.length;
+    var start = Math.max(0, total - PAGE);
+    state.messages.slice(start).forEach(function (m) {
+      body.appendChild(buildRow(m.role, m.content, m.t));
+      shown++;
+    });
+    paintMore();
+    scroll();
+  }
+
+  function paintMore() {
+    if (moreBox && moreBox.parentNode) moreBox.remove();
+    var left = state.messages.length - shown;
+    if (left <= 0) { moreBox = null; return; }
+    moreBox = document.createElement('div');
+    moreBox.className = 'vsw-more';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = 'Показать ещё ' + Math.min(PAGE, left);
+    b.onclick = function () { loadMore(true); };
+    moreBox.appendChild(b);
+    body.insertBefore(moreBox, body.firstChild);
+  }
+
+  var loadingMore = false;
+  function loadMore(force) {
+    if (loadingMore) return;
+    var total = state.messages.length;
+    if (shown >= total) return;
+    loadingMore = true;
+    var prevH = body.scrollHeight, prevTop = body.scrollTop;
+    var end = total - shown;
+    var start = Math.max(0, end - PAGE);
+    var frag = document.createDocumentFragment();
+    state.messages.slice(start, end).forEach(function (m) {
+      frag.appendChild(buildRow(m.role, m.content, m.t));
+    });
+    shown += end - start;
+    if (moreBox && moreBox.parentNode) moreBox.remove();
+    body.insertBefore(frag, body.firstChild);
+    paintMore();
+    body.scrollTop = body.scrollHeight - prevH + prevTop;   // держим точку чтения
+    loadingMore = false;
+  }
+
+  function clearHistory() {
+    if (busy) { sysNote('Дождитесь ответа, потом можно очистить.'); return; }
+    state.messages = [{ role: 'assistant', content: CFG.greeting, t: Date.now() }];
+    state.sid = sid();            // новый диалог для сервера
+    save();
+    renderHistory();
+    renderChips();
+    sysNote('Переписка очищена.');
+    input.focus();
+  }
+
+  function setBusy(v) {
+    busy = v;
+    input.disabled = v;
+    input.placeholder = v ? CFG.name + ' печатает…' : 'Введите ваше сообщение…';
+    sendBtn.disabled = v || !input.value.trim();
+    if (!v) setTimeout(function () { input.focus(); }, 30);
   }
 
   function scroll() { if (body) body.scrollTop = body.scrollHeight; }
@@ -279,8 +386,26 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
   function send() {
     var text = (input.value || '').trim();
     if (!text || busy) return;
+
+    if (text.length > MAX_LEN) {
+      sysNote('Сообщение длиннее ' + MAX_LEN + ' символов. Сократите, пожалуйста.');
+      return;
+    }
+    var now = Date.now();
+    if (now - lastSend < MIN_GAP) {
+      sysNote('Не так быстро — дайте пару секунд.');
+      return;
+    }
+    sentTimes = sentTimes.filter(function (t) { return now - t < 60000; });
+    if (sentTimes.length >= PER_MIN) {
+      sysNote('Слишком много сообщений за минуту. Подождите немного или напишите в @VerstioBot.');
+      return;
+    }
+    lastSend = now;
+    sentTimes.push(now);
+
     input.value = ''; input.style.height = 'auto';
-    busy = true; sendBtn.disabled = true;
+    setBusy(true);
 
     state.messages.push({ role: 'user', content: text, t: Date.now() });
     addMsg('user', text, Date.now());
@@ -294,8 +419,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
   function finish(bubble, acc, ok) {
     bubble.innerHTML = md(acc) + '<div class="vsw-time">' + hhmm() + '</div>';
     if (ok) { state.messages.push({ role: 'assistant', content: acc, t: Date.now() }); save(); }
-    busy = false;
-    sendBtn.disabled = !input.value.trim();
+    setBusy(false);
     scroll();
   }
 
