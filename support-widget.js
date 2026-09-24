@@ -14,9 +14,10 @@
     avatar: '/assets/alexey.jpg',
     name: 'Алексей',
     role: 'Verstio · поддержка',
-    greeting: 'Здравствуйте. Я Алексей, консультант Verstio. Расскажите, чем занимается ваш бизнес, — прикину, сколько страниц имеет смысл делать и что это будет стоить. Пилот на 20 страниц бесплатный.',
-    chips: ['Сколько стоит?', 'Что такое пилот?', 'Какие данные нужны?', 'Это не дорвеи?'],
-    footer: 'Отвечает ИИ-консультант. Сложные вопросы передаём Тимуру.'
+    greeting: 'Здравствуйте. Я Алексей из Verstio. С чем помочь?',
+    launcher: 'Спросить Алексея',
+    chips: ['Сколько стоит?', 'Что такое пилот?', 'Какие данные нужны?', 'Вопрос по текущему проекту'],
+    footer: 'Отвечает ИИ-консультант. Сложные вопросы передаём оператору.'
   }, window.SUPPORT_WIDGET || {});
 
   var LS_KEY = 'verstio_support_v1';
@@ -150,7 +151,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       '</div>' +
     '</div>' +
     '<button class="vsw-launch" aria-label="Открыть чат поддержки">' +
-      '<img alt="" src="' + CFG.avatar + '"><span class="vsw-dot"></span><b>Спросить ' + CFG.name + 'а</b>' +
+      '<img alt="" src="' + CFG.avatar + '"><span class="vsw-dot"></span><b>' + CFG.launcher + '</b>' +
     '</button>';
 
   var body, input, sendBtn, chipsBox, busy = false;
@@ -353,7 +354,7 @@ border-radius:12px;padding:10px 12px;color:var(--w-text);font-size:14.7px;line-h
       if (typing) clearInterval(typing);
       var msg = e && e.message === 'rate'
         ? 'Слишком много сообщений подряд. Подождите минуту или напишите в [@VerstioBot](https://t.me/VerstioBot).'
-        : 'Связь оборвалась. Попробуйте ещё раз или напишите в [@VerstioBot](https://t.me/VerstioBot) — Тимур ответит в течение рабочего дня.';
+        : 'Связь оборвалась. Попробуйте ещё раз или напишите в [@VerstioBot](https://t.me/VerstioBot) — оператор ответит в течение рабочего дня.';
       finish(bubble, acc || msg, !!acc);
     }).then(function () {
       if (!typing) { done = true; return; }
