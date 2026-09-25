@@ -1,0 +1,62 @@
+# Пересборка подвала.
+#
+# Запускает build.py и коммитит изменённые HTML обратно в ветку.
+# Настройки Pages трогать не надо: публикация остаётся прежней,
+# из ветки main.
+#
+# Зацикливания не будет: пуш, сделанный через GITHUB_TOKEN,
+# новые запуски workflow не порождает. Плюс в сообщении [skip ci].
+
+name: Пересобрать подвал
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'partials/**'
+      - 'build.py'
+      - '*.html'
+      - '.github/workflows/footer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footer-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Собрать подвал
+        run: python3 build.py
+
+      - name: Закоммитить изменения
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- '*.html'; then
+            echo "Подвал уже актуален, коммитить нечего."
+            exit 0
+          fi
+
+          git add -- '*.html'
+          git commit -m "chore: пересобран подвал [skip ci]"
+
+          # Между запуском и пушем в ветку мог прилететь другой коммит
+          # (например, пересборка BUNDLE.txt). Подтягиваем его ребейзом.
+          for i in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && break
+            sleep 5
+          done
+
+          git push origin "HEAD:${GITHUB_REF_NAME}"
