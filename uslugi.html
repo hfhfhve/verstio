@@ -538,26 +538,124 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 </section>
 </main>
 
-<footer>
-  <div class="shell foot">
-    <div><span class="brand" style="font-size:20px">Verstio</span> · программный SEO: платите за страницы, попавшие в индекс</div>
-    <div style="display:flex;gap:20px;flex-wrap:wrap">
-      <a href="mailto:hello@verstio.ru">hello@verstio.ru</a>
-      <a href="mailto:support@verstio.ru">support@verstio.ru</a>
-      <a href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>
+<!-- VF-FOOTER:START — не редактировать, правьте partials/footer.html -->
+<!-- ВНИМАНИЕ: этот файл — единственный источник подвала.
+     Правьте только его и запускайте build.py — подвал обновится на всех страницах. -->
+<style>
+.vf{background:#0D1013;border-top:1px solid rgba(239,234,225,.14);color:#7C848F;
+    font:400 15px/1.6 'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased}
+.vf *{box-sizing:border-box}
+.vf-shell{max-width:1180px;margin:0 auto;padding:clamp(48px,6vw,72px) clamp(20px,5vw,64px) 32px}
+.vf-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px 32px} 
+@media(max-width:900px){.vf-grid{grid-template-columns:1fr 1fr;gap:36px 24px}}
+@media(max-width:560px){.vf-grid{grid-template-columns:1fr}}
+
+.vf-brand{font:400 26px/1 'Instrument Serif',Georgia,serif;color:#EFEAE1;letter-spacing:-.01em;
+          display:inline-block;text-decoration:none}
+.vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
+.vf-note{margin:18px 0 0;font-size:13px;color:#5F666F} 
+
+.vf-soc{display:flex;gap:10px;margin-top:22px} 
+.vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
+          display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
+          transition:color .2s,border-color .2s,background .2s,transform .2s}
+.vf-soc a:hover{color:#0D1013;background:#EFEAE1;border-color:#EFEAE1;transform:translateY(-2px)}
+.vf-soc svg{width:19px;height:19px;fill:currentColor;display:block}
+
+.vf-h{margin:0 0 16px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#EFEAE1;font-weight:500}
+.vf-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+.vf-list a,.vf-mail{color:#98A0AA;text-decoration:none;font-size:14.5px;transition:color .2s}
+.vf-list a:hover,.vf-mail:hover{color:#EFEAE1}
+
+.vf-contact{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px}
+.vf-contact li{display:flex;flex-direction:column;gap:2px}
+.vf-label{font-size:12px;color:#5F666F}
+.vf-strong{color:#C2C8D0;font-size:14.5px;text-decoration:none;transition:color .2s}
+.vf-strong:hover{color:#EFEAE1}
+
+.vf-cta{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 18px;
+        background:#EFEAE1;color:#0D1013;border-radius:9px;font-size:14.5px;font-weight:500;
+        text-decoration:none;white-space:nowrap;transition:opacity .2s}
+.vf-cta:hover{opacity:.86}
+
+.vf-bottom{max-width:1180px;margin:0 auto;padding:20px clamp(20px,5vw,64px) 40px;
+           border-top:1px solid rgba(239,234,225,.12);display:flex;flex-wrap:wrap;
+           gap:10px 28px;align-items:center;justify-content:space-between;
+           font-size:12.5px;color:#666D76;line-height:1.65}
+.vf-bottom a{color:#666D76;text-decoration:none}
+.vf-bottom a:hover{color:#C2C8D0}
+.vf-legal{max-width:70ch}
+</style>
+
+<footer class="vf">
+  <div class="vf-shell">
+    <div class="vf-grid">
+
+      <div>
+        <a href="/" class="vf-brand">Verstio</a>
+        <p class="vf-tag">Программный SEO: массовые страницы под низкочастотные запросы. Платите только за те, что попали в индекс.</p>
+        <div class="vf-soc">
+          <a href="https://vk.ru/verstio" target="_blank" rel="noopener" aria-label="ВКонтакте" title="ВКонтакте">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.16 18.1c-6.1 0-9.86-4.28-10.01-11.37h3.1c.1 5.21 2.47 7.44 4.29 7.89V6.73h2.96v4.43c1.77-.19 3.62-2.26 4.24-4.43h2.9c-.48 2.67-2.5 4.74-3.94 5.6 1.44.69 3.74 2.5 4.62 5.77h-3.2c-.68-2.15-2.38-3.81-4.62-4.04v4.04h-.34z"/></svg>
+          </a>
+          <a href="https://t.me/verstio" target="_blank" rel="noopener" aria-label="Telegram-канал" title="Telegram-канал">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.3 2.9 11.5c-.9.35-.88 1.63.03 1.95l4.6 1.6 1.77 5.4c.24.73 1.17.93 1.7.37l2.55-2.7 4.6 3.4c.63.47 1.53.13 1.7-.64l3.1-14.6c.2-.9-.7-1.66-1.55-1.33zM8.9 14.1l9.3-5.7-7.6 6.9-.3 3.3-1.4-4.5z"/></svg>
+          </a>
+          <a href="https://t.me/VerstioBot" target="_blank" rel="noopener" aria-label="Телеграм-бот" title="Телеграм-бот @VerstioBot">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a1.2 1.2 0 0 1 1.2 1.2v1.3h3.4A3.4 3.4 0 0 1 20 7.9v7.2a3.4 3.4 0 0 1-3.4 3.4h-1.3l-2.5 2.9a1.1 1.1 0 0 1-1.66 0l-2.5-2.9H7.4A3.4 3.4 0 0 1 4 15.1V7.9a3.4 3.4 0 0 1 3.4-3.4h3.4V3.2A1.2 1.2 0 0 1 12 2zm-2.6 7.6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5.2 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="vf-h">Продукт</h3>
+        <ul class="vf-list">
+          <li><a href="/uslugi.html">Услуги</a></li>
+          <li><a href="/ceny.html">Цены</a></li>
+          <li><a href="/data.html">Подготовка данных</a></li>
+          <li><a href="/app/">Личный кабинет</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="vf-h">Компания</h3>
+        <ul class="vf-list">
+          <li><a href="/o-nas.html">О нас</a></li>
+          <li><a href="/kontakty.html">Контакты</a></li>
+          <li><a href="/offer.html">Договор-оферта</a></li>
+          <li><a href="/privacy.html">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="vf-h">Связаться</h3>
+        <ul class="vf-contact">
+          <li>
+            <span class="vf-label">Вопросы и заявки</span>
+            <a class="vf-strong" href="mailto:hello@verstio.ru">hello@verstio.ru</a>
+          </li>
+          <li>
+            <span class="vf-label">Поддержка клиентов</span>
+            <a class="vf-strong" href="mailto:support@verstio.ru">support@verstio.ru</a>
+          </li>
+          <li>
+            <span class="vf-label">Быстрее всего в боте</span>
+            <a class="vf-strong" href="https://t.me/VerstioBot" target="_blank" rel="noopener">@VerstioBot</a>
+          </li>
+        </ul>
+        <a class="vf-cta" href="/kontakty.html">Бесплатный пилот →</a>
+      </div>
+
     </div>
-    <nav class="foot-nav">
-      <a href="/">Главная</a>
-      <a href="/uslugi.html">Услуги</a>
-      <a href="/ceny.html">Цены</a>
-      <a href="/o-nas.html">О нас</a>
-      <a href="/kontakty.html">Контакты</a>
-      <a href="/privacy.html">Политика конфиденциальности</a>
-      <a href="/offer.html">Договор-оферта</a>
-    </nav>
-    <div class="foot-legal">© 2026 Verstio · Рахимзянов Тимур Альбертович · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
+  </div>
+
+  <div class="vf-bottom">
+    <div class="vf-legal">© 2026 Verstio · Рахимзянов Тимур Альбертович · ИНН 165056174418 · плательщик НПД, чек на каждую оплату</div>
+    <div><a href="/privacy.html">Конфиденциальность</a> · <a href="/offer.html">Оферта</a></div>
   </div>
 </footer>
+<!-- VF-FOOTER:END -->
 
 <script type="application/ld+json">{
   "@context": "https://schema.org",
