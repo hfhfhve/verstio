@@ -56,11 +56,21 @@ jobs:
           git add -- '*.html'
           git commit -m "chore: пересобран подвал"
 
-          # Между запуском и пушем в ветку мог прилететь другой коммит
-          # (например, пересборка BUNDLE.txt). Подтягиваем его ребейзом.
-          for i in 1 2 3; do
-            git pull --rebase origin "${GITHUB_REF_NAME}" && break
-            sleep 5
+          # В main параллельно пушит воркфлоу Build BUNDLE.txt.
+          # Если он успел первым, наш пуш отлетает с remote rejected.
+          # Поэтому подтягиваем и отправляем в цикле, а не один раз.
+          for i in 1 2 3 4 5; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }
+
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Готово с попытки $i."
+              exit 0
+            fi
+
+            echo "Попытка $i не прошла: ветка уехала. Пробуем ещё раз."
+            sleep $((i * 5))
           done
 
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "Не удалось отправить изменения за 5 попыток."
+          exit 1
