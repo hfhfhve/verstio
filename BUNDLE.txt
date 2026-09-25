@@ -1,6 +1,6 @@
 # Verstio Frontend — снимок репозитория
-# commit: a880b6a41e33b2dc1959afbe6b1182c87e3a4306
-# built:  2026-09-25 21:18 UTC
+# commit: 4943b00f4fa4216c314e03e0bcd88566feea8b1c
+# built:  2026-09-25 21:22 UTC
 
 ## Состав
 CNAME  (1 строк)
@@ -22420,7 +22420,7 @@ body.chat-full-open::after {
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F} 
 
-.vf-soc{display:flex;gap:10px;margin-top:22px}
+.vf-soc{display:flex;gap:10px;margin-top:22px} 
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
