@@ -1,5 +1,5 @@
 # Verstio Frontend — снимок репозитория
-# commit: f9e78e727519e050e0bd328d0fd6c31681cde10e
+# commit: c9c35e3639278808022f92099e98d81997beed48
 # built:  2026-09-25 22:19 UTC
 
 ## Состав
@@ -719,7 +719,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -1470,7 +1470,7 @@ pre .h{color:#7FB3EB}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -2736,7 +2736,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -3561,7 +3561,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -4224,7 +4224,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -4652,7 +4652,7 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -5028,7 +5028,7 @@ footer .row{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -6195,7 +6195,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .vf-tag{margin:14px 0 0;max-width:34ch;font-size:14.5px;color:#7C848F}
 .vf-note{margin:18px 0 0;font-size:13px;color:#5F666F}
 
-.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px} 
+.vf-soc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}  
 .vf-soc a{width:40px;height:40px;border:1px solid rgba(239,234,225,.14);border-radius:10px;
           display:grid;place-items:center;color:#9AA2AC;text-decoration:none;
           transition:color .2s,border-color .2s,background .2s,transform .2s}
@@ -23293,7 +23293,7 @@ body.chat-full-open::after {
 .vf-shell{max-width:1180px;margin:0 auto;padding:clamp(48px,6vw,72px) clamp(20px,5vw,64px) 32px}
 .vf-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px 32px}
 @media(max-width:900px){.vf-grid{grid-template-columns:1fr 1fr;gap:36px 24px}}
-@media(max-width:560px){.vf-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.vf-grid{grid-template-columns:1fr}} 
 
 .vf-brand{font:400 26px/1 'Instrument Serif',Georgia,serif;color:#EFEAE1;letter-spacing:-.01em;
           display:inline-block;text-decoration:none}
