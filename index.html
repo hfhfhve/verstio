@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -233,9 +234,74 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   .contact li{grid-template-columns:1fr}
   .contact li span{margin-bottom:-6px}
 }
-.reveal{opacity:0;transform:translateY(22px);will-change:opacity,transform;transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
-.reveal.is-in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+/* ══ ДВИЖЕНИЕ ══════════════════════════════════════════════════════════
+   Блоки выезжают при прокрутке, цифры досчитываются до своего значения.
+   Класс .rv навешивает скрипт, а не разметка: если JS выключен или
+   пользователь просил меньше движения, страница просто статичная и
+   полностью читаемая — ничего не спрятано стилями по умолчанию. */
+.rv{opacity:0;will-change:opacity,transform;transition:opacity .75s var(--ease),transform .75s var(--ease);transition-delay:var(--d,0ms)}
+.rv-up{transform:translate3d(0,28px,0)}
+.rv-left{transform:translate3d(-36px,0,0)}
+.rv-right{transform:translate3d(36px,0,0)}
+.rv-zoom{transform:scale(.965)}
+.rv.in{opacity:1;transform:none}
+
+/* Цифры при счёте не должны дёргать вёрстку, поэтому моноширинные цифры. */
+.counting{font-variant-numeric:tabular-nums}
+
+/* Первый экран появляется сам, без прокрутки: это первое впечатление. */
+@keyframes heroIn{from{opacity:0;transform:translate3d(0,20px,0)}to{opacity:1;transform:none}}
+.hero .offer,.hero h1,.hero .lede,.hero .btn-row,.hero .hero-note,.hero .card{animation:heroIn .85s var(--ease) both}
+.hero .offer{animation-delay:.04s}
+.hero h1{animation-delay:.12s}
+.hero .lede{animation-delay:.22s}
+.hero .btn-row{animation-delay:.3s}
+.hero .hero-note{animation-delay:.38s}
+.hero .card{animation-delay:.2s}
+
+/* Живая точка в плашке оффера. */
+@keyframes dot{0%,100%{box-shadow:0 0 0 0 rgba(94,159,232,.5)}70%{box-shadow:0 0 0 8px rgba(94,159,232,0)}}
+.offer i{animation:dot 2.6s ease-out infinite}
+
+/* Полоса прочтения страницы. */
+.prog{position:fixed;left:0;top:0;height:2px;width:100%;z-index:90;transform:scaleX(0);transform-origin:0 50%;
+      background:linear-gradient(90deg,var(--blue),var(--green));pointer-events:none}
+
+/* Шапка при прокрутке уплотняется. */
+.top,.top-in{transition:background .3s,box-shadow .35s var(--ease),padding .35s var(--ease)}
+.top.stuck{background:rgba(13,16,19,.94);box-shadow:0 12px 34px rgba(0,0,0,.4)}
+.top.stuck .top-in{padding-block:9px}
+.top-nav a{position:relative}
+.top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:1px;background:currentColor;
+                  transform:scaleX(0);transform-origin:0 50%;transition:transform .32s var(--ease)}
+.top-nav a:hover::after{transform:scaleX(1)}
+
+/* Карточки приподнимаются под курсором. */
+.panel,.pcard,.card,.stat{transition:transform .45s var(--ease),border-color .3s,box-shadow .45s var(--ease)}
+.panel:hover,.pcard:hover{transform:translateY(-4px)}
+.band--paper .panel:hover,.band--paper .pcard:hover{box-shadow:0 20px 44px rgba(13,16,19,.1);border-color:rgba(13,16,19,.2)}
+.pcard--key:hover{box-shadow:0 20px 44px rgba(0,0,0,.35)}
+.vs-row{transition:background .3s}
+.vs-row:not(.vs-head):hover{background:rgba(13,16,19,.04)}
+.ptable tbody tr{transition:background .3s}
+.ptable tbody tr:hover{background:rgba(13,16,19,.035)}
+
+/* Подсветка под курсором в карточке отчёта. */
+.hero .card{position:relative;overflow:hidden}
+.hero .card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .45s;
+    background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(94,159,232,.16),transparent 70%)}
+.hero .card:hover::after{opacity:1}
+
+/* Полоски в карточке наливаются, когда карточка показалась. */
+.bar i{transition:transform 1.15s var(--ease);transition-delay:var(--d,0ms)}
+
+/* Раскрытие вопросов и участков конвейера — с проявлением, а не рывком. */
+@keyframes openIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.faq details[open] p{animation:openIn .42s var(--ease) both}
+.stage.open .stage-body{animation:openIn .42s var(--ease) both}
+.faq summary::after{transition:transform .3s var(--ease)}
+
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* ── герой: плотнее, без пустот ───────────────────── */
@@ -1027,7 +1093,7 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
 .vf-shell{max-width:1180px;margin:0 auto;padding:clamp(48px,6vw,72px) clamp(20px,5vw,64px) 32px}
 .vf-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px 32px}
 @media(max-width:900px){.vf-grid{grid-template-columns:1fr 1fr;gap:36px 24px}}
-@media(max-width:560px){.vf-grid{grid-template-columns:1fr}} 
+@media(max-width:560px){.vf-grid{grid-template-columns:1fr}}
 
 .vf-brand{font:400 26px/1 'Instrument Serif',Georgia,serif;color:#EFEAE1;letter-spacing:-.01em;
           display:inline-block;text-decoration:none}
@@ -1146,46 +1212,6 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
   'use strict';
 
   /* Куда отправлять заявки. Пока пусто — форма откроет письмо на hello@verstio.ru. */
-  /* Плавное появление блоков при скролле.
-     Классы наве��иваем из JS, чтобы не засорять разметку и чтобы без JS
-     ст��аница осталась полностью видимой. */
-  (function () {
-    var slow = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (slow || !('IntersectionObserver' in window)) return;
-
-    var nodes = [];
-    document.querySelectorAll('.band').forEach(function (band) {
-      var shell = band.querySelector('.shell') || band;
-      Array.prototype.forEach.call(shell.children, function (el) {
-        nodes.push(el);
-      });
-    });
-    if (!nodes.length) return;
-
-    nodes.forEach(function (el) { el.classList.add('reveal'); });
-
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var el = entry.target;
-        /* Небольшая задержка внутри одного экрана: блоки выезжают друг за другом,
-           а не все сразу — именно это делает движение заметным. */
-        var peers = el.parentNode ? Array.prototype.indexOf.call(el.parentNode.children, el) : 0;
-        el.style.transitionDelay = Math.min(peers * 70, 280) + 'ms';
-        el.classList.add('is-in');
-        io.unobserve(el);
-      });
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
-
-    nodes.forEach(function (el) {
-      /* Что уже видно на первом экране — показываем сразу, без мигания. */
-      if (el.getBoundingClientRect().top < innerHeight * 0.9) {
-        el.classList.add('is-in');
-      } else {
-        io.observe(el);
-      }
-    });
-  })();
 
   /* Адрес бэкенда: заявка уходит в БД и в телеграм.
      Если очистить строку, форма вернётся к письму на hello@verstio.ru. */
@@ -1199,20 +1225,6 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
-
-  /* Счётчик в карточке отчёта — один раз, когда герой виден */
-  var num = document.querySelector('[data-count]');
-  if (num && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    var target = parseInt(num.dataset.count, 10), cur = 0;
-    var step = function(){
-      cur += Math.max(1, Math.round((target - cur) / 8));
-      if (cur >= target) { num.textContent = target; return; }
-      num.textContent = cur;
-      requestAnimationFrame(step);
-    };
-    num.textContent = '0';
-    setTimeout(step, 350);
-  }
 
   /* Форма */
   var form = document.getElementById('leadForm');
@@ -1342,6 +1354,303 @@ footer{background:var(--ink);border-top:1px solid var(--line-d);padding:44px 0}
       setTimeout(function(){ b.hidden=true; },250);
     });
   })();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   ДВИЖЕНИЕ НА СТРАНИЦЕ
+
+   Четыре независимых куска, каждый включается сам и молча выключается,
+   если браузер старый или пользователь просил меньше анимации:
+
+     1. появление блоков при прокрутке (выезд снизу и с боков);
+     2. счёт цифр от нуля до настоящего значения;
+     3. полоса прочтения и уплотнение шапки;
+     4. мелочи в карточке отчёта: подсветка под курсором и лёгкий сдвиг.
+
+   Разметку не трогаем: все классы навешиваются отсюда. Поэтому без JS
+   страница остаётся полностью видимой, а не пустой.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var CALM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var HAS_IO = 'IntersectionObserver' in window;
+
+  /* ── 1. ПОЯВЛЕНИЕ БЛОКОВ ───────────────────────────────────────────── */
+
+  /* Порядок важен: элемент забирает первое подходящее правило и больше
+     не участвует. Иначе панель внутри сетки получила бы два разных
+     направления и дёргалась. */
+  var GROUPS = [
+    { sel: '.head > *',            dir: 'up',   step: 70  },
+    { sel: '.strip-i',             dir: 'up',   step: 90  },
+    { sel: '.price-hero > *',      dir: 'up',   step: 110 },
+    { sel: '.calc > div',          dir: 'up',   step: 90  },
+    { sel: '.ptable tbody tr',     dir: 'left', step: 70  },
+    { sel: '.rlist li',            dir: 'left', step: 60  },
+    { sel: '.vs-row',              dir: 'left', step: 55  },
+    { sel: '.stage',               dir: 'up',   step: 70  },
+    { sel: '.faq details',         dir: 'up',   step: 45  },
+    { sel: '.cols > *',            dir: 'auto', step: 90  },
+    { sel: '.panel',               dir: 'up',   step: 0   },
+    { sel: '.figure',              dir: 'zoom', step: 0   },
+    { sel: '.rescue',              dir: 'up',   step: 0   },
+    { sel: '.form-inner',          dir: 'up',   step: 0   },
+    { sel: '.lead > *',            dir: 'auto', step: 0   },
+    { sel: '.cta-in > *',          dir: 'up',   step: 90  },
+    { sel: '.vf-grid > *',         dir: 'up',   step: 70  }
+  ];
+
+  var DIR_CLASS = { up: 'rv-up', left: 'rv-left', right: 'rv-right', zoom: 'rv-zoom' };
+
+  /* Направление «auto»: в сетке из двух колонок половинки разъезжаются
+     от центра, в сетке из трёх и больше — все выезжают снизу. */
+  function autoDir(el) {
+    var parent = el.parentNode;
+    if (!parent) return 'up';
+    var kids = [];
+    for (var i = 0; i < parent.children.length; i++) kids.push(parent.children[i]);
+    if (kids.length !== 2) return 'up';
+    if (innerWidth < 860) return 'up';
+    return kids.indexOf(el) === 0 ? 'left' : 'right';
+  }
+
+  function prepareReveal() {
+    var marked = [];
+
+    GROUPS.forEach(function (group) {
+      var list = document.querySelectorAll(group.sel);
+      Array.prototype.forEach.call(list, function (el) {
+        if (el.dataset.rv) return;                     // уже занят другим правилом
+        if (el.closest('.hero')) return;               // первый экран живёт своей анимацией
+        if (el.closest('.stage-body')) return;         // спрятан до раскрытия, наблюдать нечего
+        el.dataset.rv = '1';
+        var dir = group.dir === 'auto' ? autoDir(el) : group.dir;
+        el.classList.add('rv', DIR_CLASS[dir] || 'rv-up');
+        el.dataset.step = group.step;
+        marked.push(el);
+      });
+    });
+
+    return marked;
+  }
+
+  /* Задержку считаем по месту элемента среди соседей, а не по порядку в
+     документе: тогда ряд карточек выезжает слева направо. */
+  function delayFor(el) {
+    var step = parseInt(el.dataset.step, 10) || 0;
+    if (!step || !el.parentNode) return 0;
+    var index = 0, node = el;
+    while ((node = node.previousElementSibling)) {
+      if (node.dataset && node.dataset.rv) index++;
+    }
+    return Math.min(index * step, 360);
+  }
+
+  function show(el) {
+    el.style.setProperty('--d', delayFor(el) + 'ms');
+    el.classList.add('in');
+    /* После показа подсказка браузеру больше не нужна и только ест память. */
+    setTimeout(function () { el.style.willChange = 'auto'; }, 1200);
+  }
+
+  /* ── 2. СЧЁТ ЦИФР ──────────────────────────────────────────────────── */
+
+  /* Берём первый текстовый узел с числом и подменяем только его. Соседние
+     теги (<small>, <em>) и хвост вроде «₽» или «дней» остаются на месте,
+     поэтому размечать цифры в HTML не нужно. */
+  var COUNT_SEL = '.score-num, .strip-i b, .stat b, .calc b, .pnum, .ptable td.num, .rlist b, .dim b';
+  /* Число целиком, вместе с пробелами внутри: «30 000» — одно число.
+     Заканчиваться обязано цифрой, иначе счётчик съедал бы пробел перед «₽». */
+  var NUM_RE = /\d(?:[\d\u00a0\u202f ]*\d)?/;
+
+  function numberNode(el) {
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (NUM_RE.test(node.nodeValue)) return node;
+    }
+    return null;
+  }
+
+  function prepareCount(el) {
+    var node = numberNode(el);
+    if (!node) return null;
+
+    var match = node.nodeValue.match(NUM_RE);
+    var raw = match[0];
+    var digits = raw.replace(/[\s\u00a0\u202f]/g, '');
+    var target = parseInt(digits, 10);
+    if (!target || target < 2) return null;            // «0 ₽» считать нечего
+
+    /* Разделитель берём из исходного текста: где было «30 000», там и
+       останется «30 000», а не «30000». */
+    var sepMatch = raw.match(/[\s\u00a0\u202f]/);
+
+    return {
+      node: node,
+      target: target,
+      sep: sepMatch ? sepMatch[0] : '',
+      before: node.nodeValue.slice(0, match.index),
+      after: node.nodeValue.slice(match.index + raw.length)
+    };
+  }
+
+  function format(value, sep) {
+    var text = String(value);
+    if (!sep) return text;
+    return text.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+  }
+
+  function runCount(el, plan) {
+    el.classList.add('counting');
+    /* Длинные числа считаем чуть дольше: иначе 1 560 000 мелькает. */
+    var dur = Math.min(1500, 700 + String(plan.target).length * 110);
+    var t0 = 0;
+
+    function frame(now) {
+      if (!t0) t0 = now;
+      var p = Math.min(1, (now - t0) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);              // быстро в начале, мягко в конце
+      var value = Math.round(plan.target * eased);
+      plan.node.nodeValue = plan.before + format(value, plan.sep) + plan.after;
+      if (p < 1) requestAnimationFrame(frame);
+    }
+
+    plan.node.nodeValue = plan.before + format(0, plan.sep) + plan.after;
+    requestAnimationFrame(frame);
+  }
+
+  /* ── 3. ПОЛОСКИ В КАРТОЧКЕ ОТЧЁТА ──────────────────────────────────── */
+
+  /* Ширину полоски задаёт вёрстка (transform в атрибуте style). Забираем
+     её, обнуляем, а при показе возвращаем — получается наполнение. */
+  function prepareBars(scope) {
+    var bars = scope.querySelectorAll('.bar i');
+    if (!bars.length) return null;
+    var saved = [];
+    Array.prototype.forEach.call(bars, function (bar, i) {
+      saved.push(bar.style.transform || 'scaleX(1)');
+      bar.style.transform = 'scaleX(0)';
+      bar.style.setProperty('--d', (140 + i * 120) + 'ms');
+    });
+    return function () {
+      Array.prototype.forEach.call(bars, function (bar, i) {
+        bar.style.transform = saved[i];
+      });
+    };
+  }
+
+  /* ── ЗАПУСК ────────────────────────────────────────────────────────── */
+
+  if (!CALM && HAS_IO) {
+    var revealNodes = prepareReveal();
+
+    var counters = [];
+    Array.prototype.forEach.call(document.querySelectorAll(COUNT_SEL), function (el) {
+      var plan = prepareCount(el);
+      if (plan) counters.push({ el: el, plan: plan });
+    });
+
+    var heroCard = document.querySelector('.hero .card');
+    var fillBars = heroCard ? prepareBars(heroCard) : null;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        io.unobserve(el);
+        if (el.classList.contains('rv')) show(el);
+        if (el._count) runCount(el, el._count);
+        if (el._bars) { setTimeout(el._bars, 120); el._bars = null; }
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+
+    counters.forEach(function (item) { item.el._count = item.plan; });
+    if (heroCard && fillBars) heroCard._bars = fillBars;
+
+    var watch = revealNodes.slice();
+    counters.forEach(function (item) {
+      if (watch.indexOf(item.el) === -1) watch.push(item.el);
+    });
+    if (heroCard && watch.indexOf(heroCard) === -1) watch.push(heroCard);
+
+    watch.forEach(function (el) {
+      /* Что уже на экране при загрузке — показываем сразу, без мигания. */
+      if (el.getBoundingClientRect().top < innerHeight * 0.92) {
+        if (el.classList.contains('rv')) show(el);
+        if (el._count) runCount(el, el._count);
+        if (el._bars) { setTimeout(el._bars, 260); el._bars = null; }
+      } else {
+        io.observe(el);
+      }
+    });
+  }
+
+  /* ── 4. ПОЛОСА ПРОЧТЕНИЯ И ШАПКА ───────────────────────────────────── */
+
+  var top = document.querySelector('.top');
+  var prog = null;
+
+  if (!CALM) {
+    prog = document.createElement('div');
+    prog.className = 'prog';
+    prog.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(prog);
+  }
+
+  var ticking = false;
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (top) top.classList.toggle('stuck', y > 14);
+
+      if (prog) {
+        var full = document.documentElement.scrollHeight - innerHeight;
+        prog.style.transform = 'scaleX(' + (full > 0 ? Math.min(1, y / full) : 0) + ')';
+      }
+    });
+  }
+
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+
+  /* ── 5. КАРТОЧКА ОТЧЁТА ────────────────────────────────────────────── */
+
+  var card = document.querySelector('.hero .card');
+  if (card && !CALM && matchMedia('(hover: hover)').matches) {
+
+    /* Подсветка идёт за курсором. */
+    card.addEventListener('mousemove', function (e) {
+      var box = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - box.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - box.top) + 'px');
+    });
+
+    /* Лёгкий сдвиг при прокрутке: карточка отстаёт от текста и экран
+       перестаёт быть плоским. Включаем после вступительной анимации,
+       иначе inline-стиль её перебьёт. */
+    setTimeout(function () {
+      var raf = false;
+      addEventListener('scroll', function () {
+        if (raf) return;
+        raf = true;
+        requestAnimationFrame(function () {
+          raf = false;
+          var y = window.pageYOffset || 0;
+          if (y > innerHeight) return;                 // карточка уже далеко вверху
+          card.style.transform = 'translate3d(0,' + (-Math.min(y * 0.07, 22)).toFixed(1) + 'px,0)';
+        });
+      }, { passive: true });
+    }, 1200);
+  }
+})();
 </script>
 <script src="/support-widget.js" defer></script>
 <script type="application/ld+json">{
